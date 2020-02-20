@@ -1,11 +1,28 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
+import logInScreen from './src/logIn/logInScreen';
+import homeScreen from './src/home/homeScreen';
+import gardenScreen from './src/garden/gardenScreen';
+import friendsScreen from './src/friends/friendsScreen';
+
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+const Stack = createStackNavigator();
+
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
+    // Initialize all the screens
+    // When calling .navigate, use "name" to navigate to the corresponding screen
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={logInScreen} />
+        <Stack.Screen name="Home" component={homeScreen} />
+        <Stack.Screen name="Garden" component={gardenScreen} />
+        <Stack.Screen name="Friends" component={friendsScreen} />
+        </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
