@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import logInScreen from './src/logIn/logInScreen';
+import LogInScreen from './src/logIn/logInScreen';
 import homeScreen from './src/home/homeScreen';
 import gardenScreen from './src/garden/gardenScreen';
 import friendsScreen from './src/friends/friendsScreen';
@@ -17,7 +17,7 @@ export default function App() {
     // When calling .navigate, use "name" to navigate to the corresponding screen
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={logInScreen} />
+        <Stack.Screen name="Login" component={LogInScreen} />
         <Stack.Screen name="Home" component={homeScreen} />
         <Stack.Screen name="Garden" component={gardenScreen} />
         <Stack.Screen name="Friends" component={friendsScreen} />
