@@ -35,7 +35,10 @@ export default class LogInScreen extends React.Component {
                 <Button
                     title="Continue With Google"
                     onPress={() => this.logInWithGoogle()}/>
-                <Task></Task>
+                <Task
+                    name="first task"i
+                    dueDate={new Date("2/21/2022")}
+                ></Task>
             </View>
         );
     };
