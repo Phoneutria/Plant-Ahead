@@ -6,25 +6,32 @@ import * as Progress from 'react-native-progress';
 
 
 export default class homeScreen extends React.Component {
+    /* TODO: currently the growthpoints is a state variable
+    this means that when you go from homeScreen to other
+    screens and come back, growthPoints will be restored 
+    to 0. In the future, it should be a global variable 
+    that is taking data from Firebase or other place */
     constructor(props) {
         super(props);
-        this.state = {growthPoints: 0};
+        this.state = {
+            growthPoints: 0
+        };
     };
 
+    // handle the button when progress is added
     progressAdded() {
-        Alert.alert(this.state.growthPoints);
-        
         if(this.state.growthPoints < 1){
-            temp = this.state.growthPoints;
-            this.setState({ growthPoints: temp+0.2 });
+            this.setState({ growthPoints: this.state.growthPoints+0.2 });
+            Alert.alert("adding points!");
+        } else {
+            Alert.alert("Your tree is done growing!");
         }
     }
 
     render() {
         // options for drop-down box
         let data = [{
-            value: 'By Due Date'
-        },{
+            value: 'By Due Date'},{
             value: 'By Priority'
         }];
         return (
@@ -33,21 +40,26 @@ export default class homeScreen extends React.Component {
                 label='Sort'
                 data={data}
             />
+            {/* This is the button for adding adding tasks
+            TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
                 onPress={()=> Alert.alert("Add task!")}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
+
+            {/* // Self defined object progress bar */}
             <Progress.Bar 
                 progress={this.state.growthPoints} 
                 width={300} 
                 height={20}
                 style={styles.progressBar}
                 />
-              <Button
-                    onPress={this.progressAdded}
-                    title='Temperory to show progress bar'/>
-            
+
+            {/* // Button to add more progree to the progress bar */}
+            <Button
+                onPress={this.progressAdded.bind(this)}
+                title='Temperory to show progress bar'/>
         </View>
         )
        
@@ -60,7 +72,7 @@ styles = StyleSheet.create({
         padding: 20,
         marginRight: 15,
         marginLeft: 15,
-        backgroundColor: '#90F050',
+        backgroundColor: '#0E88E5',
         bottom:20,
         right:10,
         height: 70,
