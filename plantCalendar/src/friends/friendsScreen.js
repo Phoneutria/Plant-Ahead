@@ -1,7 +1,7 @@
 import * as React from 'react';
 import {View, Text, Button} from 'react-native';
 
-export default class friendsScreen extends React.Component {
+export default class FriendsScreen extends React.Component {
     render () {
         return (
             <View>
