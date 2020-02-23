@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 import PropTypes from 'prop-types';
 
@@ -15,10 +15,23 @@ export default class Task extends React.Component {
         completed: false,
     };
 
+    isCompleted() {
+        this.setState({completed: !this.completed});
+        Alert.alert(this.props.name + " is completed!");
+        /**
+         * TODO: Discuss
+         * - We can't unmount a child on its own, need to do it from the parent
+         * - Probably need to use the parent class to unmount it
+         */
+    };
+
     render() {
         return (
             <View style={styles.container}>
-                <TouchableOpacity style = {styles.task}>
+                <TouchableOpacity 
+                    style = {styles.task}
+                    onPress = {() => Alert.alert("more details about: " + this.props.name)}
+                >
                     <Text>{this.props.name}</Text>
                     <Text>{this.props.dueDate.toString()}</Text>
                     <Text>{this.props.priorityLevel}</Text>
@@ -26,7 +39,7 @@ export default class Task extends React.Component {
                 </TouchableOpacity>
                 <CheckBox 
                     checked = {this.state.completed}
-                    onPress = {() => this.setState({completed: !this.state.completed})}
+                    onPress = {() => this.isCompleted()}
                 />
             </View>
         );

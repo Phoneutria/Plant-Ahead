@@ -1,7 +1,6 @@
 import * as React from 'react';
 // TODO: remove Alert when we don't need it anymore
 import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
-import Task from '../home/task';
 
 /**
  * logInScreen Class
@@ -35,10 +34,6 @@ export default class LogInScreen extends React.Component {
                 <Button
                     title="Continue With Google"
                     onPress={() => this.logInWithGoogle()}/>
-                <Task
-                    name="first task"i
-                    dueDate={new Date("2/21/2022")}
-                ></Task>
             </View>
         );
     };
