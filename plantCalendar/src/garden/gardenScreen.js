@@ -59,7 +59,6 @@ export default class GardenScreen extends React.Component {
                 />
          </View>
         )
-       
     }
 };
 
@@ -75,10 +74,7 @@ styles = StyleSheet.create({
         left: 40,
     },
     logo: {
-    
-        
         marginTop: 50,
-    
         width: 150,
         height: 150,
     },
