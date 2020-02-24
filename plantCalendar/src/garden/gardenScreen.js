@@ -16,13 +16,11 @@ export default class gardenScreen extends React.Component {
         };
     };
 
-    // TODO: center and make logo bigger
-    // make button alerts
-    // show growth points next to the bar
-    // handle the button when progress is added
+    // TODO: make logo bigger (when ever I change the height or width,
+    // the logo just gets cut off)
     progressAdded() {
         if(this.state.growthPoints < 1){
-            this.setState({ growthPoints: this.state.growthPoints+0.2 });
+            this.setState({ growthPoints: this.state.growthPoints+0.1 });
             Alert.alert("adding points!");
         } else {
             Alert.alert("Your tree is done growing!");
@@ -31,60 +29,61 @@ export default class gardenScreen extends React.Component {
 
     render() {
         return (
-            <View style={{ flex: 10}}>
-            <Image
+        <View>
+            <View style={styles.container}>
+                <Image
                     style={styles.logo}
                     source={require('../../assets/loginLogo.png')}/>
-            <Button
-            title="Water"/>
-            <Button
-            title="Fertilize"/>
-            <Button
-            title="Shop"/>
-
-            {/* // Self defined object progress bar */}
+                <Button
+                    title="Water"
+                    onPress={this.progressAdded.bind(this)}/>
+                <Button
+                    title="Fertilize"
+                    onPress={this.progressAdded.bind(this)}/>
+                <Button
+                    title="Shop"
+                    onPress={this.progressAdded.bind(this)}/>
+                <Text
+                    style={{fontSize:20, color:'#0E88E5', marginBottom: 20}}>
+                    You currently have  [   
+                    {/*.toFixed(1) rounds the number to 1 decimal place for */}
+                    <Text>{this.state.growthPoints.toFixed(1)}</Text>
+                    ] growthPoints!
+                </Text>
+            </View>
             <Progress.Bar 
                 progress={this.state.growthPoints} 
                 width={300} 
                 height={20}
                 style={styles.progressBar}
                 />
-
-            {/* // Button to add more progree to the progress bar */}
-            <Button
-                onPress={this.progressAdded.bind(this)}
-                title='Temperory to show progress bar'/>
-        </View>
+         </View>
         )
        
     }
 };
 
 styles = StyleSheet.create({
-    button: {
-        position: 'absolute',
-        padding: 20,
-        marginRight: 15,
-        marginLeft: 15,
-        backgroundColor: '#0E88E5',
-        bottom:50,
-        right:10,
-        height: 70,
-        width: 70,  //The Width must be the same as the height
-        borderRadius:140,
-        
-    },
-    textButton: {
+    textStyle: {
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: 50,
         fontWeight: 'bold',
-        color:'#FFFFFF'
+        color:'#0E88E5',
+        marginBottom: 10
     },
     progressBar:{
         left: 40,
     },
     logo: {
+    
+        
+        marginTop: 50,
+    
         width: 150,
         height: 150,
+    },
+    container:{
+        alignItems: 'center',
+        justifyContent: 'flex-start',
     }
 });
