@@ -4,7 +4,7 @@ import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './calendar';  // import task components
 
-export default class homeScreen extends React.Component {
+export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
     this means that when you go from homeScreen to other
     screens and come back, growthPoints will be restored 
@@ -43,7 +43,7 @@ export default class homeScreen extends React.Component {
             TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
-                onPress={()=> Alert.alert("Add task!")}>
+                onPress={()=> this.props.navigation.navigate('EditTask')}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
 
@@ -58,11 +58,9 @@ export default class homeScreen extends React.Component {
             {/* // Button to add more progree to the progress bar */}
             <Button
                 onPress={this.progressAdded.bind(this)}
-                title='Temperory to show progress bar'/>
-            
+                title='Temperory to show progress bar'/>  
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar></Calendar>
-
         </View>
         )
        
