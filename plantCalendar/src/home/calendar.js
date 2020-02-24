@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, Alert, FlatList } from 'react-native';
-import Task from '../home/task';  // import task components
+import Task from '../home/Task';  // import task components
 
 /**
  * Calendar Class
