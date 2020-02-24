@@ -1,5 +1,6 @@
 import  React, { Component } from 'react';
-import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import {View, Text, Button, TouchableOpacity, 
+        StyleSheet, Alert, Image} from 'react-native';
 import * as Progress from 'react-native-progress';
 
 export default class gardenScreen extends React.Component {
@@ -15,6 +16,9 @@ export default class gardenScreen extends React.Component {
         };
     };
 
+    // TODO: center and make logo bigger
+    // make button alerts
+    // show growth points next to the bar
     // handle the button when progress is added
     progressAdded() {
         if(this.state.growthPoints < 1){
@@ -28,7 +32,9 @@ export default class gardenScreen extends React.Component {
     render() {
         return (
             <View style={{ flex: 10}}>
-            
+            <Image
+                    style={styles.logo}
+                    source={require('../../assets/loginLogo.png')}/>
             <Button
             title="Water"/>
             <Button
@@ -76,5 +82,9 @@ styles = StyleSheet.create({
     },
     progressBar:{
         left: 40,
+    },
+    logo: {
+        width: 150,
+        height: 150,
     }
 });
