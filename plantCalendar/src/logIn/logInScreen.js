@@ -9,7 +9,7 @@ import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
  * 
  * \brief Generate the view for login screen
  */
-export default class logInScreen extends React.Component { 
+export default class LogInScreen extends React.Component { 
     /**
      * TODO: Discuss placement of this function
      *  Do we want to put this function as a member function? 

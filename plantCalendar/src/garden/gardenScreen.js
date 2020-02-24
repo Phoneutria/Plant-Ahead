@@ -3,7 +3,7 @@ import {View, Text, Button, TouchableOpacity,
         StyleSheet, Alert, Image} from 'react-native';
 import * as Progress from 'react-native-progress';
 
-export default class gardenScreen extends React.Component {
+export default class GardenScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
     this means that when you go from homeScreen to other
     screens and come back, growthPoints will be restored 
@@ -27,7 +27,7 @@ export default class gardenScreen extends React.Component {
         }
     }
 
-    render() {
+    render () {
         return (
         <View>
             <View style={styles.container}>

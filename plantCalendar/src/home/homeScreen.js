@@ -5,7 +5,7 @@ import * as Progress from 'react-native-progress';
 
 
 
-export default class homeScreen extends React.Component {
+export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
     this means that when you go from homeScreen to other
     screens and come back, growthPoints will be restored 
@@ -44,7 +44,7 @@ export default class homeScreen extends React.Component {
             TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
-                onPress={()=> Alert.alert("Add task!")}>
+                onPress={()=> this.props.navigation.navigate('EditTask')}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
 
