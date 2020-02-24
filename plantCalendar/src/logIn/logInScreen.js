@@ -27,7 +27,6 @@ export default class LogInScreen extends React.Component {
     render () {
         return (
             <View style={styles.container}>
-                <Text>Login Screen</Text>
                 <Image
                     style={styles.logo}
                     source={require('../../assets/loginLogo.png')}/>

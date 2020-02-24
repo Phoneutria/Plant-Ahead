@@ -2,8 +2,7 @@ import  React, { Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
-
-
+import Calendar from './calendar';  // import task components
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -59,11 +58,9 @@ export default class HomeScreen extends React.Component {
             {/* // Button to add more progree to the progress bar */}
             <Button
                 onPress={this.progressAdded.bind(this)}
-                title='Temperory to show progress bar'/>
-             
-             <Button
-                onPress={()=>this.props.navigation.navigate('Garden')}
-                title='Temperory to test garden'/>
+                title='Temperory to show progress bar'/>  
+            {/* Tempory Dummy Calendar to display tasks*/}
+            <Calendar></Calendar>
         </View>
         )
        
