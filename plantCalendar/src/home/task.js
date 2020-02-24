@@ -13,20 +13,27 @@ export default class Task extends React.Component {
         completed: false,
     };
 
+    /**
+     * \brief check the checkbox and call parent (Calendar Class)'s function to
+     *      complete this task
+     */
     isCompleted() {
-        this.setState({completed: !this.completed});
-        Alert.alert(this.props.name + " is completed!");
+        this.setState({completed: !this.state.completed});
         /**
          * TODO: Discuss
          * - We can't unmount a child on its own, need to do it from the parent
          * - Probably need to use the parent class to unmount it
          */
-        
+        this.props.completeTask(this);
     };
 
     render() {
         return (
             <View style={styles.container}>
+                {/** 
+                 * Create a clickable rectangle that displays info about a task 
+                 *  once it's clicked, it will call the task viewer (a modal)
+                 */}
                 <TouchableOpacity 
                     style = {styles.task}
                     onPress = {() => Alert.alert("more details about: " + this.props.name)}
