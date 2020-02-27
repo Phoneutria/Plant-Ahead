@@ -94,5 +94,6 @@ const styles = StyleSheet.create({
     },
     task:{
         backgroundColor: '#afeeee',
+        width:'70%',
     },
 });

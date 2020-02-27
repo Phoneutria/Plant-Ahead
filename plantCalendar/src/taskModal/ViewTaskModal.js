@@ -8,11 +8,13 @@ export default class ViewTaskModal extends React.Component {
       return (
         <View style = {styles.container} >
           <View style = {styles.modal}>
+            {/* Close Button */}
             <TouchableOpacity 
               style={styles.closeButton}
               onPress = {() => this.props.navigation.goBack()}>
               <Icon name='close'></Icon>
             </TouchableOpacity>
+            {/* Edit Button to open the task editor modal */}
             <TouchableOpacity 
               style={styles.editButton}
               onPress = {() => this.props.navigation.navigate("EditTask")}>
