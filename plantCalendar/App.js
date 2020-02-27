@@ -40,6 +40,23 @@ export default function App() {
             cardStyle: {
               backgroundColor:'rgba(0,0,0,0.5)',
             },
+            // from react native transparent modals example
+            // make the modal fade in and fade out
+            cardStyleInterpolator: ({ current: { progress } }) => ({
+              cardStyle: {
+                opacity: progress.interpolate({
+                  inputRange: [0, 0.5, 0.9, 1],
+                  outputRange: [0, 0.25, 0.7, 1],
+                }),
+              },
+              overlayStyle: {
+                opacity: progress.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [0, 0.5],
+                  extrapolate: 'clamp',
+                }),
+              },
+            }),
           }}>
         <RootStack.Screen name="Main" component={MainStackApp} />
         <RootStack.Screen name="ViewTaskModal" component={ViewTaskModal} />

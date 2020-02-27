@@ -119,6 +119,10 @@ export default class Calendar extends React.Component {
                 ></Task>;
     };
 
+    // viewTaskOnModal(task) {
+    //     this.props.home.props.navigation.navigate('ViewTaskModal');
+    // }
+
     render() {
         return (
             <View style={styles.container}>
