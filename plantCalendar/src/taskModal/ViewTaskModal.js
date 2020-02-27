@@ -1,5 +1,5 @@
-import  React, { Component } from 'react';
-import {View, Text, Button, StyleSheet, TouchableOpacity} from 'react-native';
+import * as React from 'react';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Icon }  from 'react-native-elements';
 
 export default class ViewTaskModal extends React.Component {
@@ -20,9 +20,10 @@ export default class ViewTaskModal extends React.Component {
               onPress = {() => this.props.navigation.navigate("EditTask")}>
               <Icon name='edit'></Icon>
             </TouchableOpacity>
+            {/* Wrap a view around the Texts for easier styling */}
             <View style = {styles.taskText}>
               <Text>Task Name: {taskProps.name}</Text>
-              {/* toLocalString gives us date format:  */}
+              {/* toLocalString gives us date format: 23/01/2019, 17:23:42*/}
               <Text>Due Date: {taskProps.dueDate.toLocaleString()}</Text>
               <Text>Priority: {taskProps.priority}</Text>
               <Text>HoursLeft: {taskProps.hoursLeft}</Text>

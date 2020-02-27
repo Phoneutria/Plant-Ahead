@@ -94,6 +94,6 @@ const styles = StyleSheet.create({
     },
     task:{
         backgroundColor: '#afeeee',
-        width:'70%',
+        width:'70%',  // make all the boxes for Task have the same width
     },
 });
