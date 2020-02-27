@@ -1,14 +1,19 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
+// allow react native to check the input props for Task Class
 import PropTypes from 'prop-types';
+// allow a child component (not a Screen) to use the "navigation"
+// in this case, allow a Task component to open the ViewTaskModal
+import { useNavigation } from '@react-navigation/native';
 
 /**
  * Task Class
  *  \brief render each individual task
  * 
  */
-export default class Task extends React.Component {
+class Task extends React.Component {
+    
     state = {
         completed: false,
     };
@@ -36,7 +41,7 @@ export default class Task extends React.Component {
                  */}
                 <TouchableOpacity 
                     style = {styles.task}
-                    onPress = {() => Alert.alert("more details about: " + this.props.name)}
+                    onPress = {() => this.props.navigation.navigate("ViewTaskModal")}
                 >
                     <Text>{this.props.name}</Text>
                     <Text>{this.props.dueDate.toString()}</Text>
@@ -51,6 +56,21 @@ export default class Task extends React.Component {
         );
     };
 }
+
+/**
+ * wrap the class component Task in a function in order to use "useNavigation"
+ * 
+ * useNavigation allows a component to use the "navigation" object without requiring
+ *  the screen that the component is in (HomeScreen in this case) to pass "navigation" in
+ * However, useNavigation cannot be used inside a class, so we have to wrap the Task class
+ *  with a funciton and pass in the "navigation"
+ * See react navigation doc: https://reactnavigation.org/docs/use-navigation/
+ **/ 
+export default function(props) {
+    const navigation = useNavigation();
+
+    return <Task {...props} navigation={navigation} />;
+};
 
 /**
  * Use PropTypes library to typecheck inputted props
