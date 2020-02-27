@@ -41,6 +41,9 @@ class Task extends React.Component {
                  */}
                 <TouchableOpacity 
                     style = {styles.task}
+                    // when the Task component calls the ViewTaskModal
+                    //  it passes in its props so that ViewTaskModal can display this task's information
+                    //  TODO: We might only pass selected props instead of all the props in the future
                     onPress = {() => this.props.navigation.navigate("ViewTaskModal", {taskProps: this.props})}
                 >
                     <Text>{this.props.name}</Text>

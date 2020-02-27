@@ -4,7 +4,10 @@ import { Icon }  from 'react-native-elements';
 
 export default class ViewTaskModal extends React.Component {
     render() {
+      // get the props of a task
+      // this gets passed in when a Task Component navigates to ViewTaskModal
       const taskProps = this.props.route.params.taskProps;
+
       return (
         <View style = {styles.container} >
           <View style = {styles.modal}>
