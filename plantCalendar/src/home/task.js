@@ -41,12 +41,10 @@ class Task extends React.Component {
                  */}
                 <TouchableOpacity 
                     style = {styles.task}
-                    onPress = {() => this.props.navigation.navigate("ViewTaskModal")}
+                    onPress = {() => this.props.navigation.navigate("ViewTaskModal", {taskProps: this.props})}
                 >
                     <Text>{this.props.name}</Text>
-                    <Text>{this.props.dueDate.toString()}</Text>
-                    <Text>{this.props.priority}</Text>
-                    <Text>{this.props.hoursLeft}</Text>
+                    <Text>{this.props.dueDate.toLocaleString()}</Text>
                 </TouchableOpacity>
                 <CheckBox 
                     checked = {this.state.completed}
