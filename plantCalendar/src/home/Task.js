@@ -25,34 +25,25 @@ class Task extends React.Component {
      */
     isCompleted() {
         this.setState({checked: !this.state.checked});
+        this.animateUnmount();
         /**
          * TODO: Discuss
          * - We can't unmount a child on its own, need to do it from the parent
          * - Probably need to use the parent class to unmount it
          */
-        this.props.completeTask(this.props.id);
+        setTimeout(()=>this.props.completeTask(this.props.id), 400);
     };
 
-    componentDidUpdate(prevProps){
-        console.log("this get updated");
-        console.log(prevProps);
-        console.log("current");
-        console.log(this.props);
-        if (this.props.completed !== prevProps.completed){
-            console.log("complete is different");
-            this.animateUnmount();
-        }
-    }
-    
     animateUnmount() {
         Animated.timing(this.state.fadeValue, {
             toValue: 0,
-            duration: 1000
+            duration: 400
         }).start();
     }
 
     render() {
-        return (
+        if (!this.props.completed) {
+            return(
             <Animated.View style={{
                 flexDirection: 'row',
                 opacity: this.state.fadeValue,
@@ -76,7 +67,9 @@ class Task extends React.Component {
                     onPress = {() => this.isCompleted()}
                 />
             </Animated.View>
-        );
+        );} else {
+            return null;
+        }
     };
 }
 

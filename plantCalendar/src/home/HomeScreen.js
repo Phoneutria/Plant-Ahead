@@ -3,7 +3,6 @@ import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-nat
 import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
-import Testing from './testing';
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -15,7 +14,6 @@ export default class HomeScreen extends React.Component {
         super(props);
         this.state = {
             growthPoints: 0,
-            showChild: true,
         };
         this.buttonClick = this.buttonClick.bind(this);
     };
@@ -68,10 +66,6 @@ export default class HomeScreen extends React.Component {
                 style={styles.progressBar}
                 />
 
-            <Testing mounted={this.state.showChild}/>
-            <Button 
-                onPress={this.buttonClick}
-                title={this.state.showChild ? 'Unmount': 'Mount'}></Button>
             {/* // Button to add more progree to the progress bar */}
             <Button
                 onPress={this.progressAdded.bind(this)}

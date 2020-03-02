@@ -132,7 +132,7 @@ export default class Calendar extends React.Component {
     renderTask() {
         this.state.taskArray = [];
         for (var taskId in this.state.taskJson) {
-            if (!this.state.taskJson[taskId].completed){
+            // if (!this.state.taskJson[taskId].completed){
                 console.log(taskId);
                 console.log(this.state.taskJson[taskId].completed);
                 this.state.taskArray.push(
@@ -146,7 +146,7 @@ export default class Calendar extends React.Component {
                         completed={this.state.taskJson[taskId].completed}
                     ></Task>
                 );
-            }
+            // }
         }
     };
 
