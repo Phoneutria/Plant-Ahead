@@ -4,9 +4,7 @@ import {View, Text, Button, TouchableOpacity, StyleSheet,
     Alert, TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-<<<<<<< HEAD
 export default class CreateTaskScreen extends React.Component {
-  
   state = {
     name: "Empty",
     dueDate: new Date(1598051730000),
