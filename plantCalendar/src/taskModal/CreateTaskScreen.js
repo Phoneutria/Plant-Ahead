@@ -4,6 +4,7 @@ import {View, Text, Button, TouchableOpacity, StyleSheet,
     Alert, TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
+<<<<<<< HEAD
 export default class CreateTaskScreen extends React.Component {
   
   state = {
@@ -31,11 +32,11 @@ export default class CreateTaskScreen extends React.Component {
     }
 
     const onChangeHours = (event, hours) => {
-
+      // TODO: implement such that only numbers are allowed
     }
 
     const onChangePriority = (event, priority) => {
-
+      // TODO: implement radio butto s
     }
 
     // Tempporary function to check if text input and date picker worked
@@ -75,8 +76,6 @@ export default class CreateTaskScreen extends React.Component {
   );
   }
 }
-
-
 
 const styles = StyleSheet.create({
     input: {
