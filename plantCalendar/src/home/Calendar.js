@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Alert, FlatList, TouchableHighlightBase } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
 import Task from '../home/Task';  // import task components
 
 /**
@@ -11,9 +11,20 @@ export default class Calendar extends React.Component {
     state = {
         taskArray: [],
         delete: false,
-        // dummy data
-        // an array of tasks (TODO: format might change later)
-        taskJson:{
+        /**
+         * dummy data
+         * Json format
+         *  right now, we use the task id (int) to identify which task's
+         *  data we want to edit
+         *  TODO: this format might be different once we integrate with 
+         *  Google Calendar
+         *  TODO:
+         *      Right now, when we go to a differnt page, the taskData will
+         *      get refreshed (the completed one will appear again). This is 
+         *      because every time the homeScreen is mounted, Calendar will get
+         *      created again. Should be able to fix it once we integrate with Google Calendar
+         */
+        taskData:{
             "1": {
                 name: "Task 1",
                 dueDate: new Date("2/21/2022"),
@@ -95,24 +106,34 @@ export default class Calendar extends React.Component {
                 hoursLeft: 3, 
                 completed: false,
             },
+            "13": {
+                name: "Task 13",
+                dueDate: new Date("4/05/2022"),
+                priority: "low",
+                hoursLeft: 3, 
+                completed: false,
+            },
+            "14": {
+                name: "Task 14",
+                dueDate: new Date("4/05/2022"),
+                priority: "low",
+                hoursLeft: 3, 
+                completed: false,
+            },
         }
     }
 
     /** 
-     * \brief unmount (stop displaying) a task and complete the class on Google Calendar
+     * \brief modify this.props.taskData and mark a task (specified by taskId) as completed
      * \detail
-     *      - TODO: animate a task being completed (fade away first and then disappear?)
      *      - TODO: in Google Calendar, set the task to be completed
      * @param {*} task TODO: currently passing the entire task (which includes props, states, etc)
     */
     deleteCompletedTask(taskId) {
-        let newTaskJson = {... this.state.taskJson};
-        newTaskJson[taskId].completed = true;
-        console.log("new");
-        console.log(newTaskJson);
-        this.setState({taskJson: newTaskJson});
-        console.log("did it change task.props?");
-        console.log(this.state.taskJson);
+        let newtaskData = {... this.state.taskData};
+        newtaskData[taskId].completed = true;
+        // need to use setState to change to 
+        this.setState({taskData: newtaskData});
     }
 
     /**
@@ -121,32 +142,26 @@ export default class Calendar extends React.Component {
      *      The parent (Calendar)'s deleteCompletedTask function gets passed down to
      *      the children (individual tasks)
      *      The children will call its this.props.completeTask function to delete itself
-     * @param {*} taskInfo in JSON format
-     *      {
-     *          name: <string, required>,
-     *          dueDate: <Date, required>,
-     *          priority: <string>,
-     *          hoursLeft: <number>,
-     *      }
+     * @param {*} taskId a string that represent the taskId (each task has an unique task Id)
      */
     renderTask() {
+        // Have to clear the array so that after the tasks re-render, there isn't just a blank space
+        // left for the deleted task
         this.state.taskArray = [];
-        for (var taskId in this.state.taskJson) {
-            // if (!this.state.taskJson[taskId].completed){
-                console.log(taskId);
-                console.log(this.state.taskJson[taskId].completed);
-                this.state.taskArray.push(
-                    <Task
-                        id = {taskId}
-                        name={this.state.taskJson[taskId].name}
-                        dueDate={this.state.taskJson[taskId].dueDate}
-                        priority={this.state.taskJson[taskId].priority}
-                        hoursLeft={this.state.taskJson[taskId].hoursLeft}
-                        completeTask={(taskId) => this.deleteCompletedTask(taskId)}
-                        completed={this.state.taskJson[taskId].completed}
-                    ></Task>
-                );
-            // }
+        for (var taskId in this.state.taskData) {
+            this.state.taskArray.push(
+                <Task
+                    id = {taskId}
+                    name={this.state.taskData[taskId].name}
+                    dueDate={this.state.taskData[taskId].dueDate}
+                    priority={this.state.taskData[taskId].priority}
+                    hoursLeft={this.state.taskData[taskId].hoursLeft}
+                    completed={this.state.taskData[taskId].completed}
+                    // pass in Calendar's deleteCompletedTask function
+                    // so that when a task is completed, it can call Calendar's function
+                    completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+                ></Task>
+            );
         }
     };
 
@@ -154,7 +169,9 @@ export default class Calendar extends React.Component {
         this.renderTask();
         return (
             <View style={styles.container}>
-                {this.state.taskArray}
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    {this.state.taskArray}
+                </ScrollView>
             </View>
         );
     };
