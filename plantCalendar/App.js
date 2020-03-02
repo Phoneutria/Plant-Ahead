@@ -7,6 +7,7 @@ import GardenScreen from './src/garden/GardenScreen';
 import FriendsScreen from './src/friends/FriendsScreen';
 import ViewTaskModal from './src/taskModal/ViewTaskModal';
 import EditTaskScreen from './src/taskModal/EditTaskScreen';
+import CreateTaskScreen from './src/taskModal/CreateTaskScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -23,6 +24,7 @@ function MainStackApp() {
         <MainStack.Screen name="Home" component={HomeScreen} />
         <MainStack.Screen name="Garden" component={GardenScreen} />
         <MainStack.Screen name="Friends" component={FriendsScreen} />
+        <MainStack.Screen name="CreateTask" component={CreateTaskScreen} />
       </MainStack.Navigator>
   );
 }
@@ -61,6 +63,7 @@ export default function App() {
         <RootStack.Screen name="Main" component={MainStackApp} />
         <RootStack.Screen name="ViewTaskModal" component={ViewTaskModal} />
         <RootStack.Screen name="EditTask" component={EditTaskScreen} />
+        
         </RootStack.Navigator>
     </NavigationContainer>
   );
