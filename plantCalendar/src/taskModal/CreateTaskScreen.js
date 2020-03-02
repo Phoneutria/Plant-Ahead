@@ -3,6 +3,7 @@ import{ Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, 
     Alert, TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import {Dropdown} from 'react-native-material-dropdown';
 
 export default class CreateTaskScreen extends React.Component {
   state = {
@@ -11,6 +12,14 @@ export default class CreateTaskScreen extends React.Component {
     priority: "medium",
     hoursLeft: 0 
   }
+  // Tempporary function to check if text input and date picker worked
+  formatOutput() {
+    let temp = String(this.state.dueDate).split(' ');
+    temp = " is due on " + temp[1]+ "-" + temp[2]+ "-" + temp[3];
+    let output = String(this.state.name) + temp + " with " + this.state.priority + 
+    " priority. You have " + String(this.state.hoursLeft) + " hours left!";
+    return output;
+  }
 
   render() {
     // assigns this.state.date to the local constant date
@@ -18,7 +27,7 @@ export default class CreateTaskScreen extends React.Component {
     const {dueDate} = this.state;
     const {priority} = this.state;
     const {hoursLeft} = this.state;
-
+    
     // when we change the date in the dateTimePicker, we update the date 
     // with the selectedDate
     const onChangeDate = (event, selectedDate) => {
@@ -29,33 +38,31 @@ export default class CreateTaskScreen extends React.Component {
       this.setState({name: updateName});
     }
 
-    const onChangeHours = (event, hours) => {
-      // TODO: implement such that only numbers are allowed
+    const onChangeHours = (event, updatehours) => {
+      this.setState({hoursLeft: updatehours});
     }
 
-    const onChangePriority = (event, priority) => {
-      // TODO: implement radio butto s
-    }
-
-    // Tempporary function to check if text input and date picker worked
-    const formatOutput = (name, dueDate, priority, hours) => {
-      sdate = String(date).split(' ');
-      sdate = " is due on " + date[1]+ "-" + date[2]+"-"+date[3];
-      output = name + sdate + " with " + priority + ". You have " + hours + " left!";
-      return output;
-    }
+    let data = [
+      {value: 'high'},
+      {value: 'medium'},
+      {value: 'low'}
+    ];
 
   return (
     <View>
         <TextInput
                 style={styles.input}
-                onChangeText={name => onChangeName(name)}
+                onChangeText={(text)=>{
+                  this.setState({name:text});
+                }}
                 placeholder="name"
             />
 
             <TextInput
                 style={styles.input}
-                onChangeText={hours => onChangeHours(hours)}
+                onChangeText={(text)=>{
+                  this.setState({hoursLeft:text});
+                }}
                 placeholder="Estimate hours needed"
             />
 
@@ -65,11 +72,19 @@ export default class CreateTaskScreen extends React.Component {
               mode={'date'}
               value={ dueDate }
               onChange={onChangeDate} 
-              />
+            />
+            <Dropdown
+                label='Priority'
+                data={data}
+                onChangeText={(value)=>{
+                  this.setState({priority:value});
+                }}
+            />
 
             <Button
-                onPress={()=> Alert.alert(formatOutput(date))}
+                onPress={()=> Alert.alert(this.formatOutput())}
                 title='Submit'/> 
+                {/* this.formatOutput() */}
     </View>
   );
   }
