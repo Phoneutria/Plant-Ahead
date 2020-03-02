@@ -43,7 +43,7 @@ export default class HomeScreen extends React.Component {
             TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
-                onPress={()=> this.props.navigation.navigate('EditTask')}>
+                onPress={()=> this.props.navigation.navigate('CreateTask')}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
 
