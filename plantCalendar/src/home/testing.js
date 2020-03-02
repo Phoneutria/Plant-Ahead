@@ -16,20 +16,21 @@ export default class Testing extends React.Component {
     };
 
     _start () {
+        console.log("called start");
         Animated.timing(this.state.fadeValue, {
           toValue: 0,
           duration: 1000
         }).start();
     };
 
-    componentWillReceiveProps(newProps) { // check for the mounted props
+    componentDidUpdate(newProps) { // check for the mounted props
         if(!newProps.mounted){
             this._start();// call outro animation when mounted prop is false
         } else {
-            this.setState({ // remount the node when the mounted prop is true
-                show: true
-            })
-            setTimeout(this.mountStyle, 10) // call the into animation
+            // this.setState({ // remount the node when the mounted prop is true
+            //     show: true
+            // })
+            // setTimeout(this.mountStyle, 10) // call the into animation
         }
     };
     
@@ -44,7 +45,7 @@ export default class Testing extends React.Component {
         console.log("bad");
         Animated.timing(this.state.fadeValue, {
             toValue: 1,
-            duration: 1000
+            duration: 5
           }).start();
         //  this.setState({
         //     style: {
@@ -66,7 +67,7 @@ export default class Testing extends React.Component {
     }
     
     componentDidMount(){
-        setTimeout(this.mountStyle, 10) // call the into animation
+        setTimeout(this.mountStyle, 5) // call the into animation
     }
     
     transitionEnd(){

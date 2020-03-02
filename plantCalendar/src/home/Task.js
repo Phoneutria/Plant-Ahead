@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, Animated } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 // allow react native to check the input props for Task Class
 import PropTypes from 'prop-types';
@@ -15,7 +15,8 @@ import { useNavigation } from '@react-navigation/native';
 class Task extends React.Component {
     
     state = {
-        completed: false,
+        fadeValue: new Animated.Value(1),
+        checked: false,
     };
 
     /**
@@ -23,18 +24,39 @@ class Task extends React.Component {
      *      complete this task
      */
     isCompleted() {
-        this.setState({completed: !this.state.completed});
+        this.setState({checked: !this.state.checked});
         /**
          * TODO: Discuss
          * - We can't unmount a child on its own, need to do it from the parent
          * - Probably need to use the parent class to unmount it
          */
-        this.props.completeTask(this);
+        this.props.completeTask(this.props.id);
     };
+
+    componentDidUpdate(prevProps){
+        console.log("this get updated");
+        console.log(prevProps);
+        console.log("current");
+        console.log(this.props);
+        if (this.props.completed !== prevProps.completed){
+            console.log("complete is different");
+            this.animateUnmount();
+        }
+    }
+    
+    animateUnmount() {
+        Animated.timing(this.state.fadeValue, {
+            toValue: 0,
+            duration: 1000
+        }).start();
+    }
 
     render() {
         return (
-            <View style={styles.container}>
+            <Animated.View style={{
+                flexDirection: 'row',
+                opacity: this.state.fadeValue,
+            }}>
                 {/** 
                  * Create a clickable rectangle that displays info about a task 
                  *  once it's clicked, it will call the task viewer (a modal)
@@ -50,10 +72,10 @@ class Task extends React.Component {
                     <Text>{this.props.dueDate.toLocaleString()}</Text>
                 </TouchableOpacity>
                 <CheckBox 
-                    checked = {this.state.completed}
+                    checked = {this.state.checked}
                     onPress = {() => this.isCompleted()}
                 />
-            </View>
+            </Animated.View>
         );
     };
 }
@@ -79,7 +101,7 @@ export default function(props) {
  */
 Task.propTypes = {
     name: PropTypes.string.isRequired,
-    dueDate: PropTypes.instanceOf(Date).isRequired,
+    // dueDate: PropTypes.instanceOf(Date).isRequired,
     priority: PropTypes.oneOf(['low', 'medium', 'high']),
     hoursLeft: PropTypes.number
 };
