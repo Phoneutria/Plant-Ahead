@@ -4,10 +4,13 @@ import { Icon }  from 'react-native-elements';
 
 export default class ViewTaskModal extends React.Component {
     render() {
-      // get the props of a task
+      // get the props and states  of a task
       // this gets passed in when a Task Component navigates to ViewTaskModal
       const taskProps = this.props.route.params.taskProps;
       const taskStates = this.props.route.params.taskStates;
+      // only display "estimate time to complete" "time spent" "time left"
+      // if there is an estimated time
+      const dispTime = taskProps.estTimeToComplete != null
       return (
         <View style = {styles.container} >
           <View style = {styles.modal}>
@@ -29,9 +32,9 @@ export default class ViewTaskModal extends React.Component {
               {/* toLocalString gives us date format: 23/01/2019, 17:23:42*/}
               <Text>Due Date: {taskProps.dueDate.toLocaleString()}</Text>
               <Text>Priority: {taskProps.priority}</Text>
-              <Text>Estimated Time to Complete: {taskProps.estTimeToComplete}</Text>
-              <Text>Time Spent:{taskStates.timeSpent}</Text>
-              <Text>Time Left: {taskStates.timeLeft}</Text>
+              <Text>{dispTime? "Estimated Time to Complete: " + taskProps.estTimeToComplete : null}</Text>
+              <Text>{dispTime? "Time Spent: " + taskStates.timeSpent : null}</Text>
+              <Text>{dispTime? "Time Left: " + taskStates.timeLeft : null }</Text>
             </View>
           </View>
         </View>

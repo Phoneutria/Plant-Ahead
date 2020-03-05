@@ -103,7 +103,7 @@ export default function(props) {
  */
 Task.propTypes = {
     name: PropTypes.string.isRequired,
-    // dueDate: PropTypes.instanceOf(Date).isRequired,
+    dueDate: PropTypes.instanceOf(Date).isRequired,
     priority: PropTypes.oneOf(['low', 'medium', 'high']),
     hoursLeft: PropTypes.number
 };
