@@ -27,14 +27,26 @@ export default class ViewTaskModal extends React.Component {
               <Icon name='edit'></Icon>
             </TouchableOpacity>
             {/* Wrap a view around the Texts for easier styling */}
-            <View style = {styles.taskText}>
-              <Text>Task Name: {taskProps.name}</Text>
+            <View style = {styles.taskTextBlock}>
+              <Text style = {{...styles.taskText, fontWeight: 'bold'}}>
+                Task Name: {taskProps.name}
+              </Text>
               {/* toLocalString gives us date format: 23/01/2019, 17:23:42*/}
-              <Text>Due Date: {taskProps.dueDate.toLocaleString()}</Text>
-              <Text>Priority: {taskProps.priority}</Text>
-              <Text>{dispTime? "Estimated Time to Complete: " + taskProps.estTimeToComplete : null}</Text>
-              <Text>{dispTime? "Time Spent: " + taskStates.timeSpent : null}</Text>
-              <Text>{dispTime? "Time Left: " + taskStates.timeLeft : null }</Text>
+              <Text style = {styles.taskText}>
+                Due Date: {taskProps.dueDate.toLocaleString()}
+              </Text>
+              <Text style = {styles.taskText}>
+                Priority: {taskProps.priority}
+              </Text>
+              <Text style = {styles.taskText}>
+                {dispTime? "Estimated Time to Complete (hours): " + taskProps.estTimeToComplete : null}
+              </Text>
+              <Text style = {styles.taskText}>
+                {dispTime? "Time Spent (hours): " + taskStates.timeSpent : null}
+              </Text>
+              <Text style = {styles.taskText}>
+                {dispTime? "Time Left (hours): " + taskStates.timeLeft : null }
+              </Text>
             </View>
           </View>
         </View>
@@ -56,8 +68,11 @@ const styles = StyleSheet.create({
       // alignItems: 'center',
       justifyContent: 'center',
   },
-  taskText: {
+  taskTextBlock: {
     marginLeft: 25,
+  },
+  taskText: {
+    marginBottom: 10,
   },
   closeButton: {
     position: 'absolute', 
