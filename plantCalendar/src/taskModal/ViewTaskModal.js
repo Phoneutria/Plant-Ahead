@@ -7,7 +7,7 @@ export default class ViewTaskModal extends React.Component {
       // get the props of a task
       // this gets passed in when a Task Component navigates to ViewTaskModal
       const taskProps = this.props.route.params.taskProps;
-
+      const taskStates = this.props.route.params.taskStates;
       return (
         <View style = {styles.container} >
           <View style = {styles.modal}>
@@ -29,7 +29,9 @@ export default class ViewTaskModal extends React.Component {
               {/* toLocalString gives us date format: 23/01/2019, 17:23:42*/}
               <Text>Due Date: {taskProps.dueDate.toLocaleString()}</Text>
               <Text>Priority: {taskProps.priority}</Text>
-              <Text>HoursLeft: {taskProps.hoursLeft}</Text>
+              <Text>Estimated Time to Complete: {taskProps.estTimeToComplete}</Text>
+              <Text>Time Spent:{taskStates.timeSpent}</Text>
+              <Text>Time Left: {taskStates.timeLeft}</Text>
             </View>
           </View>
         </View>

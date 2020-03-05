@@ -40,84 +40,75 @@ export default class Calendar extends React.Component {
                 name: "Task 3",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "4": {
                 name: "Task 4",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "5": {
                 name: "Task 5",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "6": {
                 name: "Task 6",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "7": {
                 name: "Task 7",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "8": {
                 name: "Task 8",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
+                estTimeToComplete: 2,
                 completed: false,
             },
             "9": {
                 name: "Task 9",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
+                estTimeToComplete: 3,
                 completed: false,
             },
             "10": {
                 name: "Task 10",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "11": {
                 name: "Task 11",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
+                estTimeToComplete: 4,
                 completed: false,
             },
             "12": {
                 name: "Task 12",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "13": {
                 name: "Task 13",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
             "14": {
                 name: "Task 14",
                 dueDate: new Date("4/05/2022"),
                 priority: "low",
-                hoursLeft: 3, 
                 completed: false,
             },
         }
@@ -155,8 +146,8 @@ export default class Calendar extends React.Component {
                     name={this.state.taskData[taskId].name}
                     dueDate={this.state.taskData[taskId].dueDate}
                     priority={this.state.taskData[taskId].priority}
-                    hoursLeft={this.state.taskData[taskId].hoursLeft}
                     completed={this.state.taskData[taskId].completed}
+                    estTimeToComplete={this.state.taskData[taskId].estTimeToComplete}
                     // pass in Calendar's deleteCompletedTask function
                     // so that when a task is completed, it can call Calendar's function
                     completeTask={(taskId) => this.deleteCompletedTask(taskId)}
