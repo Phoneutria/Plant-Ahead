@@ -14,9 +14,14 @@ import { useNavigation } from '@react-navigation/native';
  */
 class Task extends React.Component {
     state = {
+        // for animation
         fadeAnimationTime: 400,
         fadeValue: new Animated.Value(1),
-        checked: false,  // for the checkbox
+        // for the checkbox
+        checked: false,
+        // for estimated time left
+        timeSpent: 0,
+        timeLeft: this.props.estTimeToComplete,
     };
 
     /**
@@ -60,7 +65,7 @@ class Task extends React.Component {
                         // when the Task component calls the ViewTaskModal
                         //  it passes in its props so that ViewTaskModal can display this task's information
                         //  TODO: We might only pass selected props instead of all the props in the future
-                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {taskProps: this.props})}
+                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {taskProps: this.props, taskStates: this.state})}
                     >
                         <Text>{this.props.name}</Text>
                         <Text>{this.props.dueDate.toLocaleString()}</Text>
