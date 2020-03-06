@@ -1,7 +1,9 @@
 import * as React from 'react';
 // TODO: remove Alert when we don't need it anymore
 import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
-
+import * as Google from 'expo-google-app-auth';
+import * as firebase from 'firebase';
+import {iosClientId} from '../../credentials/iosClientId';
 /**
  * logInScreen Class
  * TODO: We might not need a class if we are generating the view?
@@ -10,6 +12,30 @@ import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
  * \brief Generate the view for login screen
  */
 export default class LogInScreen extends React.Component { 
+
+    signInWithGoogleAsync= async () => {
+        try {
+            const result = await Google.logInAsync({
+            // androidClientId: YOUR_CLIENT_ID_HERE,
+            behavior: 'web',
+            iosClientId: iosClientId,
+            scopes: ['profile', 'email'],
+            });
+
+            if (result.type === 'success') {
+                return result.accessToken;
+            } else {
+                return { cancelled: true };
+            }
+        } catch (e) {
+            return { error: true };
+        }
+    }
+
+    firebaseSignIn = () => {
+        
+    }
+
     /**
      * TODO: Discuss placement of this function
      *  Do we want to put this function as a member function? 
@@ -32,7 +58,7 @@ export default class LogInScreen extends React.Component {
                     source={require('../../assets/loginLogo.png')}/>
                 <Button
                     title="Continue With Google"
-                    onPress={() => this.logInWithGoogle()}/>
+                    onPress={() => this.signInWithGoogleAsync()}/>
             </View>
         );
     };
