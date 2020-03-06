@@ -13,6 +13,10 @@ import { useNavigation } from '@react-navigation/native';
  * 
  */
 class Task extends React.Component {
+    constructor(props) {
+        super(props);
+        this.isCompleted = this.isCompleted.bind(this);
+    }
     state = {
         // for animation
         fadeAnimationTime: 400,
@@ -63,9 +67,8 @@ class Task extends React.Component {
                     <TouchableOpacity 
                         style = {styles.task}
                         // when the Task component calls the ViewTaskModal
-                        //  it passes in its props so that ViewTaskModal can display this task's information
-                        //  TODO: We might only pass selected props instead of all the props in the future
-                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {taskProps: this.props, taskStates: this.state})}
+                        //  it passes in itself so that ViewTaskModal can display this task's information
+                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {task: this})}
                     >
                         <Text>{this.props.name}</Text>
                         <Text>{this.props.dueDate.toLocaleString()}</Text>
