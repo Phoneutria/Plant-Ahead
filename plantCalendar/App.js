@@ -12,6 +12,11 @@ import CreateTaskScreen from './src/taskModal/CreateTaskScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import firebaseConfig from './config';
+
+import firebase from 'firebase';
+firebase.initializeApp(firebaseConfig);
+
 const MainStack = createStackNavigator();
 const RootStack = createStackNavigator();
 
