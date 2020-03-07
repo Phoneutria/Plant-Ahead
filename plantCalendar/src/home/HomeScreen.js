@@ -15,7 +15,6 @@ export default class HomeScreen extends React.Component {
         this.state = {
             growthPoints: 0,
         };
-        this.buttonClick = this.buttonClick.bind(this);
     };
 
     // handle the button when progress is added
@@ -28,22 +27,13 @@ export default class HomeScreen extends React.Component {
         }
     }
 
-    buttonClick(){
-        console.log(this.state.showChild);
-        this.setState({
-          showChild: !this.state.showChild
-        });
-        console.log("after");
-        console.log(this.state.showChild);
-    }
-
     render() {
         // options for drop-down box
         let data = [{
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        console.log(this.state.showChild);
+
         return (
             <View style={{ flex: 10}}>
             <Dropdown

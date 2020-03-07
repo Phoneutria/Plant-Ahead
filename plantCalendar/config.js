@@ -1,7 +1,7 @@
-import firebaseApiKey from './credentials/firebaseApiKey';
+import {firebaseApiKey} from './credentials/firebaseApiKey';
 
 // Your web app's Firebase configuration
-export const firebaseConfig = {
+export default firebaseConfig = {
     apiKey: firebaseApiKey,
     authDomain: "plantcalendar-e5222.firebaseapp.com",
     databaseURL: "https://plantcalendar-e5222.firebaseio.com",
