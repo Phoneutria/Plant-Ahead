@@ -31,13 +31,18 @@ export default class LogInScreen extends React.Component {
                 androidClientId: androidClientId,
                 behavior: 'web',
                 iosClientId: iosClientId,
-                scopes: ['profile', 'email'],
+                scopes: ['https://www.googleapis.com/auth/userinfo.email',
+                'https://www.googleapis.com/auth/userinfo.profile',
+                'https://www.googleapis.com/auth/calendar',
+                'https://www.googleapis.com/auth/calendar.events',
+                ],
             });
 
             if (result.type === 'success') {
                 this.setState({userEmail: result.user.email, userName: result.user.name});
-                this.firebaseSignUp();
-
+                this.getUsersCalendarList(result.accessToken);
+                // this.firebaseSignUp();
+                
                 return result.accessToken;
             } else {
                 return { cancelled: true };
@@ -45,6 +50,17 @@ export default class LogInScreen extends React.Component {
         } catch (e) {
             return { error: true };
         }
+    }
+
+    getUsersCalendarList = async (accessToken) => {
+        console.log(accessToken);
+        let calendarsList = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList', {
+            headers: { Authorization: `Bearer ${accessToken}`},
+        }).catch(error => console.log(error));
+        let json = await calendarsList.json();
+        console.log(await calendarsList.json());
+        
+        return calendarsList;
     }
 
     /**
