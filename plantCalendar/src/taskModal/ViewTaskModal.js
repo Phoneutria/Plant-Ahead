@@ -4,7 +4,7 @@ import { Icon }  from 'react-native-elements';
 
 export default class ViewTaskModal extends React.Component {
     state = {
-      completeTaskAnimationTime: 550,
+      completeTaskAnimationTime: 300,
     }
 
     closeAndCompleteTask() {
