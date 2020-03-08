@@ -52,16 +52,25 @@ class Task extends React.Component {
         }).start();
     }
 
+    /**
+     * \brief ViewTaskModal will call this function if the users want to add time that 
+     *          they spend on this task 
+     * @param {*} newTimeSpent 
+     */
     updateTimeSpent(newTimeSpent) {
         this.setState ( prevState => ({
-                timeSpent: parseInt(prevState.timeSpent,10) + parseInt(newTimeSpent,10),
+                timeSpent: parseFloat(prevState.timeSpent) + parseFloat(newTimeSpent),
             })
         );
-        
-        // TODO: time left should not be negative
-        this.setState ( prevState => ({
-                timeLeft: parseInt(this.props.estTimeToComplete,10) - parseInt(prevState.timeSpent,10),
-            })
+
+        this.setState ( prevState => {
+                let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(prevState.timeSpent);
+                // if the time spent exceed estimated time, time left should just be 0
+                if (newTimeLeft < 0) {
+                    newTimeLeft = 0;
+                }
+                return {timeLeft: newTimeLeft};
+            }
         );
     }
 

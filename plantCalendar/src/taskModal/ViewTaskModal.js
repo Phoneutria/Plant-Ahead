@@ -84,7 +84,7 @@ export default class ViewTaskModal extends React.Component {
                 <TextInput
                     style={styles.input}
                     onChangeText={(time)=>{
-                      this.setState({inputTimeSpent: time.replace(/[^0-9]/g, '')});
+                      this.setState({inputTimeSpent: time.replace(/[^0-9^.]/g, '')});
                     }}
                     value = {this.state.inputTimeSpent}
                     keyboardType = {'numeric'}
