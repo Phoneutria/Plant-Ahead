@@ -1,10 +1,11 @@
 import * as React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import { Icon }  from 'react-native-elements';
 
 export default class ViewTaskModal extends React.Component {
     state = {
       completeTaskAnimationTime: 300,
+      inputTimeSpent: 0,
     }
 
     closeAndCompleteTask() {
@@ -19,6 +20,13 @@ export default class ViewTaskModal extends React.Component {
                      this.state.completeTaskAnimationTime);
     }
 
+    addTimeSpent() {
+      // update the time spent and consequently the time left for a task
+      this.props.route.params.task.updateTimeSpent(this.state.inputTimeSpent);
+      // clear the text input
+      this.setState({inputTimeSpent: 0});
+    }
+
     render() {
       // get the props and states  of a task
       // this gets passed in when a Task Component navigates to ViewTaskModal
@@ -28,6 +36,8 @@ export default class ViewTaskModal extends React.Component {
       // only display "estimate time to complete" "time spent" "time left"
       // if there is an estimated time
       const dispTime = taskProps.estTimeToComplete != null
+      // const taskTimeSpent = "Time Spent (hours): " + taskStates.timeSpent;
+
       return (
         <View style = {styles.container} >
           <View style = {styles.modal}>
@@ -67,6 +77,28 @@ export default class ViewTaskModal extends React.Component {
                 {dispTime? "Time Left (hours): " + taskStates.timeLeft : null }
               </Text>
             </View>
+            {/* Adding number of hours spent for the task */}
+            {/* Only display when the task has estimated time to complete (hours) */}
+            {dispTime? 
+              <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={(time)=>{
+                      this.setState({inputTimeSpent: time.replace(/[^0-9]/g, '')});
+                    }}
+                    value = {this.state.inputTimeSpent}
+                    keyboardType = {'numeric'}
+                    // TODO: make sure the input is a number
+                    placeholder="Add Hours Spent On This"
+                />
+                <TouchableOpacity
+                  style = {styles.submitButton}
+                  onPress = {() => this.addTimeSpent()}
+                >
+                  <Text>SUBMIT</Text>
+                </TouchableOpacity>
+              </View> 
+            : null}
             {/* button to complete the task (same functionality as the checkbox for each task */}
             <TouchableOpacity 
               style = {styles.completeButton}
@@ -119,6 +151,31 @@ const styles = StyleSheet.create({
     position: 'absolute', 
     top: 5,
     right: 5,
+  },
+  inputContainer: {
+    position: 'absolute', 
+    flexDirection: 'row',
+    alignItems: 'center', 
+    marginLeft: 10,
+    marginRight: 10,
+    bottom: 75,
+  },
+  input: {
+    width: '70%',
+    fontSize: 15,
+    paddingLeft: 5,
+    margin: 5,
+    height: 50,
+    borderColor: '#0E88E5',
+    borderWidth: 4
+  },
+  submitButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0E88E5',
+    height: 50, 
+    paddingHorizontal: 10,
+    margin: 5,
   },
 });
    

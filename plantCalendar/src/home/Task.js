@@ -17,6 +17,7 @@ class Task extends React.Component {
         super(props);
         this.isCompleted = this.isCompleted.bind(this);
     }
+
     state = {
         // for animation
         fadeAnimationTime: 400,
@@ -49,6 +50,19 @@ class Task extends React.Component {
             toValue: 0,
             duration: this.state.fadeAnimationTime,
         }).start();
+    }
+
+    updateTimeSpent(newTimeSpent) {
+        this.setState ( prevState => ({
+                timeSpent: parseInt(prevState.timeSpent,10) + parseInt(newTimeSpent,10),
+            })
+        );
+        
+        // TODO: time left should not be negative
+        this.setState ( prevState => ({
+                timeLeft: parseInt(this.props.estTimeToComplete,10) - parseInt(prevState.timeSpent,10),
+            })
+        );
     }
 
     render() {

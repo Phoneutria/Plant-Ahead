@@ -96,5 +96,5 @@ const styles = StyleSheet.create({
         height: 50,
         borderColor: '#0E88E5',
         borderWidth: 4
-     },
+    },
 });
