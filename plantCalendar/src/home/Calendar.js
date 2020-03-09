@@ -133,7 +133,18 @@ export default class Calendar extends React.Component {
        
         console.log(tasksJson);
 
-        return tasks;
+        return tasksJson;
+    }
+
+    parseTaskJson = async () => {
+        let taskJson = await this.getUserTasksList();
+        const taskArray = taskJson.items;
+        console.log(taskArray);
+        for (let i = 0; i < taskArray.length; ++i){
+            const task = taskArray[i];
+            console.log(i);
+            console.log(task.title);
+        }
     }
 
     /** 
@@ -180,7 +191,7 @@ export default class Calendar extends React.Component {
 
     render() {
         this.renderTask();
-        this.getUserTasksList();
+        this.parseTaskJson();
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
