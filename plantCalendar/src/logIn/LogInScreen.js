@@ -35,13 +35,13 @@ export default class LogInScreen extends React.Component {
                 'https://www.googleapis.com/auth/userinfo.profile',
                 'https://www.googleapis.com/auth/calendar',
                 'https://www.googleapis.com/auth/calendar.events',
+                'https://www.googleapis.com/auth/tasks',
                 ],
             });
 
             if (result.type === 'success') {
                 this.setState({userEmail: result.user.email, userName: result.user.name});
-                this.getUsersCalendarList(result.accessToken);
-                // this.firebaseSignUp();
+                this.firebaseSignUp(result.accessToken);
                 
                 return result.accessToken;
             } else {
@@ -52,25 +52,14 @@ export default class LogInScreen extends React.Component {
         }
     }
 
-    getUsersCalendarList = async (accessToken) => {
-        console.log(accessToken);
-        let calendarsList = await fetch('https://www.googleapis.com/calendar/v3/users/me/calendarList', {
-            headers: { Authorization: `Bearer ${accessToken}`},
-        }).catch(error => console.log(error));
-        let json = await calendarsList.json();
-        console.log(await calendarsList.json());
-        
-        return calendarsList;
-    }
-
     /**
      * \brief if the user's account (associated with the google email) does not exist on firebase, sign up
      *          else, sign in the user
      */
-    firebaseSignUp = () => {
+    firebaseSignUp = (accessToken) => {
         firebase.auth().createUserWithEmailAndPassword(this.state.userEmail, this.state.defaultPwd)
         .then( userCredentials => {
-            this.props.navigation.navigate('Home');
+            this.props.navigation.navigate('Home', {accessToken: accessToken});
             return userCredentials.user.updateProfile({
                 displayName: this.state.userName
             });
@@ -81,7 +70,7 @@ export default class LogInScreen extends React.Component {
             if (signUpError.code == "auth/email-already-in-use"){
                 firebase.auth().signInWithEmailAndPassword(this.state.userEmail, "password")
                 .then(
-                    this.props.navigation.navigate('Home')
+                    this.props.navigation.navigate('Home', {accessToken: accessToken})
                 )
                 .catch(
                     logInError => Alert.alert(logInError)

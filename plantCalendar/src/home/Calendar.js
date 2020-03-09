@@ -114,6 +114,28 @@ export default class Calendar extends React.Component {
         }
     }
 
+    getUserTasksList = async () => {
+        // request the list of task lists
+        // a task list contains many tasks, think of "a task list" as a calendar
+        let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+            headers: { Authorization: `Bearer ${this.props.accessToken}`},
+        }).catch(error => console.log("error message: " + error));
+        // have to parse what we receive from the server into a json
+        let taskListJson = await taskLists.json();
+        let taskId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
+        
+        console.log(taskId);
+        let tasks = await fetch(taskId, {
+            headers: { Authorization: `Bearer ${this.props.accessToken}`},
+        }).catch(error => console.log("error message: " + error));
+        
+        let tasksJson = await tasks.json();
+       
+        console.log(tasksJson);
+
+        return tasks;
+    }
+
     /** 
      * \brief modify this.props.taskData and mark a task (specified by taskId) as completed
      * \detail
@@ -158,6 +180,7 @@ export default class Calendar extends React.Component {
 
     render() {
         this.renderTask();
+        this.getUserTasksList();
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>

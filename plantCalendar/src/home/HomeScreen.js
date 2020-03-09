@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-
+        
         return (
             <View style={{ flex: 10}}>
             <Dropdown
@@ -62,7 +62,9 @@ export default class HomeScreen extends React.Component {
                 title='Temperory to show progress bar'/>  
 
             {/* Tempory Dummy Calendar to display tasks*/}
-            <Calendar></Calendar>
+            <Calendar
+                accessToken = {this.props.route.params.accessToken}
+            ></Calendar>
         </View>
         )
        
