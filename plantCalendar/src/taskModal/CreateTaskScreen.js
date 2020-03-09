@@ -75,6 +75,7 @@ export default class CreateTaskScreen extends React.Component {
           }}
           // TODO: make sure the input is a number
           placeholder="Estimate hours needed"
+          keyboardType={'numeric'}  
       />
       {/* For selecting the due date */}
       <Text>Due Date</Text>
