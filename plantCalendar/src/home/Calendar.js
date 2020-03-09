@@ -114,7 +114,7 @@ export default class Calendar extends React.Component {
         }
     }
 
-    getUserTasksList = async () => {
+    getTasksListId = async () => {
         // request the list of task lists
         // a task list contains many tasks, think of "a task list" as a calendar
         let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
@@ -122,20 +122,19 @@ export default class Calendar extends React.Component {
         }).catch(error => console.log("error message: " + error));
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
-        let taskId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
-        
-        console.log(taskId);
+        return taskListJson.items[0].id;
+    }
+    
+    getUserTasksList = async () => {
+        let taskId = "https://www.googleapis.com/tasks/v1/lists/" + this.getTasksListId + "/tasks";
         let tasks = await fetch(taskId, {
             headers: { Authorization: `Bearer ${this.props.accessToken}`},
         }).catch(error => console.log("error message: " + error));
-        
         let tasksJson = await tasks.json();
-       
         console.log(tasksJson);
-
         return tasksJson;
     }
-
+    
     parseTaskJson = async () => {
         let taskJson = await this.getUserTasksList();
         const taskArray = taskJson.items;
@@ -145,6 +144,47 @@ export default class Calendar extends React.Component {
             console.log(i);
             console.log(task.title);
         }
+    }
+    
+    /** 
+     * Create New Task in Google
+     * @param title a string that stores title of the new task 
+     * @param dueDate a date object that stores the dueDate of the task
+     * TODO: This function should create a task, with the insert method,
+     * then return a string that stores the taskid.
+    **/
+    createTaskGoogle = async(title, dueDate) => {
+        let task = {
+            'title': title,
+            'due': dueDate
+            }
+        
+        // This does not work
+        // https://developers.google.com/tasks/v1/reference/tasks/insert
+        /**  let result = await gapi.client.tasks.tasklists.insert(
+                tasklist = this.getTasksListId, body = task
+         ).catch(error => console.log("Error Message:" + error));
+        **/ 
+
+        // Because the previous part of inserting the task did not work,
+        // I commented out the remaining lines but basically they convert
+        // the task object that is returned (result) into json
+        // let taskId= result.json();
+        // console.log(taskJson['title']);
+        console.log("Create Task in Google called");
+    }
+    
+    /** 
+     * Create New task in Firebase
+     * @param taskid, priority, timeLeft
+     * The taskid is retrived from the createTaskGoogle function and
+     * passed to this function via createTask() in the CreateTaskScreen.js
+     * TODO: It currently just prints the statement that the task is called
+     * We want it to create a task in firebase using the taskid from Google
+     **/ 
+
+    createTaskFirebase = async(taskid, priority, timeLeft) => {
+        console.log("Create Task in Firebase called");
     }
 
     /** 
@@ -210,3 +250,6 @@ const styles = StyleSheet.create({
         flex: 1,
     },
 });
+
+
+

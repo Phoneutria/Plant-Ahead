@@ -4,6 +4,7 @@ import {View, Text, Button, TouchableOpacity, StyleSheet,
     Alert, TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-material-dropdown';
+import Calendar from '../home/Calendar';
 
 export default class CreateTaskScreen extends React.Component {
   state = {
@@ -21,6 +22,19 @@ export default class CreateTaskScreen extends React.Component {
     let output = String(this.state.name) + temp + " with " + this.state.priority + 
     " priority. You have " + String(this.state.hoursLeft) + " hours left!";
     return output;
+  }
+
+  /**
+   * create New Task
+   * This function calls the createTaskGoogle and createTaskFirebase functions in the 
+   * Calendar class to create new a new Task
+   * After these functions are called, an alert pops up to summarize the tasks
+   * information
+   */
+  createTask() {
+    let taskId = new Calendar().createTaskGoogle(this.state.name, this.state.dueDate);
+    new Calendar().createTaskFirebase(taskId, this.state.priority, this.hoursLeft);
+    Alert.alert(this.formatOutput());
   }
 
   render() {
@@ -81,7 +95,7 @@ export default class CreateTaskScreen extends React.Component {
 
       {/* For creating the task */}
       <Button
-          onPress={()=> Alert.alert(this.formatOutput())}
+          onPress={()=> this.createTask()}
           title='Submit'/> 
           {/* this.formatOutput() */}
     </View>
