@@ -8,6 +8,9 @@ export default class ViewTaskModal extends React.Component {
       inputTimeSpent: 0,
     }
 
+    /**
+     * \brief if the user clicks the complete button on the Task Viewer Modal
+     */
     closeAndCompleteTask() {
       // close the modal
       this.props.navigation.goBack();
@@ -20,6 +23,9 @@ export default class ViewTaskModal extends React.Component {
                      this.state.completeTaskAnimationTime);
     }
 
+    /**
+     * \brief if the user clicks the submit button to input time spent on a task
+     */
     addTimeSpent() {
       // update the time spent and consequently the time left for a task
       this.props.route.params.task.updateTimeSpent(this.state.inputTimeSpent);
@@ -84,12 +90,10 @@ export default class ViewTaskModal extends React.Component {
                 <TextInput
                     style={styles.input}
                     onChangeText={(time)=>{
-                      this.setState({inputTimeSpent: time.replace(/[^0-9^.]/g, '')});
+                      this.setState({inputTimeSpent: time});
                     }}
                     value = {this.state.inputTimeSpent}
-                    keyboardType = {'numeric'}
-                    // TODO: make sure the input is a number
-                    placeholder="Add Hours Spent On This"
+                    keyboardType = {'numeric'} 
                 />
                 <TouchableOpacity
                   style = {styles.submitButton}
@@ -122,11 +126,10 @@ const styles = StyleSheet.create({
       height: '50%', 
       width: '80%', 
       backgroundColor: "#F2F2F2",
-      // alignItems: 'center',
-      justifyContent: 'center',
   },
   taskTextBlock: {
     marginLeft: 25,
+    top: 55,
   },
   taskText: {
     marginBottom: 10,

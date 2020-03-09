@@ -58,11 +58,13 @@ class Task extends React.Component {
      * @param {*} newTimeSpent 
      */
     updateTimeSpent(newTimeSpent) {
+        // TODO: float might add weirdly if the new time spent is weird...
         this.setState ( prevState => ({
                 timeSpent: parseFloat(prevState.timeSpent) + parseFloat(newTimeSpent),
             })
         );
 
+        // after we change the timeSpent, we need to call setState again and change time left
         this.setState ( prevState => {
                 let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(prevState.timeSpent);
                 // if the time spent exceed estimated time, time left should just be 0
