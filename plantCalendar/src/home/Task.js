@@ -13,6 +13,11 @@ import { useNavigation } from '@react-navigation/native';
  * 
  */
 class Task extends React.Component {
+    constructor(props) {
+        super(props);
+        this.isCompleted = this.isCompleted.bind(this);
+    }
+
     state = {
         // for animation
         fadeAnimationTime: 400,
@@ -47,6 +52,30 @@ class Task extends React.Component {
         }).start();
     }
 
+    /**
+     * \brief ViewTaskModal will call this function if the users want to add time that 
+     *          they spend on this task 
+     * @param {*} newTimeSpent 
+     */
+    updateTimeSpent(newTimeSpent) {
+        // TODO: float might add weirdly if the new time spent is weird...
+        this.setState ( prevState => ({
+                timeSpent: parseFloat(prevState.timeSpent) + parseFloat(newTimeSpent),
+            })
+        );
+
+        // after we change the timeSpent, we need to call setState again and change time left
+        this.setState ( prevState => {
+                let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(prevState.timeSpent);
+                // if the time spent exceed estimated time, time left should just be 0
+                if (newTimeLeft < 0) {
+                    newTimeLeft = 0;
+                }
+                return {timeLeft: newTimeLeft};
+            }
+        );
+    }
+
     render() {
         // only render the task if it is not completed
         if (!this.props.completed) {
@@ -63,9 +92,8 @@ class Task extends React.Component {
                     <TouchableOpacity 
                         style = {styles.task}
                         // when the Task component calls the ViewTaskModal
-                        //  it passes in its props so that ViewTaskModal can display this task's information
-                        //  TODO: We might only pass selected props instead of all the props in the future
-                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {taskProps: this.props, taskStates: this.state})}
+                        //  it passes in itself so that ViewTaskModal can display this task's information
+                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {task: this})}
                     >
                         <Text>{this.props.name}</Text>
                         <Text>{this.props.dueDate.toLocaleString()}</Text>
@@ -103,7 +131,7 @@ export default function(props) {
  */
 Task.propTypes = {
     name: PropTypes.string.isRequired,
-    // dueDate: PropTypes.instanceOf(Date).isRequired,
+    dueDate: PropTypes.instanceOf(Date).isRequired,
     priority: PropTypes.oneOf(['low', 'medium', 'high']),
     hoursLeft: PropTypes.number
 };

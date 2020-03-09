@@ -11,6 +11,7 @@ export default class Calendar extends React.Component {
     state = {
         taskArray: [],
         delete: false,
+        rerenderTaskWaitTime: 150,
         /**
          * dummy data
          * Json format
@@ -156,8 +157,11 @@ export default class Calendar extends React.Component {
     deleteCompletedTask(taskId) {
         let newtaskData = {... this.state.taskData};
         newtaskData[taskId].completed = true;
-        // need to use setState to change to 
-        this.setState({taskData: newtaskData});
+        // need to use setState to change to trigger rendering
+        // use a setTimeout so the task does not re-render too quickly,
+        //     and the animation look smoother 
+        setTimeout(()=> this.setState({taskData: newtaskData}),
+                     this.state.rerenderTaskWaitTime);
     }
 
     /**
