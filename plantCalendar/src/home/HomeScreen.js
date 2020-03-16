@@ -59,7 +59,7 @@ export default class HomeScreen extends React.Component {
             {/* // Button to add more progree to the progress bar */}
             <Button
                 onPress={this.progressAdded.bind(this)}
-                title='Temperory to show progress bar'/>  
+                title='Temporary to show progress bar'/>  
 
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
