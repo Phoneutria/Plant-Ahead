@@ -14,8 +14,9 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import firebaseConfig from './config';
 
-import firebase from 'firebase';
-firebase.initializeApp(firebaseConfig);
+// import * as firebase from 'firebase';
+// firebase.initializeApp(firebaseConfig);
+
 
 const MainStack = createStackNavigator();
 const RootStack = createStackNavigator();

@@ -2,7 +2,12 @@ import * as React from 'react';
 // TODO: remove Alert when we don't need it anymore
 import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
 import * as Google from 'expo-google-app-auth';
+
 import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+import "../../FirestoreSetup";
+
 import {iosClientId} from '../../credentials/iosClientId';
 import {androidClientId} from '../../credentials/androidClientId';
 
@@ -14,6 +19,7 @@ import {androidClientId} from '../../credentials/androidClientId';
  * \brief Generate the view for login screen
  */
 export default class LogInScreen extends React.Component { 
+
     state = {
         defaultPwd: "password",
         userEmail: "",
@@ -57,6 +63,7 @@ export default class LogInScreen extends React.Component {
      *          else, sign in the user
      */
     firebaseSignUp = (accessToken) => {
+        console.log("pre-sign in on firebase");
         firebase.auth().createUserWithEmailAndPassword(this.state.userEmail, this.state.defaultPwd)
         .then( userCredentials => {
             this.props.navigation.navigate('Home', {accessToken: accessToken});
@@ -68,15 +75,38 @@ export default class LogInScreen extends React.Component {
             // if sign up failed, and the error message is "the account already exists"
             // then we can sign in the user
             if (signUpError.code == "auth/email-already-in-use"){
+                console.log("sign in the user");
                 firebase.auth().signInWithEmailAndPassword(this.state.userEmail, "password")
-                .then(
-                    this.props.navigation.navigate('Home', {accessToken: accessToken})
+                .then(() => {
+                        firebase.firestore().collection('users').doc(this.state.userEmail).get().then(thisUser => {
+                            if (thisUser.exists){
+                                console.log("-----------");
+                                this.updateFirebaseUserData(this.state.userEmail, this.state.userName, 100);
+                                console.log("-----------");
+                            }
+                        }).catch(error => console.log(error));
+
+                        this.props.navigation.navigate('Home', {accessToken: accessToken});
+                    }
                 )
                 .catch(
                     logInError => Alert.alert(logInError)
                 );
             }
         });
+    }
+
+    updateFirebaseUserData(userEmail, name, growthPoint) {
+        console.log("try to create the user in the database");
+
+        firebase.firestore().collection('users').doc(userEmail).set({
+            name: name,
+            growthPoint: growthPoint,
+        }).catch(
+            error => console.log(error)
+        );
+
+        console.log("created the user successfully");
     }
 
     render () {       
