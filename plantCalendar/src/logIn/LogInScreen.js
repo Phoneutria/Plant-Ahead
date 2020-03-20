@@ -5,16 +5,15 @@ import * as Google from 'expo-google-app-auth';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
+import "../firebaseFirestore/FirestoreSetup";
 
-import "../../FirestoreSetup";
+import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 
 import {iosClientId} from '../../credentials/iosClientId';
 import {androidClientId} from '../../credentials/androidClientId';
 
 /**
- * logInScreen Class
- * TODO: We might not need a class if we are generating the view?
- *       Do we need any other feature (member function)?
+ * LogInScreen Class
  * 
  * \brief Generate the view for login screen
  */
@@ -24,6 +23,7 @@ export default class LogInScreen extends React.Component {
         defaultPwd: "password",
         userEmail: "",
         userName: "",
+        firestore: new FirestoreHandle(),
     }
     
     /**
@@ -47,7 +47,7 @@ export default class LogInScreen extends React.Component {
 
             if (result.type === 'success') {
                 this.setState({userEmail: result.user.email, userName: result.user.name});
-                this.firebaseSignUp(result.accessToken);
+                this.firebaseSignUpSignIn(result.accessToken);
                 
                 return result.accessToken;
             } else {
@@ -62,10 +62,11 @@ export default class LogInScreen extends React.Component {
      * \brief if the user's account (associated with the google email) does not exist on firebase, sign up
      *          else, sign in the user
      */
-    firebaseSignUp = (accessToken) => {
-        console.log("pre-sign in on firebase");
+    firebaseSignUpSignIn = (accessToken) => {
+        // attempt to create the user first for signin firsts
         firebase.auth().createUserWithEmailAndPassword(this.state.userEmail, this.state.defaultPwd)
         .then( userCredentials => {
+            this.createUserDataInFirestore();
             this.props.navigation.navigate('Home', {accessToken: accessToken});
             return userCredentials.user.updateProfile({
                 displayName: this.state.userName
@@ -75,17 +76,8 @@ export default class LogInScreen extends React.Component {
             // if sign up failed, and the error message is "the account already exists"
             // then we can sign in the user
             if (signUpError.code == "auth/email-already-in-use"){
-                console.log("sign in the user");
                 firebase.auth().signInWithEmailAndPassword(this.state.userEmail, "password")
-                .then(() => {
-                        firebase.firestore().collection('users').doc(this.state.userEmail).get().then(thisUser => {
-                            if (thisUser.exists){
-                                console.log("-----------");
-                                this.updateFirebaseUserData(this.state.userEmail, this.state.userName, 100);
-                                console.log("-----------");
-                            }
-                        }).catch(error => console.log(error));
-
+                .then(() => {  
                         this.props.navigation.navigate('Home', {accessToken: accessToken});
                     }
                 )
@@ -96,20 +88,23 @@ export default class LogInScreen extends React.Component {
         });
     }
 
-    updateFirebaseUserData(userEmail, name, growthPoint) {
-        console.log("try to create the user in the database");
-
-        firebase.firestore().collection('users').doc(userEmail).set({
-            name: name,
-            growthPoint: growthPoint,
-        }).catch(
-            error => console.log(error)
-        );
-
-        console.log("created the user successfully");
+    /**
+     * \brief create the user's data on firebase's database: firestore if this user's data does not exist in firebase
+     * \details call the function from FirestoreHandle class, which is responsible for handling data updates
+     *      and other mechanisms in firestore
+     */
+    createUserDataInFirestore() {
+        // firestore does not have direct method to check if data exist
+        // have to try to get the data first and use if !exist
+        firebase.firestore().collection('users').doc(this.state.userEmail).get().then(thisUser => {
+            if (!thisUser.exists){
+                // takes in user's email, name, and growth point (default starting with 0 growth point)
+                this.state.firestore.updateFirebaseUserData(this.state.userEmail, this.state.userName, 0);
+            }
+        }).catch(error => console.log(error));
     }
 
-    render () {       
+    render () {  
         return (
             <View style={styles.container}>
                 <Image
