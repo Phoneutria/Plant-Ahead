@@ -1,23 +1,122 @@
 import  React, { Component } from 'react';
-import {View, Text, Button, StyleSheet, Alert} from 'react-native';
+import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
+import {Dropdown} from 'react-native-material-dropdown';
 
 export default class ViewTaskModal extends React.Component {
-    render() {
+  
+  render() {
+      const taskProps = this.props.route.params.task.props;
+
+      // options for priority
+      let data = [
+        {value: 'high'},
+        {value: 'medium'},
+        {value: 'low'}
+      ];
+
       return (
-          // flex exapnds the component to fill available space, in this case
-          // it fills the screen with the backgroundcolor
-        <View style = {{ flex: 1, 
-                        alignItems: 'center', 
-                        justifyContent: 'center', 
-                        backgroundColor: 'white'}} >
-            <Button
-              onPress = {() => this.props.navigation.goBack()}
-              title = "Dismiss"
+        <View style = {styles.editScreen}> 
+          <View style = {styles.header}>
+            <View style = {styles.header}></View>
+            <Text style = {styles.headerText}> Edit Task </Text>
+          </View>  
+          
+          {/* Editing name of the task */}
+          <View style = {styles.editView}>
+            <Text style = {styles.editText}> Name:  </Text>
+            <TextInput style = {styles.textBox}
+              defaultValue = {taskProps.name}>
+            </TextInput>
+          </View>
+
+          {/* Editing due date of the task
+              TODO: add date picker */}
+          <View style = {styles.editView}>
+            <Text style = {styles.editText}> Due Date: </Text>
+            <Text> Old Due Date </Text>
+          </View>
+
+          {/* Editing time to complete of the task */}
+          <View style = {styles.editView}>
+            <Text style = {styles.editText}> Est. Time to Complete: </Text>
+            <TextInput style = {styles.textBox} 
+              defaultValue = {taskProps.estTimeToComplete}> 
+            </TextInput>
+          </View>
+          
+          {/* Editing priority of the task 
+              TODO: style*/}
+          <View style = {styles.editView}>
+            <Text style = {styles.editText}> Priority: </Text>
+            <Dropdown
+              label= {taskProps.priority}
+              data={data}
             />
+          </View>
+          
+          {/* Navigation buttons 
+              TODO: "Save" button should update database data*/}
+          <View style = {styles.botButtons}>
+            <Button
+              title = "Cancel"
+              onPress = {() => this.props.navigation.goBack()}>
+            </Button>
+            <Button
+              title = "Save"
+              onPress = {() => this.props.navigation.goBack()}>
+            </Button>
+          </View>  
 
         </View>
       );
   }
 }
   
-   
+const styles = StyleSheet.create({
+  header: {
+    flex: 2,
+    backgroundColor: 'green',
+    alignItems: 'center'
+  },
+
+  headerText: {
+    flex: 1,
+    fontWeight: 'bold',
+    backgroundColor: 'green',
+    alignItems: 'stretch'
+  },
+  
+  editScreen: {
+    flex: 1,
+    backgroundColor: 'white',
+    alignItems: 'stretch'
+  },
+
+  editView: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+
+  botButtons: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-around'
+  },
+
+  editText: {
+    fontWeight: 'bold',
+    alignItems: 'center'
+  },
+
+  textBox: {
+    borderColor: 'green',
+    borderWidth: 1
+
+  },
+
+  footer: {
+    flex: 2,
+    flexDirection: 'row'
+  }
+})
