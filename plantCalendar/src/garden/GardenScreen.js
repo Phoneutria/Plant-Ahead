@@ -2,6 +2,7 @@ import  React, { Component } from 'react';
 import {View, Text, Button, TouchableOpacity, 
         StyleSheet, Alert, Image} from 'react-native';
 import * as Progress from 'react-native-progress';
+import SpriteSheet from 'rn-sprite-sheet';
 
 export default class GardenScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -11,9 +12,12 @@ export default class GardenScreen extends React.Component {
     that is taking data from Firebase or other place */
     constructor(props) {
         super(props);
+         
         this.state = {
             growthPoints: 0
         };
+
+        this.plant = null;
     };
 
     // TODO: make logo bigger (when ever I change the height or width,
@@ -27,13 +31,38 @@ export default class GardenScreen extends React.Component {
         }
     }
 
+    playTesting() {
+        console.log("should be animating");
+        this.plant.play({
+            type: "walk", // (required) name of the animation (name is specified as a key in the animation prop)
+            fps: 7, // frames per second
+            loop: true, // if true, replays animation after it finishes
+            resetAfterFinish: false, // if true, the animation will reset back to the first frame when finished; else will remain on the last frame when finished
+            onFinish: () => {}, // called when the animation finishes; will not work when loop === true
+          });
+          
+    }
+
     render () {
+       
         return (
         <View>
             <View style={styles.container}>
-                <Image
-                    style={styles.logo}
-                    source={require('../../assets/loginLogo.png')}/>
+                <SpriteSheet
+                    ref={ref => (this.plant = ref)}
+                    source={require('./plants/testing.png')}
+                    columns={2}
+                    rows={2}
+                    height={300} // set either, none, but not both
+                    // width={200}
+                    imageStyle={{ marginTop: -1 }}
+                    animations={{
+                        walk: [0, 1, 2, 1],
+                    }}
+                />
+                <Button
+                    title="test"
+                    onPress={() => this.playTesting()}/>
                 <Button
                     title="Water"
                     onPress={this.progressAdded.bind(this)}/>

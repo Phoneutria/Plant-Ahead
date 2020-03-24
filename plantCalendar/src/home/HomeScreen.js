@@ -60,7 +60,9 @@ export default class HomeScreen extends React.Component {
             <Button
                 onPress={this.progressAdded.bind(this)}
                 title='Temperory to show progress bar'/>  
-
+            <Button
+                onPress={()=> this.props.navigation.navigate('Garden')}
+                title='Temperory going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}
