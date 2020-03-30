@@ -78,8 +78,7 @@ export default class ViewTaskModal extends React.Component {
             />
           </View>
           
-          {/* Navigation buttons 
-              TODO: "Save" button should update database data*/}
+          {/* Navigation buttons */}
           <View style = {styles.botButtons}>
             <Button
               title = "Cancel"
