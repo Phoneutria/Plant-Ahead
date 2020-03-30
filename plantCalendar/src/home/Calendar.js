@@ -165,6 +165,16 @@ export default class Calendar extends React.Component {
     }
 
     /**
+     * \brief modifies task data by calling appropriate helper functions
+     * \detail
+     *      updates task's name (taskName), due date (dueDate), completion status (completion),
+     *      priority level (priority), time spent on task (timeSpent)
+     *      TODO: add firebase functionality after merge
+     */
+    updateTask(taskId, taskListId, taskName, dueDate, completion, priority, timeLeft, timeSpent) {
+        this.updateGoogleTask(taskId, taskListId, taskName, dueDate, completion);
+    }
+    /**
      * \brief modifies task data in user's Google Tasks
      * \detail
      *      updates task's name (taskName) and due date (dueDate) in user's Google Tasks
@@ -180,7 +190,6 @@ export default class Calendar extends React.Component {
             headers: { Authorization: `Bearer ${this.props.accessToken}`},
         }).catch(error => console.log("error message: " + error));
         
-        // update task properties
         task.title = taskName;
         task.due = dueDate;
         task.completed = completion;

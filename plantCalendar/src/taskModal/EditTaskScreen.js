@@ -1,11 +1,25 @@
 import  React, { Component } from 'react';
 import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
+import {updateTask} from '../home/Calendar.js';
 
 export default class ViewTaskModal extends React.Component {
+  state = {
+    name: "Empty",
+    taskId: "Empty",
+    taskListId: "Empty",
+    completion: false,
+    dueDate: new Date(1598051730000),
+    priority: "medium",
+    estTimeToComplete: 0
+  }
   
   render() {
       const taskProps = this.props.route.params.task.props;
+
+      this.setState({name:taskProps.name, taskId:taskProps.taskId, dueDate:taskProps.dueDate,
+        taskListId:taskProps.taskListId, priority:taskProps.priority, 
+        esttimeToComplete:taskProps.estTimeToComplete});
 
       // options for priority
       let data = [
@@ -15,6 +29,7 @@ export default class ViewTaskModal extends React.Component {
       ];
 
       return (
+        // TODO: Add option to update completion status
         <View style = {styles.editScreen}> 
           <View style = {styles.header}>
             <View style = {styles.header}></View>
@@ -26,6 +41,9 @@ export default class ViewTaskModal extends React.Component {
             <Text style = {styles.editText}> Name:  </Text>
             <TextInput style = {styles.textBox}
               defaultValue = {taskProps.name}>
+                onChangeText={(text)=>{
+                  this.setState({name:text});
+                }}
             </TextInput>
           </View>
 
@@ -40,7 +58,10 @@ export default class ViewTaskModal extends React.Component {
           <View style = {styles.editView}>
             <Text style = {styles.editText}> Est. Time to Complete: </Text>
             <TextInput style = {styles.textBox} 
-              defaultValue = {taskProps.estTimeToComplete}> 
+              defaultValue = {taskProps.estTimeToComplete}>
+              onChangeText={(text)=>{
+                this.setState({estTimeToComplete:text});
+              }} 
             </TextInput>
           </View>
           
@@ -51,6 +72,9 @@ export default class ViewTaskModal extends React.Component {
             <Dropdown
               label= {taskProps.priority}
               data={data}
+              onChangeText={(text)=>{
+                this.setState({priority:text});
+              }}
             />
           </View>
           
@@ -63,7 +87,8 @@ export default class ViewTaskModal extends React.Component {
             </Button>
             <Button
               title = "Save"
-              onPress = {() => this.props.navigation.goBack()}>
+              onPress = {() => {updateTask(state.taskId, state.taskListId, state.name, state.dueDate, state.completion);
+                                this.props.navigation.goBack()}}>
             </Button>
           </View>  
 
