@@ -2,6 +2,7 @@ import  React, { Component } from 'react';
 import {View, Text, Button, TouchableOpacity, 
         StyleSheet, Alert, Image} from 'react-native';
 import * as Progress from 'react-native-progress';
+import SpriteSheet from 'rn-sprite-sheet';
 
 export default class GardenScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -11,9 +12,12 @@ export default class GardenScreen extends React.Component {
     that is taking data from Firebase or other place */
     constructor(props) {
         super(props);
+         
         this.state = {
             growthPoints: 0
         };
+
+        this.plant = null;
     };
 
     // TODO: make logo bigger (when ever I change the height or width,
@@ -27,13 +31,72 @@ export default class GardenScreen extends React.Component {
         }
     }
 
+    playStage1Testing() {
+        console.log("stage1");
+        this.plant.play({
+            type: "stage1", // (required) name of the animation (name is specified as a key in the animation prop)
+            fps: 7, // frames per second
+            loop: true, // if true, replays animation after it finishes
+            resetAfterFinish: false, // if true, the animation will reset back to the first frame when finished; else will remain on the last frame when finished
+            onFinish: () => {}, // called when the animation finishes; will not work when loop === true
+          });
+          
+    }
+
+    playStage2Testing() {
+        console.log("stage2");
+        this.plant.play({
+            type: "stage2", // (required) name of the animation (name is specified as a key in the animation prop)
+            fps: 7, // frames per second
+            loop: true, // if true, replays animation after it finishes
+            resetAfterFinish: false, // if true, the animation will reset back to the first frame when finished; else will remain on the last frame when finished
+            onFinish: () => {}, // called when the animation finishes; will not work when loop === true
+          });
+          
+    }
+    
+    playStage3Testing() {
+        console.log("stage3");
+        this.plant.play({
+            type: "stage3", // (required) name of the animation (name is specified as a key in the animation prop)
+            fps: 7, // frames per second
+            loop: true, // if true, replays animation after it finishes
+            resetAfterFinish: false, // if true, the animation will reset back to the first frame when finished; else will remain on the last frame when finished
+            onFinish: () => {}, // called when the animation finishes; will not work when loop === true
+          });
+          
+    }
+
     render () {
+       
         return (
         <View>
             <View style={styles.container}>
-                <Image
-                    style={styles.logo}
-                    source={require('../../assets/loginLogo.png')}/>
+                {/* Testing how to import and use a sprite sheet */}
+                <SpriteSheet
+                    ref={ref => (this.plant = ref)} // declare the reference to this sprite as a data member of Garden Class
+                    source={require('./plants/sunflower.png')}
+                    columns={3}
+                    rows={3}
+                    height={300} // set either, none, but not both
+                    // width={200}
+                    imageStyle={{ marginTop: -1 }}
+                    // refer to the sprite sheet for sunflower
+                    animations={{
+                        stage1: [0, 1, 2, 1],
+                        stage2: [3, 4, 5, 4],
+                        stage3: [6, 7, 8, 7],
+                    }}
+                />
+                <Button
+                    title="stage 1"
+                    onPress={() => this.playStage1Testing()}/>
+                <Button
+                    title="stage 2"
+                    onPress={() => this.playStage2Testing()}/>
+                <Button
+                    title="stage 3"
+                    onPress={() => this.playStage3Testing()}/>
                 <Button
                     title="Water"
                     onPress={this.progressAdded.bind(this)}/>
