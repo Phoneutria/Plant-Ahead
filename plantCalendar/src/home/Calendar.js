@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import Task from '../home/Task';  // import task components
+import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 
 /**
  * Calendar Class
@@ -9,6 +10,8 @@ import Task from '../home/Task';  // import task components
  */
 export default class Calendar extends React.Component {
     state = {
+        // a class to handle most of the firestore interfaces (eg. update data in firestore)
+        firestoreHandle: new FirestoreHandle(),
         taskArray: [],
         delete: false,
         rerenderTaskWaitTime: 150,
@@ -20,7 +23,7 @@ export default class Calendar extends React.Component {
          *  TODO: this format might be different once we integrate with 
          *  Google Calendar
          *  TODO:
-         *      Right now, when we go to a differnt page, the taskData will
+         *      Right now, when we go to a different page, the taskData will
          *      get refreshed (the completed one will appear again). This is 
          *      because every time the homeScreen is mounted, Calendar will get
          *      created again. Should be able to fix it once we integrate with Google Calendar
@@ -115,6 +118,10 @@ export default class Calendar extends React.Component {
         }
     }
 
+    /**
+     * \brief return a json of all the task from user's Google Task
+     * \warning assume that the user only has one task list (and all the tasks are stored in that list)
+     */
     getUserTasksList = async () => {
         // request the list of task lists
         // a task list contains many tasks, think of "a task list" as a calendar
@@ -123,29 +130,46 @@ export default class Calendar extends React.Component {
         }).catch(error => console.log("error message: " + error));
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
-        let taskId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
-        
-        console.log(taskId);
-        let tasks = await fetch(taskId, {
+
+        // assume that all tasks from the user is stored in task list 1
+        // directly set the task list id
+        let taskListId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
+
+        let tasks = await fetch(taskListId, {
             headers: { Authorization: `Bearer ${this.props.accessToken}`},
         }).catch(error => console.log("error message: " + error));
         
         let tasksJson = await tasks.json();
-       
-        console.log(tasksJson);
 
         return tasksJson;
     }
 
-    parseTaskJson = async () => {
+    /**
+     * \brief gets the list of tasks from Google Task, initialize all the task in firestore
+     * \details gets called when the Calendar gets mounted on HomeScreen (Only get called once)
+     */
+    initAllTasksInFirebase = async () => {
+        // gets the json of all the task data from Google Task
         let taskJson = await this.getUserTasksList();
         const taskArray = taskJson.items;
+        
         console.log(taskArray);
+
         for (let i = 0; i < taskArray.length; ++i){
             const task = taskArray[i];
-            console.log(i);
-            console.log(task.title);
+
+            // call the firestore handler function to initialize the data in firestore if it hasn't
+            // been created. 
+            this.state.firestoreHandle.initFirebaseTaskData(this.props.userEmail, 
+                task.id, task.title);
+            // testing update Firebase Task Data
+            // this.state.firestoreHandle.updateFirebaseTaskData(this.props.userEmail, 
+            //     task.id, task.title, 'middle', 2, 0);
         }
+    }
+
+    componentDidMount() {
+        this.initAllTasksInFirebase();
     }
 
     /** 
@@ -172,10 +196,11 @@ export default class Calendar extends React.Component {
      *      The children will call its this.props.completeTask function to delete itself
      * @param {*} taskId a string that represent the taskId (each task has an unique task Id)
      */
-    renderTask() {
+    renderTask = async () => {
         // Have to clear the array so that after the tasks re-render, there isn't just a blank space
         // left for the deleted task
         this.state.taskArray = [];
+
         for (var taskId in this.state.taskData) {
             this.state.taskArray.push(
                 <Task
@@ -195,12 +220,12 @@ export default class Calendar extends React.Component {
 
     render() {
         this.renderTask();
-        this.parseTaskJson();
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {this.state.taskArray}
                 </ScrollView>
+
             </View>
         );
     };

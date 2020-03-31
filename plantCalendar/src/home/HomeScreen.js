@@ -66,6 +66,7 @@ export default class HomeScreen extends React.Component {
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}
+                userEmail = {this.props.route.params.userEmail}
             ></Calendar>
         </View>
         )

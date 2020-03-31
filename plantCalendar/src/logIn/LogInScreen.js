@@ -23,7 +23,7 @@ export default class LogInScreen extends React.Component {
         defaultPwd: "password",
         userEmail: "",
         userName: "",
-        firestore: new FirestoreHandle(),
+        firestoreHandle: new FirestoreHandle(),
     }
     
     /**
@@ -78,7 +78,7 @@ export default class LogInScreen extends React.Component {
             if (signUpError.code == "auth/email-already-in-use"){
                 firebase.auth().signInWithEmailAndPassword(this.state.userEmail, "password")
                 .then(() => {  
-                        this.props.navigation.navigate('Home', {accessToken: accessToken});
+                        this.props.navigation.navigate('Home', {accessToken: accessToken, userEmail: this.state.userEmail});
                     }
                 )
                 .catch(
@@ -99,7 +99,7 @@ export default class LogInScreen extends React.Component {
         firebase.firestore().collection('users').doc(this.state.userEmail).get().then(thisUser => {
             if (!thisUser.exists){
                 // takes in user's email, name, and growth point (default starting with 0 growth point)
-                this.state.firestore.updateFirebaseUserData(this.state.userEmail, this.state.userName, 0);
+                this.state.firestoreHandle.updateFirebaseUserData(this.state.userEmail, this.state.userName, 0);
             }
         }).catch(error => console.log(error));
     }
@@ -109,7 +109,7 @@ export default class LogInScreen extends React.Component {
             <View style={styles.container}>
                 <Image
                     style={styles.logo}
-                    source={require('../../assets/loginLogo.png')}/>
+                    source={require('../../assets/plantAheadLogo.png')}/>
                 <Button
                     title="Continue With Google"
                     onPress={() => this.signInWithGoogleAsync()}/>
