@@ -43,7 +43,7 @@ export default class FirestoreHandle {
             // only initialize the task data with default values if it doesn't exist
             if (!thisTask.exists) {
                 this.updateFirebaseTaskData(userEmail, taskId, taskName, 
-                    'middle', 2, 0);
+                    'middle', 2, 0, false);
             }
         })
     }
@@ -57,8 +57,9 @@ export default class FirestoreHandle {
      * @param {*} priority string, options: 'low', 'middle', 'high'
      * @param {*} estTimeToComplete double, how long the user estimates to complete this task
      * @param {*} timeSpent double, how long the user has spent on this task
+     * @param {*} completed boolean, whether this task has been completed
      */
-    updateFirebaseTaskData(userEmail, taskId, taskName, priority, estTimeToComplete, timeSpent) {
+    updateFirebaseTaskData(userEmail, taskId, taskName, priority, estTimeToComplete, timeSpent, completed) {
         const taskRef = firebase.firestore().collection('users').doc(userEmail).
             collection('tasks').doc(taskId);
         
@@ -68,6 +69,7 @@ export default class FirestoreHandle {
                 priority: priority,
                 estTimeToComplete: estTimeToComplete,
                 timeSpent: timeSpent,
+                completed: completed,
             },
             // merge: true will update the fields in the document of create it if it doesn't exist
             {merge: true}
