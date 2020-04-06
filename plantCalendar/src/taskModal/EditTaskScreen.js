@@ -1,25 +1,35 @@
+// I want to import the updateTask function so that way when a user presses the Button, the 
+// function is called. I also want that function to be able to call a function in the same File.
+// Unsure if this will happen automatically. I was trying to wrap it in a class and call
+// the class form a separate File, becaue it seems like having it be a component class is bad. 
+// React is confusing. 
+
 import  React, { Component } from 'react';
 import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import {updateTask} from '../home/Calendar.js';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-export default class ViewTaskModal extends React.Component {
-  state = {
-    name: "Empty",
-    taskId: "Empty",
-    taskListId: "Empty",
-    completion: false,
-    dueDate: new Date(1598051730000),
-    priority: "medium",
-    estTimeToComplete: 0
+
+import GoogleHandler from './GoogleHandler.js';
+
+export default class EditTaskModal extends React.Component {
+  constructor(props) {
+    super(props)
+    this.taskProps = this.props.route.params.task.props;
+
+    this.state = {
+      googleHandle: new GoogleHandler(),
+      name: this.taskProps.name,
+      taskId: this.taskProps.taskId,
+      dueDate: this.taskProps.dueDate,
+      taskListId: this.taskProps.taskListId, 
+      priority: this.taskProps.priority, 
+      esttimeToComplete: this.taskProps.estTimeToComplete
+    }
   }
-  
-  render() {
-      const taskProps = this.props.route.params.task.props;
 
-      this.setState({name:taskProps.name, taskId:taskProps.taskId, dueDate:taskProps.dueDate,
-        taskListId:taskProps.taskListId, priority:taskProps.priority, 
-        esttimeToComplete:taskProps.estTimeToComplete});
+  render() {
+      console.log("Task props should not be undefined: " + this.props.route.param);
 
       // options for priority
       let data = [
@@ -28,8 +38,13 @@ export default class ViewTaskModal extends React.Component {
         {value: 'low'}
       ];
 
+      // when we change the date in the datetimepicker, we update the date 
+      // with the selectedDate
+      const onChangeDate = (event, selectedDate) => {
+        this.setState({dueDate: selectedDate});
+      };
+
       return (
-        // TODO: Add option to update completion status
         <View style = {styles.editScreen}> 
           <View style = {styles.header}>
             <View style = {styles.header}></View>
@@ -40,28 +55,27 @@ export default class ViewTaskModal extends React.Component {
           <View style = {styles.editView}>
             <Text style = {styles.editText}> Name:  </Text>
             <TextInput style = {styles.textBox}
-              defaultValue = {taskProps.name}>
-                onChangeText={(text)=>{
-                  this.setState({name:text});
-                }}
+              defaultValue = {this.state.name}
+              onChangeText={(text)=>{
+                this.setState({name:text});
+              }}>
             </TextInput>
           </View>
 
           {/* Editing due date of the task
-              TODO: add date picker */}
+              TODO: find a better picker library and implement */}
           <View style = {styles.editView}>
             <Text style = {styles.editText}> Due Date: </Text>
-            <Text> Old Due Date </Text>
-          </View>
+          </View> 
 
           {/* Editing time to complete of the task */}
           <View style = {styles.editView}>
             <Text style = {styles.editText}> Est. Time to Complete: </Text>
             <TextInput style = {styles.textBox} 
-              defaultValue = {taskProps.estTimeToComplete}>
+              defaultValue = {this.state.estTimeToComplete}
               onChangeText={(text)=>{
-                this.setState({estTimeToComplete:text});
-              }} 
+                this.setState({estTimeToComplete: text});
+              }}> 
             </TextInput>
           </View>
           
@@ -70,7 +84,7 @@ export default class ViewTaskModal extends React.Component {
           <View style = {styles.editView}>
             <Text style = {styles.editText}> Priority: </Text>
             <Dropdown
-              label= {taskProps.priority}
+              label= {this.state.priority}
               data={data}
               onChangeText={(text)=>{
                 this.setState({priority:text});
@@ -86,8 +100,8 @@ export default class ViewTaskModal extends React.Component {
             </Button>
             <Button
               title = "Save"
-              onPress = {() => {updateTask(state.taskId, state.taskListId, state.name, state.dueDate, state.completion);
-                                this.props.navigation.goBack()}}>
+              onPress = {() => {this.state.googleHandle.updateGoogleTask(this.state.taskId, 
+                this.state.taskListId, this.state.taskName, this.state.dueDate, this.state.completion)}}>
             </Button>
           </View>  
 

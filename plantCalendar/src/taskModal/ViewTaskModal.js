@@ -56,7 +56,7 @@ export default class ViewTaskModal extends React.Component {
             {/* Edit Button to open the task editor modal */}
             <TouchableOpacity 
               style={styles.editButton}
-              onPress = {() => this.props.navigation.navigate("EditTask")}>
+              onPress = {() => this.props.navigation.navigate("EditTask", {task: this.props.route.params.task})}>
               <Icon name='edit'></Icon>
             </TouchableOpacity>
             {/* Wrap a view around the Texts for easier styling */}

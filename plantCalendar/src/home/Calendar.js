@@ -8,6 +8,11 @@ import Task from '../home/Task';  // import task components
  * 
  */
 export default class Calendar extends React.Component {
+    constructor(props) {
+        super(props);
+        this.updateTask = this.updateTask.bind(this);
+       }
+
     state = {
         taskArray: [],
         delete: false,
@@ -123,6 +128,7 @@ export default class Calendar extends React.Component {
         }).catch(error => console.log("error message: " + error));
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
+        console.log("taskListId:" + taskListJson[0].id);
         let taskId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
         
         console.log(taskId);
@@ -138,6 +144,7 @@ export default class Calendar extends React.Component {
     }
 
     parseTaskJson = async () => {
+        alert("you called a function");
         let taskJson = await this.getUserTasksList();
         const taskArray = taskJson.items;
         console.log(taskArray);
@@ -172,8 +179,9 @@ export default class Calendar extends React.Component {
      *      TODO: add firebase functionality after merge
      */
     updateTask(taskId, taskListId, taskName, dueDate, completion, priority, timeLeft, timeSpent) {
+        alert("hello worlds");
         this.updateGoogleTask(taskId, taskListId, taskName, dueDate, completion);
-    }
+    };
     /**
      * \brief modifies task data in user's Google Tasks
      * \detail
