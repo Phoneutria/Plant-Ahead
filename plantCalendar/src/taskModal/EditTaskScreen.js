@@ -1,14 +1,7 @@
-// I want to import the updateTask function so that way when a user presses the Button, the 
-// function is called. I also want that function to be able to call a function in the same File.
-// Unsure if this will happen automatically. I was trying to wrap it in a class and call
-// the class form a separate File, becaue it seems like having it be a component class is bad. 
-// React is confusing. 
-
 import  React, { Component } from 'react';
 import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
 
 import GoogleHandler from './GoogleHandler.js';
 
