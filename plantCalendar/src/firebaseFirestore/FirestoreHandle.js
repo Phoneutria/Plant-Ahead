@@ -43,7 +43,7 @@ export default class FirestoreHandle {
             // only initialize the task data with default values if it doesn't exist
             if (!thisTask.exists) {
                 this.updateFirebaseTaskData(userEmail, taskId, taskName, 
-                    'middle', 2, 0, false);
+                    'medium', 2, 0, false);
             }
         })
     }
@@ -69,6 +69,28 @@ export default class FirestoreHandle {
                 priority: priority,
                 estTimeToComplete: estTimeToComplete,
                 timeSpent: timeSpent,
+                completed: completed,
+            },
+            // merge: true will update the fields in the document of create it if it doesn't exist
+            {merge: true}
+        ).catch(
+            error => console.log(error)
+        );
+    }
+
+    /**
+     * \brief complete a given task specified by its task id in firestore
+     * 
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} taskId task's unique id from google Task's data, used to identify task in firestore
+     * @param {*} completed boolean, whether this task has been completed
+     */
+    setTaskCompleteInFirebase(userEmail, taskId, completed) {
+        const taskRef = firebase.firestore().collection('users').doc(userEmail).
+            collection('tasks').doc(taskId);
+        
+        taskRef.set(
+            {
                 completed: completed,
             },
             // merge: true will update the fields in the document of create it if it doesn't exist

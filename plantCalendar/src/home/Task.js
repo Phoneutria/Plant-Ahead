@@ -20,7 +20,7 @@ class Task extends React.Component {
 
     state = {
         // for animation
-        fadeAnimationTime: 400,
+        fadeAnimationTime: 250,
         fadeValue: new Animated.Value(1),
         // for the checkbox
         checked: false,

@@ -19,7 +19,7 @@ export default class Calendar extends React.Component {
         taskArray: [],
         renderDone: false,
         delete: false,
-        rerenderTaskWaitTime: 150,
+        rerenderTaskWaitTime: 50,
     }
 
     /**
@@ -91,13 +91,14 @@ export default class Calendar extends React.Component {
      * @param {*} task TODO: currently passing the entire task (which includes props, states, etc)
     */
     deleteCompletedTask(taskId) {
-        let newtaskData = {... this.state.taskData};
-        newtaskData[taskId].completed = true;
+        this.state.firestoreHandle.setTaskCompleteInFirebase(this.props.userEmail, 
+            taskId, true);
         // need to use setState to change to trigger rendering
         // use a setTimeout so the task does not re-render too quickly,
         //     and the animation look smoother 
-        setTimeout(()=> this.setState({taskData: newtaskData}),
-                     this.state.rerenderTaskWaitTime);
+        this.renderTask();
+        // setTimeout(()=> this.renderTask(),
+        //              this.state.rerenderTaskWaitTime);
     }
 
     /**
@@ -128,8 +129,18 @@ export default class Calendar extends React.Component {
                 
                 let taskFbData = thisTask.data();
                 
-                currentTaskArray.push(
-                    this.renderIndividalTask(taskFbData, task.id, task.title, task.due)
+                currentTaskArray.push( 
+                        <Task
+                            id = {task.id}
+                            name={task.title}
+                            dueDate={new Date(task.due)}
+                            priority={taskFbData.priority}
+                            completed={taskFbData.completed}
+                            estTimeToComplete={taskFbData.estTimeToComplete}
+                            // pass in Calendar's deleteCompletedTask function
+                            // so that when a task is completed, it can call Calendar's function
+                            completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+                        ></Task>
                 );
 
                 if (i == taskDataArray.length-1){
@@ -138,22 +149,6 @@ export default class Calendar extends React.Component {
             });
         }
     };
-
-    renderIndividalTask(taskFbData, id, title, due) {       
-        return(
-                <Task
-                    id = {id}
-                    name={title}
-                    dueDate={due}
-                    priority={taskFbData.priority}
-                    completed={taskFbData.completed}
-                    estTimeToComplete={taskFbData.estTimeToComplete}
-                    // pass in Calendar's deleteCompletedTask function
-                    // so that when a task is completed, it can call Calendar's function
-                    completeTask={(taskId) => this.deleteCompletedTask(taskId)}
-                ></Task>
-            );
-    }
 
     render() {
         return (
