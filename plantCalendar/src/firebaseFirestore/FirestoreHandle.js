@@ -7,6 +7,17 @@ import "./FirestoreSetup";
  * 
  * \brief Provide helper function to handle data update, delete etc in 
  *      firebase's database: firestore
+ * \details
+ *      to use, you should import this class
+ *          import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+ *      and create an instance of it in the React Component's state:
+ *          state = {
+ *              ... other states ...
+ *              firestoreHandle: new FirestoreHandle(),
+ *              ... other states ...
+ *          }
+ *      if you want to get data from firebase, you need to also import firebase:
+ *          import * as firebase from 'firebase';
  */
 export default class FirestoreHandle {
     /**
@@ -101,7 +112,7 @@ export default class FirestoreHandle {
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
      * @param {*} timeSpent double, how long the user has spent on this task
      */
-    updateTimeSpentInFirebase(userEmail, timeSpent) {
+    updateTimeSpentInFirebase(userEmail, taskId, timeSpent) {
         const taskRef = firebase.firestore().collection('users').doc(userEmail).
         collection('tasks').doc(taskId);
 

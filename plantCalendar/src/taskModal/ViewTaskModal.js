@@ -18,6 +18,7 @@ export default class ViewTaskModal extends React.Component {
 
     /**
      * \brief if the user clicks the complete button on the Task Viewer Modal
+     * \details TODO: add the complete function for Google Task  here!
      */
     closeAndCompleteTask() {
       // close the modal
@@ -48,7 +49,7 @@ export default class ViewTaskModal extends React.Component {
       // call the firestore helper function to update timeSpent in the database
       this.state.firestoreHandle.updateTimeSpentInFirebase(this.props.route.params.userEmail,taskRef.id, 
           newTimeSpent);
-      
+
       // setState will trigger re-render of viewTaskModal
       this.setState(() =>{ 
         let newTimeLeft = parseFloat(taskRef.estTimeToComplete) - parseFloat(newTimeSpent);
