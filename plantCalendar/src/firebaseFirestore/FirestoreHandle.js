@@ -14,7 +14,7 @@ export default class FirestoreHandle {
      *      user (specified by userEmail parameter)
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
      * @param {*} name user's fullname, includes first name and last name
-     * @param {*} growthPoint integer
+     * @param {*} growthPoint TODO: integer? or float?
      */
     updateFirebaseUserData(userEmail, name, growthPoint) {
         firebase.firestore().collection('users').doc(userEmail).set(
@@ -29,6 +29,12 @@ export default class FirestoreHandle {
         );
     }
 
+    // TODO: Test this function (I'm too dead to test at 3 am...)
+    /**
+     * \brief update the user's growth point in firestore
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} growthPoint TODO: integer? or float?
+     */
     updateUserGrowthPointFirebase(userEmail, growthPoint) {
         firebase.firestore().collection('users').doc(userEmail).set(
             {
@@ -90,7 +96,12 @@ export default class FirestoreHandle {
         );
     }
 
-    updateTimeSpentInFirebase(userEmail, growthPoint) {
+    /**
+     * \brief update the timeSpent for a given task specified by its task id in firestore
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} timeSpent double, how long the user has spent on this task
+     */
+    updateTimeSpentInFirebase(userEmail, timeSpent) {
         const taskRef = firebase.firestore().collection('users').doc(userEmail).
         collection('tasks').doc(taskId);
 
@@ -127,8 +138,17 @@ export default class FirestoreHandle {
         );
     }
 
-    // TODO: Test this function (I'm too dead to test)
-    
+    // TODO: Test this function (I'm too dead to test at 3 am..)
+    /**
+     * \brief create a plant and its data in firestore
+     * \details
+     *      Let firestore automatically generate an id for the plant
+     * \warning
+     *      Cannot be used as an update function
+     *      There should be only one plant where "fullyGrown" is false in the "plants" collection
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} plantName plant's name
+     */
     createPlantDataInFirebase(userEmail, plantName) {
         const plantsCollectionRef = firebase.firestore().collection('users').doc(userEmail).
             collection('plants');
@@ -147,6 +167,13 @@ export default class FirestoreHandle {
         );
     }
 
+    // TODO: Test this function (I'm too dead to test at 3 am...)
+    /**
+     * \brief update the plantPoint for the user's plant specified by its id
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} plantId an unique id to identify the plant in firestore
+     * @param {*} plantPoint (TODO: int? or float?) updated new plantPoint to keep track of the plant's progress
+     */
     updatePlantGrowthPoint(userEmail, plantId, plantPoint) {
         const plantRef = firebase.firestore().collection('users').doc(userEmail).
         collection('plants').doc(plantId);

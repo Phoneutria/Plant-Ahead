@@ -14,27 +14,36 @@ export default class GardenScreen extends React.Component {
     that is taking data from Firebase or other place */
     constructor(props) {
         super(props);
+        // have to do this, so the array "plantAnimationFunctions" can work
         this.playStage0 = this.playStage0.bind(this);
         this.playStage1 = this.playStage1.bind(this);
         this.playStage2 = this.playStage2.bind(this);
         this.state = {
             growthPoints: 0,
-            plant: 2,
+            // TODO: temporary solution to animate base on stage
+            // the "stage" of the plant act as the index to pick which function to call
             plantAnimationFunctions: [this.playStage0, this.playStage1, this.playStage2],
-            plantComponet: null,
         };
 
         this.plantRef = null;
     };
 
-    initPlant() {
+    /**
+     * TODO: this function is probably incomplete, a rough way of how you will animate based on plant's stage
+     * \brief animate the plant based on its stage stored in firebase
+     */
+    playPlant() {
         const plantCollectionRef = firebase.firestore().collection('users').doc(this.props.route.params.userEmail).
             collection('plants');
         
+        // Warning: assume that there is only one plant that we are currently growing
+        //      so that only one plant data has fullyGrown == false
         plantCollectionRef.where("fullyGrown", "==", false).onSnapshot( (querySnapShot) => {
+            // get the plant that is not fullyGrown
             querySnapShot.forEach(doc => {
                 const plantData = doc.data();
                 
+                // use the stage as index to figure out which animation function to call
                 let animationFunc = this.state.plantAnimationFunctions[plantData.stage];
                 animationFunc();
             });
@@ -50,7 +59,6 @@ export default class GardenScreen extends React.Component {
         } else {
             Alert.alert("Your tree is done growing!");
         }
-
     }
 
     playStage0() {
@@ -108,17 +116,8 @@ export default class GardenScreen extends React.Component {
                     }}
                 />
                 <Button
-                    title="show"
-                    onPress={() => this.initPlant()}/>
-                <Button
-                    title="stage 0"
-                    onPress={() => this.playStage0()}/>
-                <Button
-                    title="stage 1"
-                    onPress={() => this.playStage1()}/>
-                <Button
-                    title="stage 2"
-                    onPress={() => this.playStage2()}/>
+                    title="play"
+                    onPress={() => this.playPlant()}/>
                 <Button
                     title="Water"
                     onPress={this.progressAdded.bind(this)}/>
