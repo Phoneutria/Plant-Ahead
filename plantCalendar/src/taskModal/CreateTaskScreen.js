@@ -4,23 +4,34 @@ import {View, Text, Button, TouchableOpacity, StyleSheet,
     Alert, TextInput} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-material-dropdown';
+import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+
 
 export default class CreateTaskScreen extends React.Component {
   state = {
     name: "Empty",
     dueDate: new Date(1598051730000),
     priority: "medium",
-    hoursLeft: 0 
+    estTimeToComplete: 0,
+    // a class to handle most of the firestore interfaces (eg. update time in firestore)
+    firestoreHandle: new FirestoreHandle(),
   }
+
+
   // TODO: instead of this function, it would be a function that
   // create new task and returns back to the home page
-  // Tempporary function to check if text input and date picker worked
+  // Temporary function to check if text input and date picker worked
   formatOutput() {
     let temp = String(this.state.dueDate).split(' ');
     temp = " is due on " + temp[1]+ "-" + temp[2]+ "-" + temp[3];
     let output = String(this.state.name) + temp + " with " + this.state.priority + 
-    " priority. You have " + String(this.state.hoursLeft) + " hours left!";
-    return output;
+    " priority. You have " + String(this.state.estTimeToComplete) + " hours left!";
+
+    this.state.firestoreHandle.updateFirebaseTaskData(this.props.route.params.userEmail,
+      "TODO: actualGoolgeTaskId", this.state.name, this.state.priority, 
+      this.state.estTimeToComplete, 0, false);
+    
+    Alert.alert(output);
   }
 
   render() {
@@ -28,7 +39,7 @@ export default class CreateTaskScreen extends React.Component {
     const {name} = this.state;
     const {dueDate} = this.state;
     const {priority} = this.state;
-    const {hoursLeft} = this.state;
+    const {estTimeToComplete} = this.state;
     
     // when we change the date in the dateTimePicker, we update the date 
     // with the selectedDate
@@ -57,7 +68,7 @@ export default class CreateTaskScreen extends React.Component {
       <TextInput
           style={styles.input}
           onChangeText={(text)=>{
-            this.setState({hoursLeft:text});
+            this.setState({estTimeToComplete:text});
           }}
           // TODO: make sure the input is a number
           placeholder="Estimate hours needed"
@@ -81,7 +92,7 @@ export default class CreateTaskScreen extends React.Component {
 
       {/* For creating the task */}
       <Button
-          onPress={()=> Alert.alert(this.formatOutput())}
+          onPress={()=> this.formatOutput()}
           title='Submit'/> 
           {/* this.formatOutput() */}
     </View>
