@@ -6,9 +6,6 @@ import PropTypes from 'prop-types';
 // allow a child component (not a Screen) to use the "navigation"
 // in this case, allow a Task component to open the ViewTaskModal
 import { useNavigation } from '@react-navigation/native';
-// import * as firebase from 'firebase';
-
-import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 
 /**
  * Task Class
@@ -30,8 +27,6 @@ class Task extends React.Component {
         // // for estimated time left
         // timeSpent: 0,
         timeLeft: this.props.estTimeToComplete-this.props.timeSpent,
-        // a class to handle most of the firestore interfaces (eg. update time in firestore)
-        firestoreHandle: new FirestoreHandle(),
     };
 
     /**
@@ -56,31 +51,6 @@ class Task extends React.Component {
             duration: this.state.fadeAnimationTime,
         }).start();
     }
-
-
-    componentDidUpdate(prevProps) {
-        console.log("re-render?");
-        if (this.props.timeSpent !== prevProps.timeSpent) {
-            console.log("re-render");
-            // after we change the timeSpent, we need to call setState again and change time left
-            this.setState ( () => {
-                let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(this.props.timeSpent);
-                // if the time spent exceed estimated time, time left should just be 0
-                if (newTimeLeft < 0) {
-                    newTimeLeft = 0;
-                }
-                return {timeLeft: newTimeLeft};
-            });
-
-            this.props.navigation.setParams({
-                task: this
-            });
-        }
-    }
-
-    componetDidMount() {
-        console.log("Please tell me you have the right time spent: " + this.props.timeSpent);
-    }
     
     render() {
         // only render the task if it is not completed
@@ -100,9 +70,14 @@ class Task extends React.Component {
                         // when the Task component calls the ViewTaskModal
                         //  it passes in itself so that ViewTaskModal can display this task's information
                         onPress = {() => {
-                            console.log("Should have the newest");
-                            console.log(this.props.timeSpent);
+                            let currentTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(this.props.timeSpent);
+                            // if the time spent exceed estimated time, time left should just be 0
+                            if (currentTimeLeft < 0) {
+                                currentTimeLeft = 0;
+                            }
+
                             this.props.navigation.navigate("ViewTaskModal", {
+                                // data and functions to pass into the ViewTaskModal
                                 task: {
                                     name: this.props.name,
                                     id: this.props.id,
@@ -110,9 +85,19 @@ class Task extends React.Component {
                                     priority: this.props.priority,
                                     estTimeToComplete: this.props.estTimeToComplete,
                                     timeSpent: this.props.timeSpent,
-                                    timeLeft: this.state.timeLeft,
+                                    timeLeft: currentTimeLeft,
+                                    // function that ViewTaskModal can call if the user clicks
+                                    //     the "complete" button on the modal
                                     completedHandler: this.isCompleted,
+                                    // this.props.updatedTaskHandler is a function belonging to the Calendar class
+                                    // Calendar passes this function in as a prop of Task
+                                    // Then, the ViewTaskModal can call this function if the user clicks
+                                    //     the "submit" button to update time spent on the class
+                                    // this allows us the re-render the tasks
+                                    timeSpentHandler: this.props.updatedTaskHandler,
                                 },
+                                // pass in the user email so View Task Modal has the necessary information
+                                //      to call the firestore handler functions
                                 userEmail: this.props.userEmail,
                             });}}
                     >

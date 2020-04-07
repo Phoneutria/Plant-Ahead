@@ -3,9 +3,8 @@ import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-nat
 import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
-import { useIsFocused } from '@react-navigation/native';
 
-class HomeScreen extends React.Component {
+export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
     this means that when you go from homeScreen to other
     screens and come back, growthPoints will be restored 
@@ -34,7 +33,7 @@ class HomeScreen extends React.Component {
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        if (this.props.isFocused){
+       
         return (
             <View style={{ flex: 10}}>
             <Dropdown
@@ -72,15 +71,10 @@ class HomeScreen extends React.Component {
             ></Calendar>
         </View>
         );
-        }else{return null;}
     }
 };
-// Wrap and export
-export default function(props) {
-    const isFocused = useIsFocused();
-  
-    return <HomeScreen {...props} isFocused={isFocused} />;
-  }
+
+
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',

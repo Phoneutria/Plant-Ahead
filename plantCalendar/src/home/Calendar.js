@@ -5,7 +5,6 @@ import Task from '../home/Task';  // import task components
 import * as firebase from 'firebase';
 
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
-import { FlatList } from 'react-native-gesture-handler';
 
 /**
  * Calendar Class
@@ -24,7 +23,10 @@ export default class Calendar extends React.Component {
 
     /**
      * \brief return a json of all the task from user's Google Task
-     * \warning assume that the user only has one task list (and all the tasks are stored in that list)
+     * \warning 
+     *      - REQUIRED: use this format (use await!) to call this function and get the data properly
+     *           const taskJson = await this.getUserTasksJson();
+     *      - assume that the user only has one task list (and all the tasks are stored in that list
      */
     getUserTasksJson = async () => {
         // request the list of task lists
@@ -46,14 +48,6 @@ export default class Calendar extends React.Component {
         let tasksJson = await tasks.json();
 
         return tasksJson;
-    }
-
-    getUserTasksArray = async () => {
-        // gets the json of all the task data from Google Task
-        const taskJson = await this.getUserTasksJson();
-
-        const taskArray = taskJson.items;
-        return taskArray;
     }
 
     /**
@@ -78,6 +72,10 @@ export default class Calendar extends React.Component {
         }
     }
 
+    /**
+     * \brief initialize any task that needs to be added to Firestore, then render all tasks
+     * \details Called after Calendar is rendered
+     */
     componentDidMount() {
         this.initAllTasksInFirebase();
         
@@ -99,6 +97,18 @@ export default class Calendar extends React.Component {
     }
 
     /**
+     * \brief a handler function that allow other React Components to call Calendar's renderTask
+     * \detail this function gets passed into other React Components as props
+     *          so that if other components need to re-render the tasks, they can call this function
+     *         example usage:
+     *          - ViewTaskModal needs to re-render the task in order to update timeSpent for a task
+     *              properly, so it needs to call this function
+     */
+    updatedTaskHandler() {
+        this.renderTask();
+    }
+
+    /**
      * \brief render each task based on its information
      * \detail
      *      The parent (Calendar)'s deleteCompletedTask function gets passed down to
@@ -107,46 +117,64 @@ export default class Calendar extends React.Component {
      * @param {*} taskId a string that represent the taskId (each task has an unique task Id)
      */
     renderTask = async () => {
-        let currentTaskArray = [];
+        let tempTaskArray = [];
         
         // gets the json of all the task data from Google Task
         const taskJson = await this.getUserTasksJson();
-        const taskDataArray = taskJson.items;
+        const googleTaskDataArray = taskJson.items;
         
-        const collectionRef = firebase.firestore().collection('users').doc(this.props.userEmail).
+        const tasksCollectionRef = firebase.firestore().collection('users').doc(this.props.userEmail).
                     collection('tasks');
-                    
-        collectionRef.onSnapshot(() => {
-            for (let i = 0; i < taskDataArray.length; ++i){
-                const task = taskDataArray[i];
 
+        // onSnapshot() allows us to listen for changes in the firebase
+        // if any tasks get updated, the function inside onSnapshot() will run
+        //     so we can re-render the tasks
+        tasksCollectionRef.onSnapshot(() => {
+            // iterate throught the data from google Task and 
+            // render each task
+            for (let i = 0; i < googleTaskDataArray.length; ++i){
+                const taskGoogleData = googleTaskDataArray[i];
+
+                // reference to the task document in firestore
                 const taskRef = firebase.firestore().collection('users').doc(this.props.userEmail).
-                    collection('tasks').doc(task.id);
+                    collection('tasks').doc(taskGoogleData.id);
 
+                // get the data from firestore, then create the tasks
                 taskRef.get().then(thisTask => {      
                     let taskFbData = thisTask.data();
-                    console.log("Should have updated time spent " + i);
-                    console.log(taskFbData.timeSpent);
-                    currentTaskArray[i]=
+                   
+                    // create an arrays of Task React Components
+                    tempTaskArray[i]=
                             <Task
                                 userEmail = {this.props.userEmail}
-                                key = {task.id}
-                                id = {task.id}
-                                name={task.title}
-                                dueDate={new Date(task.due)}
+                                // compiler wants a "key" prop when the components are 
+                                // rendered in an array
+                                // this prop is there to just make the compiler happy
+                                key = {taskGoogleData.id}
+                                // data for the task
+                                id = {taskGoogleData.id}
+                                name={taskGoogleData.title}
+                                dueDate={new Date(taskGoogleData.due)}
                                 priority={taskFbData.priority}
                                 completed={taskFbData.completed}
                                 estTimeToComplete={taskFbData.estTimeToComplete}
                                 timeSpent = {taskFbData.timeSpent}
                                 // pass in Calendar's deleteCompletedTask function
-                                // so that when a task is completed, it can call Calendar's function
+                                // so that when a task is completed, the task can call Calendar's function
                                 completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+                                // pass in the Calendar's renderTask function
+                                // so that when a task and possibly the ViewTaskModal needs to re-render
+                                //      all the task, they can call this function
+                                updatedTaskHandler={() => this.updatedTaskHandler()}
                             ></Task>
                     ;             
 
-                    if (i == taskDataArray.length-1){
-                        console.log("i still satisfied the condition");
-                        this.setState({renderDone: true, taskArray: currentTaskArray});
+                    // A sneaky way to make the rendering task work
+                    // this ensures that all the tasks will be added to the array
+                    //      before Calendar calls its render() function
+                    if (i == googleTaskDataArray.length-1){
+                        // setState will trigger Calender to call its render() function
+                        this.setState({taskArray: tempTaskArray});
                     }
                 });
             }
@@ -157,9 +185,7 @@ export default class Calendar extends React.Component {
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    {console.log("rendering is killing me")}
-                    {console.log(this.state.taskArray)}
-                    {this.state.renderDone? this.state.taskArray: null}
+                    {this.state.taskArray}
                 </ScrollView>
             </View>
         );
