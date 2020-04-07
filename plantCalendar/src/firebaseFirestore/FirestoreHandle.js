@@ -29,6 +29,18 @@ export default class FirestoreHandle {
         );
     }
 
+    updateUserGrowthPointFirebase(userEmail, growthPoint) {
+        firebase.firestore().collection('users').doc(userEmail).set(
+            {
+                growthPoint: growthPoint,
+            },
+            // merge: true will update the fields in the document of create it if it doesn't exist
+            {merge: true}
+        ).catch(
+            error => console.log(error)
+        );
+    }
+
     /**
      * \brief Initialize a given task data specified by its task id in firestore
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
@@ -78,7 +90,7 @@ export default class FirestoreHandle {
         );
     }
 
-    updateTimeSpentInFirebase(userEmail, taskId, timeSpent) {
+    updateTimeSpentInFirebase(userEmail, growthPoint) {
         const taskRef = firebase.firestore().collection('users').doc(userEmail).
         collection('tasks').doc(taskId);
 
@@ -91,7 +103,6 @@ export default class FirestoreHandle {
         ).catch(
             error => console.log(error)
         );
-
     }
 
     /**
@@ -114,6 +125,41 @@ export default class FirestoreHandle {
         ).catch(
             error => console.log(error)
         );
+    }
+
+    // TODO: Test this function (I'm too dead to test)
+    
+    createPlantDataInFirebase(userEmail, plantName) {
+        const plantsCollectionRef = firebase.firestore().collection('users').doc(userEmail).
+            collection('plants');
+        
+        plantsCollectionRef.set(
+            {
+                name: plantName,
+                plantPoint: 0,
+                stage: 0,
+                fullyGrown: false,
+            },
+            // merge: true will update the fields in the document of create it if it doesn't exist
+            {merge: true}
+        ).catch(
+            error => console.log(error)
+        );
+    }
+
+    updatePlantGrowthPoint(userEmail, plantId, plantPoint) {
+        const plantRef = firebase.firestore().collection('users').doc(userEmail).
+        collection('plants').doc(plantId);
+    
+        plantsCollectionRef.set(
+            {
+                plantPoint: plantPoint,
+            },
+            // merge: true will update the fields in the document of create it if it doesn't exist
+            {merge: true}
+        ).catch(
+            error => console.log(error)
+    );
     }
 
     /**

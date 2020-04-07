@@ -66,7 +66,12 @@ export default class HomeScreen extends React.Component {
                 onPress={this.progressAdded.bind(this)}
                 title='Temperory to show progress bar'/>  
             <Button
-                onPress={()=> this.props.navigation.navigate('Garden')}
+                onPress={()=> this.props.navigation.navigate('Garden',
+                {
+                    // pass in the userEmail so CreateTaskScreen can have the necessary info
+                    // to interact with firestore
+                    userEmail: this.props.route.params.userEmail
+                })}
                 title='Temperory going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
