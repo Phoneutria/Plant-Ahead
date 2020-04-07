@@ -44,7 +44,12 @@ export default class HomeScreen extends React.Component {
             TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
-                onPress={()=> this.props.navigation.navigate('CreateTask')}>
+                onPress={()=> this.props.navigation.navigate('CreateTask', 
+                    {
+                        // pass in the userEmail so CreateTaskScreen can have the necessary info
+                        // to interact with firestore
+                        userEmail: this.props.route.params.userEmail
+                    })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
 
@@ -64,7 +69,6 @@ export default class HomeScreen extends React.Component {
                 onPress={()=> this.props.navigation.navigate('Garden')}
                 title='Temperory going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
-            {console.log("rerendering home?")}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
