@@ -78,6 +78,22 @@ export default class FirestoreHandle {
         );
     }
 
+    updateTimeSpentInFirebase(userEmail, taskId, timeSpent) {
+        const taskRef = firebase.firestore().collection('users').doc(userEmail).
+        collection('tasks').doc(taskId);
+
+        taskRef.set(
+            {
+                timeSpent: timeSpent,
+            },
+            // merge: true will update the fields in the document of create it if it doesn't exist
+            {merge: true}
+        ).catch(
+            error => console.log(error)
+        );
+
+    }
+
     /**
      * \brief complete a given task specified by its task id in firestore
      * 

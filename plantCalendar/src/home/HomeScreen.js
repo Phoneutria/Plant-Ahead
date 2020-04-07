@@ -3,8 +3,9 @@ import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-nat
 import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
+import { useIsFocused } from '@react-navigation/native';
 
-export default class HomeScreen extends React.Component {
+class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
     this means that when you go from homeScreen to other
     screens and come back, growthPoints will be restored 
@@ -33,7 +34,7 @@ export default class HomeScreen extends React.Component {
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        
+        if (this.props.isFocused){
         return (
             <View style={{ flex: 10}}>
             <Dropdown
@@ -64,16 +65,22 @@ export default class HomeScreen extends React.Component {
                 onPress={()=> this.props.navigation.navigate('Garden')}
                 title='Temperory going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
+            {console.log("rerendering home?")}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
             ></Calendar>
         </View>
-        )
-       
+        );
+        }else{return null;}
     }
 };
-
+// Wrap and export
+export default function(props) {
+    const isFocused = useIsFocused();
+  
+    return <HomeScreen {...props} isFocused={isFocused} />;
+  }
 const styles = StyleSheet.create({
     button: {
         position: 'absolute',

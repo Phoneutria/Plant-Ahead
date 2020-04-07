@@ -2,10 +2,17 @@ import * as React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import { Icon }  from 'react-native-elements';
 
+
+import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+
 export default class ViewTaskModal extends React.Component {
     state = {
       completeTaskAnimationTime: 300,
       inputTimeSpent: 0,
+      // a class to handle most of the firestore interfaces (eg. update time in firestore)
+      firestoreHandle: new FirestoreHandle(),
+      displayTimeSpent: this.props.route.params.task.timeSpent,
+      displayTimeLeft: this.props.route.params.task.timeLeft,
     }
 
     /**
@@ -19,7 +26,7 @@ export default class ViewTaskModal extends React.Component {
       // wait for a bit so the user can clear see 2 steps:
       //   1) close the modal
       //   2) delete the task
-      setTimeout(()=>this.props.route.params.task.isCompleted(),
+      setTimeout(()=>this.props.route.params.task.completedHandler(),
                      this.state.completeTaskAnimationTime);
     }
 
@@ -28,20 +35,33 @@ export default class ViewTaskModal extends React.Component {
      */
     addTimeSpent() {
       // update the time spent and consequently the time left for a task
-      this.props.route.params.task.updateTimeSpent(this.state.inputTimeSpent);
+      // this.props.route.params.task.timeSpentHandler(this.state.inputTimeSpent);
+      const task = this.props.route.params.task;
+      let newTimeSpent = parseFloat(task.timeSpent) + parseFloat(this.state.inputTimeSpent);
+      this.state.firestoreHandle.updateTimeSpentInFirebase(this.props.route.params.userEmail,task.id, 
+          newTimeSpent);
+      
       // clear the text input
-      this.setState({inputTimeSpent: 0});
+      this.setState(() =>{ 
+        let newTimeLeft = parseFloat(task.estTimeToComplete) - parseFloat(newTimeSpent);
+          // if the time spent exceed estimated time, time left should just be 0
+          if (newTimeLeft < 0) {
+              newTimeLeft = 0;
+          }
+        return {displayTimeLeft: newTimeLeft, displayTimeSpent: newTimeSpent, inputTimeSpent: 0}
+      });
+
+      
     }
 
     render() {
       // get the props and states  of a task
       // this gets passed in when a Task Component navigates to ViewTaskModal
-      const taskProps = this.props.route.params.task.props;
-      const taskStates = this.props.route.params.task.state;
-      
+      const task = this.props.route.params.task;
+
       // only display "estimate time to complete" "time spent" "time left"
       // if there is an estimated time
-      const dispTime = taskProps.estTimeToComplete != null
+      const dispTime = task.estTimeToComplete != null
       // const taskTimeSpent = "Time Spent (hours): " + taskStates.timeSpent;
 
       return (
@@ -62,25 +82,25 @@ export default class ViewTaskModal extends React.Component {
             {/* Wrap a view around the Texts for easier styling */}
             <View style = {styles.taskTextBlock}>
               <Text style = {{...styles.taskText, fontWeight: 'bold'}}>
-                Task Name: {taskProps.name}
+                Task Name: {task.name}
               </Text>
               {/* toLocalString gives us date format: 23/01/2019, 17:23:42*/}
               <Text style = {styles.taskText}>
-                Due Date: {taskProps.dueDate.toLocaleString()}
+                Due Date: {task.dueDate.toLocaleString()}
               </Text>
               <Text style = {styles.taskText}>
-                Priority: {taskProps.priority}
+                Priority: {task.priority}
               </Text>
               {/* all the time related info for a task will only show if the task has
                   estimate time to complete */}
               <Text style = {styles.taskText}>
-                {dispTime? "Estimated Time to Complete (hours): " + taskProps.estTimeToComplete : null}
+                {dispTime? "Estimated Time to Complete (hours): " + task.estTimeToComplete : null}
               </Text>
               <Text style = {styles.taskText}>
-                {dispTime? "Time Spent (hours): " + taskStates.timeSpent : null}
+                {dispTime? "Time Spent (hours): " + this.state.displayTimeSpent : null}
               </Text>
               <Text style = {styles.taskText}>
-                {dispTime? "Time Left (hours): " + taskStates.timeLeft : null }
+                {dispTime? "Time Left (hours): " + this.state.displayTimeLeft : null }
               </Text>
             </View>
             {/* Adding number of hours spent for the task */}

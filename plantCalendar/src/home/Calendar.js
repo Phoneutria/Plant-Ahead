@@ -93,12 +93,9 @@ export default class Calendar extends React.Component {
     deleteCompletedTask(taskId) {
         this.state.firestoreHandle.setTaskCompleteInFirebase(this.props.userEmail, 
             taskId, true);
-        // need to use setState to change to trigger rendering
-        // use a setTimeout so the task does not re-render too quickly,
-        //     and the animation look smoother 
+        
+        // re-render the tasks
         this.renderTask();
-        // setTimeout(()=> this.renderTask(),
-        //              this.state.rerenderTaskWaitTime);
     }
 
     /**
@@ -110,50 +107,58 @@ export default class Calendar extends React.Component {
      * @param {*} taskId a string that represent the taskId (each task has an unique task Id)
      */
     renderTask = async () => {
-
         let currentTaskArray = [];
-        
         
         // gets the json of all the task data from Google Task
         const taskJson = await this.getUserTasksJson();
         const taskDataArray = taskJson.items;
+        
+        const collectionRef = firebase.firestore().collection('users').doc(this.props.userEmail).
+                    collection('tasks');
+                    
+        collectionRef.onSnapshot(() => {
+            for (let i = 0; i < taskDataArray.length; ++i){
+                const task = taskDataArray[i];
 
-    
-        for (let i = 0; i < taskDataArray.length; ++i){
-            const task = taskDataArray[i];
+                const taskRef = firebase.firestore().collection('users').doc(this.props.userEmail).
+                    collection('tasks').doc(task.id);
 
-            const taskRef = firebase.firestore().collection('users').doc(this.props.userEmail).
-                collection('tasks').doc(task.id);
+                taskRef.get().then(thisTask => {      
+                    let taskFbData = thisTask.data();
+                    console.log("Should have updated time spent " + i);
+                    console.log(taskFbData.timeSpent);
+                    currentTaskArray[i]=
+                            <Task
+                                userEmail = {this.props.userEmail}
+                                key = {task.id}
+                                id = {task.id}
+                                name={task.title}
+                                dueDate={new Date(task.due)}
+                                priority={taskFbData.priority}
+                                completed={taskFbData.completed}
+                                estTimeToComplete={taskFbData.estTimeToComplete}
+                                timeSpent = {taskFbData.timeSpent}
+                                // pass in Calendar's deleteCompletedTask function
+                                // so that when a task is completed, it can call Calendar's function
+                                completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+                            ></Task>
+                    ;             
 
-            taskRef.get().then(thisTask => {
-                
-                let taskFbData = thisTask.data();
-                
-                currentTaskArray.push( 
-                        <Task
-                            id = {task.id}
-                            name={task.title}
-                            dueDate={new Date(task.due)}
-                            priority={taskFbData.priority}
-                            completed={taskFbData.completed}
-                            estTimeToComplete={taskFbData.estTimeToComplete}
-                            // pass in Calendar's deleteCompletedTask function
-                            // so that when a task is completed, it can call Calendar's function
-                            completeTask={(taskId) => this.deleteCompletedTask(taskId)}
-                        ></Task>
-                );
-
-                if (i == taskDataArray.length-1){
-                    this.setState({renderDone: true, taskArray: currentTaskArray});
-                }
-            });
-        }
+                    if (i == taskDataArray.length-1){
+                        console.log("i still satisfied the condition");
+                        this.setState({renderDone: true, taskArray: currentTaskArray});
+                    }
+                });
+            }
+        });
     };
 
     render() {
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
+                    {console.log("rendering is killing me")}
+                    {console.log(this.state.taskArray)}
                     {this.state.renderDone? this.state.taskArray: null}
                 </ScrollView>
             </View>

@@ -6,6 +6,9 @@ import PropTypes from 'prop-types';
 // allow a child component (not a Screen) to use the "navigation"
 // in this case, allow a Task component to open the ViewTaskModal
 import { useNavigation } from '@react-navigation/native';
+// import * as firebase from 'firebase';
+
+import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 
 /**
  * Task Class
@@ -24,9 +27,11 @@ class Task extends React.Component {
         fadeValue: new Animated.Value(1),
         // for the checkbox
         checked: false,
-        // for estimated time left
-        timeSpent: 0,
-        timeLeft: this.props.estTimeToComplete,
+        // // for estimated time left
+        // timeSpent: 0,
+        timeLeft: this.props.estTimeToComplete-this.props.timeSpent,
+        // a class to handle most of the firestore interfaces (eg. update time in firestore)
+        firestoreHandle: new FirestoreHandle(),
     };
 
     /**
@@ -52,30 +57,31 @@ class Task extends React.Component {
         }).start();
     }
 
-    /**
-     * \brief ViewTaskModal will call this function if the users want to add time that 
-     *          they spend on this task 
-     * @param {*} newTimeSpent 
-     */
-    updateTimeSpent(newTimeSpent) {
-        // TODO: float might add weirdly if the new time spent is weird...
-        this.setState ( prevState => ({
-                timeSpent: parseFloat(prevState.timeSpent) + parseFloat(newTimeSpent),
-            })
-        );
 
-        // after we change the timeSpent, we need to call setState again and change time left
-        this.setState ( prevState => {
-                let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(prevState.timeSpent);
+    componentDidUpdate(prevProps) {
+        console.log("re-render?");
+        if (this.props.timeSpent !== prevProps.timeSpent) {
+            console.log("re-render");
+            // after we change the timeSpent, we need to call setState again and change time left
+            this.setState ( () => {
+                let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(this.props.timeSpent);
                 // if the time spent exceed estimated time, time left should just be 0
                 if (newTimeLeft < 0) {
                     newTimeLeft = 0;
                 }
                 return {timeLeft: newTimeLeft};
-            }
-        );
+            });
+
+            this.props.navigation.setParams({
+                task: this
+            });
+        }
     }
 
+    componetDidMount() {
+        console.log("Please tell me you have the right time spent: " + this.props.timeSpent);
+    }
+    
     render() {
         // only render the task if it is not completed
         if (!this.props.completed) {
@@ -93,7 +99,22 @@ class Task extends React.Component {
                         style = {styles.task}
                         // when the Task component calls the ViewTaskModal
                         //  it passes in itself so that ViewTaskModal can display this task's information
-                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {task: this})}
+                        onPress = {() => {
+                            console.log("Should have the newest");
+                            console.log(this.props.timeSpent);
+                            this.props.navigation.navigate("ViewTaskModal", {
+                                task: {
+                                    name: this.props.name,
+                                    id: this.props.id,
+                                    dueDate: this.props.dueDate,
+                                    priority: this.props.priority,
+                                    estTimeToComplete: this.props.estTimeToComplete,
+                                    timeSpent: this.props.timeSpent,
+                                    timeLeft: this.state.timeLeft,
+                                    completedHandler: this.isCompleted,
+                                },
+                                userEmail: this.props.userEmail,
+                            });}}
                     >
                         <Text>{this.props.name}</Text>
                         <Text>{this.props.dueDate.toLocaleString()}</Text>
