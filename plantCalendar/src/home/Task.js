@@ -93,7 +93,7 @@ class Task extends React.Component {
                         style = {styles.task}
                         // when the Task component calls the ViewTaskModal
                         //  it passes in itself so that ViewTaskModal can display this task's information
-                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {task: this})}
+                        onPress = {() => {this.props.navigation.navigate("ViewTaskModal", {task: this})}}
                     >
                         <Text>{this.props.name}</Text>
                         <Text>{this.props.dueDate.toLocaleString()}</Text>

@@ -17,13 +17,15 @@ export default class EditTaskModal extends React.Component {
       dueDate: this.taskProps.dueDate,
       taskListId: this.taskProps.taskListId, 
       priority: this.taskProps.priority, 
-      esttimeToComplete: this.taskProps.estTimeToComplete
+      esttimeToComplete: this.taskProps.estTimeToComplete,
+      completed: this.taskProps.completed,
+
+      // used to access user's Google Calendar
+      accessToken: this.taskProps.accessToken
     }
   }
 
   render() {
-      console.log("Task props should not be undefined: " + this.props.route.param);
-
       // options for priority
       let data = [
         {value: 'high'},
@@ -94,7 +96,7 @@ export default class EditTaskModal extends React.Component {
             <Button
               title = "Save"
               onPress = {() => {this.state.googleHandle.updateGoogleTask(this.state.taskId, 
-                this.state.taskListId, this.state.taskName, this.state.dueDate, this.state.completion)}}>
+                this.state.taskListId, this.state.name, this.state.dueDate, this.state.completed, this.state.accessToken)}}>
             </Button>
           </View>  
 

@@ -8,11 +8,6 @@ import Task from '../home/Task';  // import task components
  * 
  */
 export default class Calendar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.updateTask = this.updateTask.bind(this);
-       }
-
     state = {
         taskArray: [],
         delete: false,
@@ -38,6 +33,8 @@ export default class Calendar extends React.Component {
             }, 
             "2": {
                 name: "Task 2",
+                taskListId: "MTMwNDc5MDg4MTMzOTM0NDI0OTQ6MDow",
+                taskId: "c3ViZjRFaUNUQlFPU2JNZQ",
                 dueDate: new Date("3/01/2022"),
                 priority: "high",
                 completed: false,
@@ -128,10 +125,8 @@ export default class Calendar extends React.Component {
         }).catch(error => console.log("error message: " + error));
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
-        console.log("taskListId:" + taskListJson[0].id);
         let taskId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
         
-        console.log(taskId);
         let tasks = await fetch(taskId, {
             headers: { Authorization: `Bearer ${this.props.accessToken}`},
         }).catch(error => console.log("error message: " + error));
@@ -144,7 +139,6 @@ export default class Calendar extends React.Component {
     }
 
     parseTaskJson = async () => {
-        alert("you called a function");
         let taskJson = await this.getUserTasksList();
         const taskArray = taskJson.items;
         console.log(taskArray);
@@ -172,44 +166,6 @@ export default class Calendar extends React.Component {
     }
 
     /**
-     * \brief modifies task data by calling appropriate helper functions
-     * \detail
-     *      updates task's name (taskName), due date (dueDate), completion status (completion),
-     *      priority level (priority), time spent on task (timeSpent)
-     *      TODO: add firebase functionality after merge
-     */
-    updateTask(taskId, taskListId, taskName, dueDate, completion, priority, timeLeft, timeSpent) {
-        alert("hello worlds");
-        this.updateGoogleTask(taskId, taskListId, taskName, dueDate, completion);
-    };
-    /**
-     * \brief modifies task data in user's Google Tasks
-     * \detail
-     *      updates task's name (taskName) and due date (dueDate) in user's Google Tasks
-     *      can also tell Google Tasks that the task is complete
-     *      taskName is a string, taskListId is a string, dueDate is a string, 
-     *      completion is a bool (true for completed)
-     *      taskId identifies the task
-     */
-    updateGoogleTask = async (taskId, taskListId, taskName, dueDate, completion) => {
-        // get task from user's Google Tasks
-        let task = await fetch('https://www.googleapis.com/tasks/v1/' + taskListId +
-        "/tasks/" + taskId, {
-            headers: { Authorization: `Bearer ${this.props.accessToken}`},
-        }).catch(error => console.log("error message: " + error));
-        
-        task.title = taskName;
-        task.due = dueDate;
-        task.completed = completion;
-        
-        // send modified task back to user's Google Tasks
-        var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks/" + taskId,
-        true);
-        xhr.send(task);
-    }
-
-    /**
      * \brief render each task based on its information
      * \detail
      *      The parent (Calendar)'s deleteCompletedTask function gets passed down to
@@ -221,18 +177,26 @@ export default class Calendar extends React.Component {
         // Have to clear the array so that after the tasks re-render, there isn't just a blank space
         // left for the deleted task
         this.state.taskArray = [];
-        for (var taskId in this.state.taskData) {
+        for (var index in this.state.taskData) {
             this.state.taskArray.push(
                 <Task
-                    id = {taskId}
-                    name={this.state.taskData[taskId].name}
-                    dueDate={this.state.taskData[taskId].dueDate}
-                    priority={this.state.taskData[taskId].priority}
-                    completed={this.state.taskData[taskId].completed}
-                    estTimeToComplete={this.state.taskData[taskId].estTimeToComplete}
+                    id = {index}
+                    name={this.state.taskData[index].name}
+                    dueDate={this.state.taskData[index].dueDate}
+                    priority={this.state.taskData[index].priority}
+                    completed={this.state.taskData[index].completed}
+                    estTimeToComplete={this.state.taskData[index].estTimeToComplete}
                     // pass in Calendar's deleteCompletedTask function
                     // so that when a task is completed, it can call Calendar's function
                     completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+
+                    // pass in the user's access token, which will be used to access and update the user's 
+                    // Google Tasks if they choose to edit this task
+                    accessToken = {this.props.accessToken}
+
+                    // debugging update task function 
+                    taskId = {this.state.taskData[index].taskId}
+                    taskListId = {this.state.taskData[index].taskListId}
                 ></Task>
             );
         }

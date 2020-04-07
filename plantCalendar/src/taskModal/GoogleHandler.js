@@ -1,4 +1,4 @@
-import { NativeModules } from "react-native";
+import { NativeModules, PushNotificationIOS } from "react-native";
 
 export default class GoogleHandler{
 
@@ -11,23 +11,20 @@ export default class GoogleHandler{
      *      completion is a bool (true for completed)
      *      taskId identifies the task
      */
-    updateGoogleTask = async (taskId, taskListId, taskName, dueDate, completion) => {
-        // get task from user's Google Tasks
-        let task = await fetch('https://www.googleapis.com/tasks/v1/' + taskListId +
-        "/tasks/" + taskId, {
-            headers: { Authorization: `Bearer ${this.props.accessToken}`},
-        }).catch(error => console.log("error message: " + error));
-        
-        // modify task
-        task.title = taskName;
-        task.due = dueDate;
-        task.completed = completion;
-        
-        // send modified task back to user's Google Tasks
-        var xhr = new XMLHttpRequest();
-        xhr.open("PUT", "https://www.googleapis.com/tasks/v1/lists/" + taskListId + "/tasks/" + taskId,
-        true);
-        xhr.send(task);
+    updateGoogleTask = async (taskId, taskListId, taskName, dueDate, completion, accessToken) => {
+
+        // send an HTTP PATCH request to the google API, which updates the specified task 
+        // TODO: make it possible to complete tasks, update the due date
+        let editedTask = await fetch('https://www.googleapis.com/tasks/v1/lists/' + taskListId + '/tasks/' + taskId, {
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-type': 'application/json'},
+            method: 'PATCH',
+            body: JSON.stringify({
+                title: taskName,
+                id: taskId
+            })
+        }).catch((error) => {
+            console.error('Error:', error)
+        })
     }
 
 }
