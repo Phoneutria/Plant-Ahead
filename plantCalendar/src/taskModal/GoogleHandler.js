@@ -1,5 +1,3 @@
-import { NativeModules, PushNotificationIOS } from "react-native";
-
 export default class GoogleHandler{
 
     /**
