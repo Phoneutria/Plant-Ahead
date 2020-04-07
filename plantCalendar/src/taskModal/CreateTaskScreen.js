@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import{ Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, 
-    Alert, TextInput} from 'react-native';
+    Alert, TextInput, TouchableHighlightBase} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-material-dropdown';
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
@@ -27,11 +27,40 @@ export default class CreateTaskScreen extends React.Component {
     let output = String(this.state.name) + temp + " with " + this.state.priority + 
     " priority. You have " + String(this.state.estTimeToComplete) + " hours left!";
 
-    this.state.firestoreHandle.updateFirebaseTaskData(this.props.route.params.userEmail,
-      "TODO: actualGoolgeTaskId", this.state.name, this.state.priority, 
-      this.state.estTimeToComplete, 0, false);
+    // TODO: Once you have the create new Task function ready, uncomment the code bellow
+    //   then set googlTaskId to task id returned by Goolge Task Create function
+
+    // let googleTaskId = "TODO: actualGoolgeTaskId"
     
+    // // create the task in firestore
+    // this.state.firestoreHandle.updateFirebaseTaskData(this.props.route.params.userEmail,
+    //   googleTaskId, this.state.name, this.state.priority, 
+    //   parseFloat(this.state.estTimeToComplete), 0, false);
+    
+    this.props.navigation.goBack();
+
     Alert.alert(output);
+
+    /**
+     * Suggestion:
+     *    If when we go back to the home screen, the tasks do not render
+     *    and you can't see the new Task Created...
+     *      You need to figure out how to call the Calendar's renderTask() function.
+     *  
+     *      One way that I was able to do it for the ViewTaskModal was using navigate()
+     *      function to pass in parameters (for example, how I pass in userEmail)
+     *      You might want to look at ViewTaskModal and see how I pass in the function
+     *      timeSpentHandler()
+     * 
+     *      However, this might be more complicated because I don't know how you can access 
+     *      Calendar's function from the HomeScreen (which is like a box containing Calendar)
+     *      In my case, I was able to do it because ViewTaskModal is called by a Task, and the
+     *      Calendar is like a box containing Tasks). Therefore, it's easier to pass timeSpentHandler()
+     *      from Calendar to Task then from Task to ViewTaskModal
+     * 
+     *      P.S: I'm sorry about the long paragraphs. I'm trying to leave as much information behind as
+     *      possible really late a night lmao
+     */
   }
 
   render() {
