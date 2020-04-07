@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import Task from '../home/Task';  // import task components
+
+import * as firebase from 'firebase';
+
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 
 /**
@@ -13,116 +16,19 @@ export default class Calendar extends React.Component {
         // a class to handle most of the firestore interfaces (eg. update data in firestore)
         firestoreHandle: new FirestoreHandle(),
         taskArray: [],
+        renderDone: false,
         delete: false,
-        rerenderTaskWaitTime: 150,
-        /**
-         * dummy data
-         * Json format
-         *  right now, we use the task id (int) to identify which task's
-         *  data we want to edit
-         *  TODO: this format might be different once we integrate with 
-         *  Google Calendar
-         *  TODO:
-         *      Right now, when we go to a different page, the taskData will
-         *      get refreshed (the completed one will appear again). This is 
-         *      because every time the homeScreen is mounted, Calendar will get
-         *      created again. Should be able to fix it once we integrate with Google Calendar
-         */
-        taskData:{
-            "1": {
-                name: "Task 1",
-                dueDate: new Date("2/21/2022"),
-                completed: false,
-            }, 
-            "2": {
-                name: "Task 2",
-                dueDate: new Date("3/01/2022"),
-                priority: "high",
-                completed: false,
-            },
-            "3": {
-                name: "Task 3",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "4": {
-                name: "Task 4",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "5": {
-                name: "Task 5",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "6": {
-                name: "Task 6",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "7": {
-                name: "Task 7",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "8": {
-                name: "Task 8",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                estTimeToComplete: 2,
-                completed: false,
-            },
-            "9": {
-                name: "Task 9",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                estTimeToComplete: 3,
-                completed: false,
-            },
-            "10": {
-                name: "Task 10",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "11": {
-                name: "Task 11",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                estTimeToComplete: 4,
-                completed: false,
-            },
-            "12": {
-                name: "Task 12",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "13": {
-                name: "Task 13",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-            "14": {
-                name: "Task 14",
-                dueDate: new Date("4/05/2022"),
-                priority: "low",
-                completed: false,
-            },
-        }
+        rerenderTaskWaitTime: 50,
     }
 
     /**
      * \brief return a json of all the task from user's Google Task
-     * \warning assume that the user only has one task list (and all the tasks are stored in that list)
+     * \warning 
+     *      - REQUIRED: use this format (use await!) to call this function and get the data properly
+     *           const taskJson = await this.getUserTasksJson();
+     *      - assume that the user only has one task list (and all the tasks are stored in that list
      */
-    getUserTasksList = async () => {
+    getUserTasksJson = async () => {
         // request the list of task lists
         // a task list contains many tasks, think of "a task list" as a calendar
         let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
@@ -150,10 +56,8 @@ export default class Calendar extends React.Component {
      */
     initAllTasksInFirebase = async () => {
         // gets the json of all the task data from Google Task
-        let taskJson = await this.getUserTasksList();
+        const taskJson = await this.getUserTasksJson();
         const taskArray = taskJson.items;
-        
-        console.log(taskArray);
 
         for (let i = 0; i < taskArray.length; ++i){
             const task = taskArray[i];
@@ -168,8 +72,14 @@ export default class Calendar extends React.Component {
         }
     }
 
+    /**
+     * \brief initialize any task that needs to be added to Firestore, then render all tasks
+     * \details Called after Calendar is rendered
+     */
     componentDidMount() {
         this.initAllTasksInFirebase();
+        
+        this.renderTask();
     }
 
     /** 
@@ -179,13 +89,23 @@ export default class Calendar extends React.Component {
      * @param {*} task TODO: currently passing the entire task (which includes props, states, etc)
     */
     deleteCompletedTask(taskId) {
-        let newtaskData = {... this.state.taskData};
-        newtaskData[taskId].completed = true;
-        // need to use setState to change to trigger rendering
-        // use a setTimeout so the task does not re-render too quickly,
-        //     and the animation look smoother 
-        setTimeout(()=> this.setState({taskData: newtaskData}),
-                     this.state.rerenderTaskWaitTime);
+        this.state.firestoreHandle.setTaskCompleteInFirebase(this.props.userEmail, 
+            taskId, true);
+        
+        // re-render the tasks
+        this.renderTask();
+    }
+
+    /**
+     * \brief a handler function that allow other React Components to call Calendar's renderTask
+     * \detail this function gets passed into other React Components as props
+     *          so that if other components need to re-render the tasks, they can call this function
+     *         example usage:
+     *          - ViewTaskModal needs to re-render the task in order to update timeSpent for a task
+     *              properly, so it needs to call this function
+     */
+    updatedTaskHandler() {
+        this.renderTask();
     }
 
     /**
@@ -197,35 +117,76 @@ export default class Calendar extends React.Component {
      * @param {*} taskId a string that represent the taskId (each task has an unique task Id)
      */
     renderTask = async () => {
-        // Have to clear the array so that after the tasks re-render, there isn't just a blank space
-        // left for the deleted task
-        this.state.taskArray = [];
+        let tempTaskArray = [];
+        
+        // gets the json of all the task data from Google Task
+        const taskJson = await this.getUserTasksJson();
+        const googleTaskDataArray = taskJson.items;
+        
+        const tasksCollectionRef = firebase.firestore().collection('users').doc(this.props.userEmail).
+                    collection('tasks');
 
-        for (var taskId in this.state.taskData) {
-            this.state.taskArray.push(
-                <Task
-                    id = {taskId}
-                    name={this.state.taskData[taskId].name}
-                    dueDate={this.state.taskData[taskId].dueDate}
-                    priority={this.state.taskData[taskId].priority}
-                    completed={this.state.taskData[taskId].completed}
-                    estTimeToComplete={this.state.taskData[taskId].estTimeToComplete}
-                    // pass in Calendar's deleteCompletedTask function
-                    // so that when a task is completed, it can call Calendar's function
-                    completeTask={(taskId) => this.deleteCompletedTask(taskId)}
-                ></Task>
-            );
-        }
+        // onSnapshot() allows us to listen for changes in the firebase
+        // if any tasks get updated, the function inside onSnapshot() will run
+        //     so we can re-render the tasks
+        tasksCollectionRef.onSnapshot(() => {
+            // iterate throught the data from google Task and 
+            // render each task
+            for (let i = 0; i < googleTaskDataArray.length; ++i){
+                const taskGoogleData = googleTaskDataArray[i];
+
+                // reference to the task document in firestore
+                const taskRef = firebase.firestore().collection('users').doc(this.props.userEmail).
+                    collection('tasks').doc(taskGoogleData.id);
+
+                // get the data from firestore, then create the tasks
+                taskRef.get().then(thisTask => {      
+                    let taskFbData = thisTask.data();
+                   
+                    // create an arrays of Task React Components
+                    tempTaskArray[i]=
+                            <Task
+                                userEmail = {this.props.userEmail}
+                                // compiler wants a "key" prop when the components are 
+                                // rendered in an array
+                                // this prop is there to just make the compiler happy
+                                key = {taskGoogleData.id}
+                                // data for the task
+                                id = {taskGoogleData.id}
+                                name={taskGoogleData.title}
+                                dueDate={new Date(taskGoogleData.due)}
+                                priority={taskFbData.priority}
+                                completed={taskFbData.completed}
+                                estTimeToComplete={taskFbData.estTimeToComplete}
+                                timeSpent = {taskFbData.timeSpent}
+                                // pass in Calendar's deleteCompletedTask function
+                                // so that when a task is completed, the task can call Calendar's function
+                                completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+                                // pass in the Calendar's renderTask function
+                                // so that when a task and possibly the ViewTaskModal needs to re-render
+                                //      all the task, they can call this function
+                                updatedTaskHandler={() => this.updatedTaskHandler()}
+                            ></Task>
+                    ;             
+
+                    // A sneaky way to make the rendering task work
+                    // this ensures that all the tasks will be added to the array
+                    //      before Calendar calls its render() function
+                    if (i == googleTaskDataArray.length-1){
+                        // setState will trigger Calender to call its render() function
+                        this.setState({taskArray: tempTaskArray});
+                    }
+                });
+            }
+        });
     };
 
     render() {
-        this.renderTask();
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     {this.state.taskArray}
                 </ScrollView>
-
             </View>
         );
     };

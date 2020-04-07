@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        
+       
         return (
             <View style={{ flex: 10}}>
             <Dropdown
@@ -64,15 +64,16 @@ export default class HomeScreen extends React.Component {
                 onPress={()=> this.props.navigation.navigate('Garden')}
                 title='Temperory going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
+            {console.log("rerendering home?")}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
             ></Calendar>
         </View>
-        )
-       
+        );
     }
 };
+
 
 const styles = StyleSheet.create({
     button: {

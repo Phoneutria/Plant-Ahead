@@ -20,13 +20,13 @@ class Task extends React.Component {
 
     state = {
         // for animation
-        fadeAnimationTime: 400,
+        fadeAnimationTime: 250,
         fadeValue: new Animated.Value(1),
         // for the checkbox
         checked: false,
-        // for estimated time left
-        timeSpent: 0,
-        timeLeft: this.props.estTimeToComplete,
+        // // for estimated time left
+        // timeSpent: 0,
+        timeLeft: this.props.estTimeToComplete-this.props.timeSpent,
     };
 
     /**
@@ -51,31 +51,7 @@ class Task extends React.Component {
             duration: this.state.fadeAnimationTime,
         }).start();
     }
-
-    /**
-     * \brief ViewTaskModal will call this function if the users want to add time that 
-     *          they spend on this task 
-     * @param {*} newTimeSpent 
-     */
-    updateTimeSpent(newTimeSpent) {
-        // TODO: float might add weirdly if the new time spent is weird...
-        this.setState ( prevState => ({
-                timeSpent: parseFloat(prevState.timeSpent) + parseFloat(newTimeSpent),
-            })
-        );
-
-        // after we change the timeSpent, we need to call setState again and change time left
-        this.setState ( prevState => {
-                let newTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(prevState.timeSpent);
-                // if the time spent exceed estimated time, time left should just be 0
-                if (newTimeLeft < 0) {
-                    newTimeLeft = 0;
-                }
-                return {timeLeft: newTimeLeft};
-            }
-        );
-    }
-
+    
     render() {
         // only render the task if it is not completed
         if (!this.props.completed) {
@@ -93,7 +69,37 @@ class Task extends React.Component {
                         style = {styles.task}
                         // when the Task component calls the ViewTaskModal
                         //  it passes in itself so that ViewTaskModal can display this task's information
-                        onPress = {() => this.props.navigation.navigate("ViewTaskModal", {task: this})}
+                        onPress = {() => {
+                            let currentTimeLeft = parseFloat(this.props.estTimeToComplete) - parseFloat(this.props.timeSpent);
+                            // if the time spent exceed estimated time, time left should just be 0
+                            if (currentTimeLeft < 0) {
+                                currentTimeLeft = 0;
+                            }
+
+                            this.props.navigation.navigate("ViewTaskModal", {
+                                // data and functions to pass into the ViewTaskModal
+                                task: {
+                                    name: this.props.name,
+                                    id: this.props.id,
+                                    dueDate: this.props.dueDate,
+                                    priority: this.props.priority,
+                                    estTimeToComplete: this.props.estTimeToComplete,
+                                    timeSpent: this.props.timeSpent,
+                                    timeLeft: currentTimeLeft,
+                                    // function that ViewTaskModal can call if the user clicks
+                                    //     the "complete" button on the modal
+                                    completedHandler: this.isCompleted,
+                                    // this.props.updatedTaskHandler is a function belonging to the Calendar class
+                                    // Calendar passes this function in as a prop of Task
+                                    // Then, the ViewTaskModal can call this function if the user clicks
+                                    //     the "submit" button to update time spent on the class
+                                    // this allows us the re-render the tasks
+                                    timeSpentHandler: this.props.updatedTaskHandler,
+                                },
+                                // pass in the user email so View Task Modal has the necessary information
+                                //      to call the firestore handler functions
+                                userEmail: this.props.userEmail,
+                            });}}
                     >
                         <Text>{this.props.name}</Text>
                         <Text>{this.props.dueDate.toLocaleString()}</Text>
