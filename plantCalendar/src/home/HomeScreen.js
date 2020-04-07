@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        
+       
         return (
             <View style={{ flex: 10}}>
             <Dropdown
@@ -44,7 +44,12 @@ export default class HomeScreen extends React.Component {
             TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
-                onPress={()=> this.props.navigation.navigate('CreateTask')}>
+                onPress={()=> this.props.navigation.navigate('CreateTask', 
+                    {
+                        // pass in the userEmail so CreateTaskScreen can have the necessary info
+                        // to interact with firestore
+                        userEmail: this.props.route.params.userEmail
+                    })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
 
@@ -60,16 +65,24 @@ export default class HomeScreen extends React.Component {
             <Button
                 onPress={this.progressAdded.bind(this)}
                 title='Temporary to show progress bar'/>  
-
+            <Button
+                onPress={()=> this.props.navigation.navigate('Garden',
+                {
+                    // pass in the userEmail so CreateTaskScreen can have the necessary info
+                    // to interact with firestore
+                    userEmail: this.props.route.params.userEmail
+                })}
+                title='Temperory going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}
+                userEmail = {this.props.route.params.userEmail}
             ></Calendar>
         </View>
-        )
-       
+        );
     }
 };
+
 
 const styles = StyleSheet.create({
     button: {

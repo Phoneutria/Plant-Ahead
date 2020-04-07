@@ -13,12 +13,12 @@ export default class EditTaskModal extends React.Component {
     this.state = {
       googleHandle: new GoogleHandler(),
       name: this.taskProps.name,
-      taskId: this.taskProps.taskId,
+      taskId: this.taskProps.id,
       dueDate: this.taskProps.dueDate,
-      taskListId: this.taskProps.taskListId, 
+      taskListId: this.taskProps.taskListId,  // undefined until we implement support for multiple task lists
       priority: this.taskProps.priority, 
       esttimeToComplete: this.taskProps.estTimeToComplete,
-      completed: this.taskProps.completed,
+      completed: this.taskProps.completed,  // undefined until we implement support for completing tasks
 
       // used to access user's Google Calendar
       accessToken: this.taskProps.accessToken
