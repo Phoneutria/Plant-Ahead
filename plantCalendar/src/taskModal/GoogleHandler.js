@@ -1,7 +1,7 @@
 export default class GoogleHandler{
 
     /**
-     * \brief modifies task data in user's Google Tasks
+     * \brief updates task data in user's Google Tasks
      * \detail
      *      updates task's name (taskName) and due date (dueDate) in user's Google Tasks
      *      can also tell Google Tasks that the task is complete
@@ -34,5 +34,16 @@ export default class GoogleHandler{
             console.error('Error:', error)
         })
     }
+
+    // /**
+    //  * \brief completes a specified task in a user's Google Tasks
+    //  * \detail taskId is the task's id
+    //  *         taskListId is the task list's id
+    //  *         completed is true if to mark the task as complete
+    //  *         completed is false to mark the task as not complete
+    //  */
+    // completeGoogleTask = async(taskId, taskListId, completed) {
+
+    // }
 
 }
