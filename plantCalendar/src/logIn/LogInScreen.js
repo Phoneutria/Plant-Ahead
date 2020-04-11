@@ -48,7 +48,6 @@ export default class LogInScreen extends React.Component {
             if (result.type === 'success') {
                 this.setState({userEmail: result.user.email, userName: result.user.name});
                 this.firebaseSignUpSignIn(result.accessToken);
-                
                 return result.accessToken;
             } else {
                 return { cancelled: true };
@@ -98,8 +97,9 @@ export default class LogInScreen extends React.Component {
         // have to try to get the data first and use if !exist
         firebase.firestore().collection('users').doc(this.state.userEmail).get().then(thisUser => {
             if (!thisUser.exists){
-                // takes in user's email, name, and growth point (default starting with 0 growth point)
-                this.state.firestoreHandle.updateFirebaseUserData(this.state.userEmail, this.state.userName, 0);
+                // takes in user's email, name, growth point (default starting with 0 growth point), and
+                // the plant name (default starting with "plant 1")
+                this.state.firestoreHandle.initFirebaseUserData(this.state.userEmail, this.state.userName, 0, "plant 1");
             }
         }).catch(error => console.log(error));
     }

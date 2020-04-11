@@ -33,7 +33,7 @@ export default class HomeScreen extends React.Component {
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-       
+        
         return (
             <View style={{ flex: 10}}>
             <Dropdown
@@ -80,6 +80,7 @@ export default class HomeScreen extends React.Component {
             ></Calendar>
         </View>
         );
+        
     }
 };
 
