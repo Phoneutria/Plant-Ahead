@@ -159,6 +159,7 @@ export default class Calendar extends React.Component {
                                 completed={taskFbData.completed}
                                 estTimeToComplete={taskFbData.estTimeToComplete}
                                 timeSpent = {taskFbData.timeSpent}
+                                accessToken = {this.props.accessToken}
                                 // pass in Calendar's deleteCompletedTask function
                                 // so that when a task is completed, the task can call Calendar's function
                                 completeTask={(taskId) => this.deleteCompletedTask(taskId)}

@@ -86,6 +86,7 @@ class Task extends React.Component {
                                     estTimeToComplete: this.props.estTimeToComplete,
                                     timeSpent: this.props.timeSpent,
                                     timeLeft: currentTimeLeft,
+                                    accessToken: this.props.accessToken,
                                     // function that ViewTaskModal can call if the user clicks
                                     //     the "complete" button on the modal
                                     completedHandler: this.isCompleted,
