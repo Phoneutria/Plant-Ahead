@@ -8,20 +8,20 @@ import GoogleHandler from './GoogleHandler.js';
 export default class EditTaskModal extends React.Component {
   constructor(props) {
     super(props)
-    this.taskProps = this.props.route.params.task.props;
+    this.taskRef = this.props.route.params.task;
 
     this.state = {
       googleHandle: new GoogleHandler(),
-      name: this.taskProps.name,
-      taskId: this.taskProps.id,
-      dueDate: this.taskProps.dueDate,
-      taskListId: this.taskProps.taskListId,  // undefined until we implement support for multiple task lists
-      priority: this.taskProps.priority, 
-      esttimeToComplete: this.taskProps.estTimeToComplete,
-      completed: this.taskProps.completed,  // undefined until we implement support for completing tasks
+      name: this.taskRef.name,
+      taskId: this.taskRef.id,
+      dueDate: this.taskRef.dueDate,
+      taskListId: this.taskRef.taskListId,  // undefined until we implement support for multiple task lists
+      priority: this.taskRef.priority, 
+      esttimeToComplete: this.taskRef.estTimeToComplete,
+      completed: this.taskRef.completed,  // undefined until we implement support for completing tasks
 
       // used to access user's Google Calendar
-      accessToken: this.taskProps.accessToken
+      accessToken: this.taskRef.accessToken
     }
   }
 
