@@ -175,8 +175,8 @@ export default class FirestoreHandle {
      * @param {*} plantName 
      */
     plantRef(userEmail, plantName) {
-        plantRef = firebase.firestore().collection('users').doc(userEmail).
-        collection('plants').doc(plantName);
+        var plantRef;
+        plantRef = firebase.firestore().collection('users').doc(userEmail).collection('plants').doc(plantName);
         return plantRef;
     }
     /**
@@ -231,7 +231,25 @@ export default class FirestoreHandle {
             {merge: true}
         ).catch(
             error => console.log(error)
-    );
+        );
+    }
+
+        /**
+     * \brief update fullyGrown to true for a plant specified by its name
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} plantName name of plant
+     */
+    updatePlantFullyGrown(userEmail, plantName) {
+        plantRef = this.plantRef(userEmail, plantName);
+        plantsCollectionRef.set(
+            {
+                fullyGrown: True,
+            },
+            // merge: true will update the fields in the document of create it if it doesn't exist
+            {merge: true}
+        ).catch(
+            error => console.log(error)
+        );
     }
 
     /**
@@ -241,11 +259,9 @@ export default class FirestoreHandle {
      */
     getGrowthPoint(userEmail, plantName) {
         plantRef = this.plantRef(userEmail, plantName);
-        var growthPoint = 0;
-        taskRef.get().then(thisPlant => {
-            growthPoint = thisPlant.data().growthPoint;
+        return plantRef.get().then(thisPlant => {
+            return thisPlant.data().growthPoint;
         });
-        return growthPoint;
     }
 
      /**
@@ -254,12 +270,11 @@ export default class FirestoreHandle {
      * @param {*} plantName
      */
     getStage(userEmail, plantName) {
-        plantRef = this.plantRef(userEmail, plantName);
-        var stage = 0;
-        taskRef.get().then(thisPlant => {
-            stage = thisPlant.data().stage;
+        // var plantRef = this.plantRef(userEmail, plantName);
+        const plantRef = firebase.firestore().collection('users').doc(userEmail).collection('plants').doc(plantName);
+        return plantRef.get().then(thisPlant => {
+            return thisPlant.data().stage;
         });
-        return stage;
     }
 
 // --------------------------Example of Getting data from Firebase --------------------------
