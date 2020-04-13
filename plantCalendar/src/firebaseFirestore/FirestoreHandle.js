@@ -220,12 +220,17 @@ export default class FirestoreHandle {
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
      * @param {*} plantName name of plant
      * @param {*} growthPoint an integer that keeps track of the plant's progress
+     * @param {*} fullyGrown a boolean that indicates whether the plant is fully grown
+     * @param {*} stage an integer that indicates the new stage of a plant
+     * 
      */
-    updatePlantGrowthPoint(userEmail, plantName, growthPoint) {
+    updatePlant(userEmail, plantName, growthPoint, fullyGrown, stage) {
         plantRef = this.plantRef(userEmail, plantName);
-        plantsCollectionRef.set(
+        plantRef.set(
             {
                 growthPoint: growthPoint,
+                fullyGrown: fullyGrown,
+                stage: stage,
             },
             // merge: true will update the fields in the document of create it if it doesn't exist
             {merge: true}
@@ -234,48 +239,10 @@ export default class FirestoreHandle {
         );
     }
 
-        /**
-     * \brief update fullyGrown to true for a plant specified by its name
-     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
-     * @param {*} plantName name of plant
-     */
-    updatePlantFullyGrown(userEmail, plantName) {
-        plantRef = this.plantRef(userEmail, plantName);
-        plantsCollectionRef.set(
-            {
-                fullyGrown: True,
-            },
-            // merge: true will update the fields in the document of create it if it doesn't exist
-            {merge: true}
-        ).catch(
-            error => console.log(error)
-        );
-    }
+ 
 
-    /**
-     * \brief get growthPoint of a plant
-     * @param {*} userEmail 
-     * @param {*} plantName
-     */
-    getGrowthPoint(userEmail, plantName) {
-        plantRef = this.plantRef(userEmail, plantName);
-        return plantRef.get().then(thisPlant => {
-            return thisPlant.data().growthPoint;
-        });
-    }
+    
 
-     /**
-     * \brief get the stage of a plant
-     * @param {*} userEmail 
-     * @param {*} plantName
-     */
-    getStage(userEmail, plantName) {
-        // var plantRef = this.plantRef(userEmail, plantName);
-        const plantRef = firebase.firestore().collection('users').doc(userEmail).collection('plants').doc(plantName);
-        return plantRef.get().then(thisPlant => {
-            return thisPlant.data().stage;
-        });
-    }
 
 // --------------------------Example of Getting data from Firebase --------------------------
     /**
