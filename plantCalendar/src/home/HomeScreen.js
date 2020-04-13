@@ -48,7 +48,9 @@ export default class HomeScreen extends React.Component {
                     {
                         // pass in the userEmail so CreateTaskScreen can have the necessary info
                         // to interact with firestore
-                        userEmail: this.props.route.params.userEmail
+                        userEmail: this.props.route.params.userEmail,
+                        // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
+                        accessToken: this.props.route.params.accessToken
                     })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>

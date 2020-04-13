@@ -15,6 +15,7 @@ export default class GoogleHandler{
         let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
             headers: { Authorization: `Bearer ${accessToken}`},
         }).catch(error => console.log("error message: " + error));
+        
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
 
@@ -33,6 +34,43 @@ export default class GoogleHandler{
         }).catch((error) => {
             console.error('Error:', error)
         })
+    }
+
+    /**
+     * \brief creates a new task in user's Google Tasks
+     * \detail
+     *      called from the create task screen
+     *      creates a task with a custom task name and due date chosen by the user
+     *      dueDate should be a Date() object
+     */
+    createGoogleTask = async(taskName, accessToken, dueDate) => {
+        // request the list of task lists
+        // a task list contains many tasks, think of "a task list" as a calendar
+        let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+            headers: { Authorization: `Bearer ${accessToken}`},
+        }).catch(error => console.log("error message: " + error));
+       
+        // have to parse what we receive from the server into a json
+        let taskListJson = await taskLists.json();
+        
+        // we assume that all tasks from the user is stored in task list 1
+        // TODO: add support for multiple task lists
+
+        console.log(dueDate.toISOString());
+
+        let newTask = await fetch('https://www.googleapis.com/tasks/v1/lists/' + taskListJson.items[0].id + '/tasks', {
+            headers: { Authorization: `Bearer ${accessToken}`, 'Content-type': 'application/json', "Accept": 'application/json'},
+            method: 'POST',
+            body: JSON.stringify({
+                title: taskName,
+                due: dueDate.toISOString()
+            })
+        }).catch((error) => {
+                console.error('Error:', error)
+        })
+
+        let newTaskJson = await newTask.json();
+        console.log(newTaskJson);
     }
 
     // /**

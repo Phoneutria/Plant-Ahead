@@ -5,6 +5,7 @@ import {View, Text, Button, TouchableOpacity, StyleSheet,
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-material-dropdown';
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+import GoogleHandler from './GoogleHandler.js';
 
 
 export default class CreateTaskScreen extends React.Component {
@@ -15,6 +16,7 @@ export default class CreateTaskScreen extends React.Component {
     estTimeToComplete: 0,
     // a class to handle most of the firestore interfaces (eg. update time in firestore)
     firestoreHandle: new FirestoreHandle(),
+    googleHandle: new GoogleHandler()
   }
 
 
@@ -102,13 +104,13 @@ export default class CreateTaskScreen extends React.Component {
           // TODO: make sure the input is a number
           placeholder="Estimate hours needed"
       />
-      {/* For selecting the due date */}
+      {/* For selecting the due date
       <Text>Due Date</Text>
       <DateTimePicker 
         mode={'date'}
         value={ dueDate }
         onChange={onChangeDate} 
-      />
+      /> */}
 
       {/* For selecting the priority */}
       <Dropdown
@@ -119,11 +121,16 @@ export default class CreateTaskScreen extends React.Component {
           }}
       />
 
-      {/* For creating the task */}
-      <Button
-          onPress={()=> this.formatOutput()}
-          title='Submit'/> 
-          {/* this.formatOutput() */}
+      {/* Navigation buttons */}
+      <View>
+        <Button
+            onPress = {() => this.props.navigation.goBack()}
+            title = 'Cancel'/>
+        <Button
+            onPress={()=> this.state.googleHandle.createGoogleTask(this.state.name, this.props.route.params.accessToken)}
+            title='Submit'/> 
+            {/* this.formatOutput() */}
+      </View>
     </View>
   );
   }
