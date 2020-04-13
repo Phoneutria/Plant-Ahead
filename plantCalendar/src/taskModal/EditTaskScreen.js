@@ -1,7 +1,8 @@
 import  React, { Component } from 'react';
 import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
+
 
 import GoogleHandler from './GoogleHandler.js';
 
@@ -20,6 +21,8 @@ export default class EditTaskModal extends React.Component {
       esttimeToComplete: this.taskRef.estTimeToComplete,
       completed: this.taskRef.completed,  // undefined until we implement support for completing tasks
 
+      dateIsVisible: false,  // determines whether the datetimepicker modal is visible
+
       // used to access user's Google Calendar
       accessToken: this.taskRef.accessToken
     }
@@ -36,7 +39,8 @@ export default class EditTaskModal extends React.Component {
       // when we change the date in the datetimepicker, we update the date 
       // with the selectedDate
       const onChangeDate = (event, selectedDate) => {
-        this.setState({dueDate: selectedDate});
+        this.setState({dueDate: selectedDate,
+                      dateIsVisible: false});
       };
 
       return (
@@ -60,7 +64,13 @@ export default class EditTaskModal extends React.Component {
           {/* Editing due date of the task
               TODO: find a better picker library and implement */}
           <View style = {styles.editView}>
-            <Text style = {styles.editText}> Due Date: </Text>
+            <Button title="Select Date" onPress={() => this.setState({dateIsVisible: true})} />
+            <DateTimePickerModal
+              isVisible={this.state.dateIsVisible}
+              mode="date"
+              onConfirm={(selectedDate) => onChangeDate(selectedDate)}
+              onCancel={() => this.setState({dateIsVisible:false})}
+            />
           </View> 
 
           {/* Editing time to complete of the task */}
@@ -95,7 +105,7 @@ export default class EditTaskModal extends React.Component {
             </Button>
             <Button
               title = "Save"
-              onPress = {() => {this.state.googleHandle.updateGoogleTask(this.state.taskId, 
+              onPress = {() => {console.log("due date from edit screen"); console.log(this.state.dueDate); this.state.googleHandle.updateGoogleTask(this.state.taskId, 
                 this.state.taskListId, this.state.name, this.state.dueDate, this.state.completed, this.state.accessToken)}}>
             </Button>
           </View>  

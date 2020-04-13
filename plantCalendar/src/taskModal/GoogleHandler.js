@@ -8,6 +8,7 @@ export default class GoogleHandler{
      *      taskName is a string, taskListId is a string, dueDate is a string, 
      *      completion is a bool (true for completed)
      *      taskId identifies the task
+     *      dueDate must be a Date() object
      */
     updateGoogleTask = async (taskId, taskListId, taskName, dueDate, completion, accessToken) => {
         // request the list of task lists
@@ -15,6 +16,9 @@ export default class GoogleHandler{
         let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
             headers: { Authorization: `Bearer ${accessToken}`},
         }).catch(error => console.log("error message: " + error));
+
+        console.log("updateGoogleTask due date");
+        console.log(dueDate)
         
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
@@ -29,7 +33,8 @@ export default class GoogleHandler{
             method: 'PATCH',
             body: JSON.stringify({
                 title: taskName,
-                id: taskId
+                id: taskId,
+                due: dueDate.toISOString()
             })
         }).catch((error) => {
             console.error('Error:', error)
@@ -43,7 +48,7 @@ export default class GoogleHandler{
      *      creates a task with a custom task name and due date chosen by the user
      *      dueDate should be a Date() object
      */
-    createGoogleTask = async(taskName, accessToken, dueDate) => {
+    createGoogleTask = async(taskName, dueDate, accessToken) => {
         // request the list of task lists
         // a task list contains many tasks, think of "a task list" as a calendar
         let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {

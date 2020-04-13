@@ -2,10 +2,10 @@ import React, {useState} from 'react';
 import{ Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, 
     Alert, TextInput, TouchableHighlightBase} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import {Dropdown} from 'react-native-material-dropdown';
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 import GoogleHandler from './GoogleHandler.js';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
 export default class CreateTaskScreen extends React.Component {
@@ -16,7 +16,10 @@ export default class CreateTaskScreen extends React.Component {
     estTimeToComplete: 0,
     // a class to handle most of the firestore interfaces (eg. update time in firestore)
     firestoreHandle: new FirestoreHandle(),
-    googleHandle: new GoogleHandler()
+    googleHandle: new GoogleHandler(),
+
+    //boolean to handle the datetimepicker
+    dateIsVisible: false
   }
 
 
@@ -66,16 +69,12 @@ export default class CreateTaskScreen extends React.Component {
   }
 
   render() {
-    // assigns this.state.date to the local constant date
-    const {name} = this.state;
-    const {dueDate} = this.state;
-    const {priority} = this.state;
-    const {estTimeToComplete} = this.state;
     
-    // when we change the date in the dateTimePicker, we update the date 
+    // when we change the date in the datetimepicker, we update the date 
     // with the selectedDate
-    const onChangeDate = (event, selectedDate) => {
-      this.setState({dueDate: selectedDate});
+    const onChangeDate = (selectedDate) => {
+      this.setState({dueDate: selectedDate, 
+                    dateIsVisible: false});
     };
 
     // options for priority
@@ -104,13 +103,16 @@ export default class CreateTaskScreen extends React.Component {
           // TODO: make sure the input is a number
           placeholder="Estimate hours needed"
       />
-      {/* For selecting the due date
-      <Text>Due Date</Text>
-      <DateTimePicker 
-        mode={'date'}
-        value={ dueDate }
-        onChange={onChangeDate} 
-      /> */}
+      {/* For selecting the due date */}
+     <View>
+      <Button title="Select Date" onPress={() => this.setState({dateIsVisible: true})} />
+      <DateTimePickerModal
+        isVisible={this.state.dateIsVisible}
+        mode="date"
+        onConfirm={(selectedDate) => onChangeDate(selectedDate)}
+        onCancel={() => this.setState({dateIsVisible:false})}
+      />
+    </View>
 
       {/* For selecting the priority */}
       <Dropdown
@@ -127,7 +129,7 @@ export default class CreateTaskScreen extends React.Component {
             onPress = {() => this.props.navigation.goBack()}
             title = 'Cancel'/>
         <Button
-            onPress={()=> this.state.googleHandle.createGoogleTask(this.state.name, this.props.route.params.accessToken)}
+            onPress={()=> this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, this.props.route.params.accessToken)}
             title='Submit'/> 
             {/* this.formatOutput() */}
       </View>
