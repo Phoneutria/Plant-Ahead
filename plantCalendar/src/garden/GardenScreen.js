@@ -8,37 +8,21 @@ import * as firebase from 'firebase';
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
 
 export default class GardenScreen extends React.Component {
-    /* TODO: currently the growthpoints is a state variable
-    this means that when you go from homeScreen to other
-    screens and come back, growthPoints will be restored 
-    to 0. In the future, it should be a global variable 
-    that is taking data from Firebase or other place */
     constructor(props) {
         super(props);
-        // have to do this, so the array "plantAnimationFunctions" can work
         this.state = {
             firestoreHandle: new FirestoreHandle,
             plantName: "temp",
             growthPoint: -1,
             stage: -1,
             userEmail: this.props.route.params.userEmail,
-            // TODO: temporary solution to animate base on stage
-            // the "stage" of the plant act as the index to pick which function to call
-            // plantAnimationFunctions: [this.playStage0, this.playStage1, this.playStage2],
         };
-        
         this.plantRef = null;
     };
 
     /**
-     * TODO: this function is can only animate the first plant, need to be able to check if 
-     * the plant if fully grown. If yes, then create a new plant
-     * 
-     * TODO: currently, this function is called if you press the play button
-     * We want to eventually make it such that it plays all the time??? (undecided)
-     * 
-     * \brief animate the plant based on its stage stored in firebase (no parameters necessary)
-     * This function calls the getStage() method from the FirestoreHandle class, by passing
+     * \brief: animate the plant based on its stage stored in firebase (no parameters necessary)
+     * \detail: This function calls the getStage() method from the FirestoreHandle class, by passing
      * the class the userEmail and the name of the plant. Then the method returns the stage
      * of the current plant, and passed this as an argument to call playStage() 
      * function
@@ -55,16 +39,16 @@ export default class GardenScreen extends React.Component {
         .catch(err => {
             console.log("error getting plants", err);
         })
-       
     }
+        
       /**
-     * \brief get the stage of a plant
-     * @param {*} plantName
+     * \brief: get and update the stage and growth point of a plant
+     * @param {*} plantName name of the plant
      */
     getPlantInfo(plantName) {
-        // var plantRef = this.plantRef(userEmail, plantName);
         const plantRef = firebase.firestore().collection('users').doc(this.state.userEmail).
         collection('plants').doc(plantName);
+        // get information from firebase and return a promise
         return plantRef.get().then(thisPlant => {
             this.setState({stage: thisPlant.data().stage});
             this.setState({growthPoint: thisPlant.data().growthPoint});
@@ -81,9 +65,11 @@ export default class GardenScreen extends React.Component {
     async playPlant() {
         // not that since both getPlantName and getStage are asynchronus functions, need to use
         // then to await the promise
+        // get name of the plant
         await this.getPlantName();
+        // update stage and growth point state variables
         await this.getPlantInfo(this.state.plantName);
-        
+        // type determines the stage of the plant in the animation
         var type = ""
         if (this.state.stage == 0) {
             type = "stage0";
@@ -92,34 +78,37 @@ export default class GardenScreen extends React.Component {
         } else {
             type = "stage2";
         }
+        // animate plant moving
         this.plant.play({
-            type: type, // (required) name of the animation (name is specified as a key in the animation prop)
-            fps: 7, // frames per second
-            loop: true, // if true, replays animation after it finishes
-            resetAfterFinish: false, // if true, the animation will reset back to the first frame when finished; else will remain on the last frame when finished
-            onFinish: () => {}, // called when the animation finishes; will not work when loop === true
+            // (required) name of the animation (name is specified as a key in the animation prop)
+            type: type, 
+            // frames per second
+            fps: 7,    
+            // if true, replays animation after it finishes
+            loop: true, 
+            // if true, the animation will reset back to the first frame when finished; 
+            // else will remain on the last frame when finished
+            resetAfterFinish: false,  
+            // called when the animation finishes; will not work when loop === true
+            onFinish: () => {},
         });
     }
 
-  
-
     /**
-     * /brief: updates plant info whenever user waters or fertilizes the plant
+     * \brief: updates plant info whenever user waters or fertilizes the plant
      * @param {*} action an integer that indicates whether the user watered or fertilized the plant
-     * This function is called whenever the water or fertilize button is pressed. It first gets the 
+     * \details: This function is called whenever the water or fertilize button is pressed. It first gets the 
      * current stats by calling the playPlant function. Then, it updates the stats depending on 
      * the current stats, by calling the updatePlant in the FirestoreHandle class.
      * threshold is an array that holds 3 integers to indicate how many growth points each stage needs
      * to move to the next one.
-     * If growth point is less than the threshold during that stage, 10 growth points will be added
-     * If plant is in stage 0 or 1 and growth point achieves threshold, plant moves to next stage
-     * If plant is in stage 2 and growth point achieves threshold, new plant is created in database
-     * (calls initFirebasePlantData in the FirestoreHandle class)
      */
     progressAdded(action) {
+        // updates the state variables to current stats
         this.playPlant();
-
+        // growth point threshold for different stages
         let threshold = [50, 70, 100]
+        // If growth point is less than the threshold during that stage, 10 growth points will be added
         if(this.state.growthPoint < threshold[this.state.stage]){
             this.state.firestoreHandle.updatePlant(this.state.userEmail, this.state.plantName, 
                 this.state.growthPoint+10, false, this.state.stage);
@@ -129,11 +118,14 @@ export default class GardenScreen extends React.Component {
                 Alert.alert("You just fertilized your plants! 10 points added.");
             }
         } else {
+            // If plant is in stage 0 or 1 and growth point achieves threshold, plant moves to next stage
             if (this.state.stage < 2) {
                 this.state.firestoreHandle.updatePlant(this.state.userEmail, this.state.plantName, 
                     0, false, this.state.stage+1);
                 Alert.alert("Congratulations! Your plant can move to the next stage. Press play to see.");
-            } else {
+            } 
+            //  If plant is in stage 2 and growth point achieves threshold, new plant is created in database
+            else {
                 this.state.firestoreHandle.updatePlant(this.state.userEmail, this.state.plantName, 
                     this.state.growthPoint+10, true, this.state.stage+1);
                 // TODO: instead of giving a default name, there will be a pop-up that prompts
@@ -142,6 +134,7 @@ export default class GardenScreen extends React.Component {
                 Alert.alert("Your plant is done growing! You will be given a new plant.");
             }
         }
+        // updates variables with new stats
         this.playPlant();
     }
 
