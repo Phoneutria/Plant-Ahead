@@ -76,6 +76,8 @@ export default class GoogleHandler{
 
         let newTaskJson = await newTask.json();
         console.log(newTaskJson);
+
+        return newTaskJson.id;
     }
 
     // /**

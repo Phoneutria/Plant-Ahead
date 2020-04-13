@@ -18,6 +18,8 @@ export default class CreateTaskScreen extends React.Component {
     firestoreHandle: new FirestoreHandle(),
     googleHandle: new GoogleHandler(),
 
+    userEmail: this.props.route.params.userEmail,
+
     //boolean to handle the datetimepicker
     dateIsVisible: false
   }
@@ -66,6 +68,25 @@ export default class CreateTaskScreen extends React.Component {
      *      P.S: I'm sorry about the long paragraphs. I'm trying to leave as much information behind as
      *      possible really late a night lmao
      */
+  }
+
+  /** \brief takes the user's input and creates a corresponding task in google calendar and firebase
+   * 
+   */
+
+  async initiateTask() {
+    // create task in google Task
+    taskId = await this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, this.props.route.params.accessToken);
+    console.log(taskId);
+    
+    // initialize task in Firebase
+    this.state.firestoreHandle.initFirebaseTaskData(this.state.userEmail, taskId, this.state.name);
+    
+    // update new task with user-entered data
+    // the time spent on the task is zero by default
+    // the task is not completed, by default
+    this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, this.state.priority,
+                                                      this.state.estTimeToComplete, 0, false)
   }
 
   render() {
@@ -129,7 +150,7 @@ export default class CreateTaskScreen extends React.Component {
             onPress = {() => this.props.navigation.goBack()}
             title = 'Cancel'/>
         <Button
-            onPress={()=> this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, this.props.route.params.accessToken)}
+            onPress={()=> this.initiateTask()}
             title='Submit'/> 
             {/* this.formatOutput() */}
       </View>

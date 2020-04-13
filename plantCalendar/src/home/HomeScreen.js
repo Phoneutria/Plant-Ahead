@@ -70,7 +70,7 @@ export default class HomeScreen extends React.Component {
             <Button
                 onPress={()=> this.props.navigation.navigate('Garden',
                 {
-                    // pass in the userEmail so CreateTaskScreen can have the necessary info
+                    // pass in the userEmail so Garden can have the necessary info
                     // to interact with firestore
                     userEmail: this.props.route.params.userEmail
                 })}
