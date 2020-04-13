@@ -167,6 +167,7 @@ export default class FirestoreHandle {
         collection('tasks').doc(taskId);
         return taskRef;
     }
+    
 // --------------------------Plant Related Functions --------------------------
     /**
      * A helper function that defined plantRef in firestore, called in all functions
@@ -238,12 +239,7 @@ export default class FirestoreHandle {
             error => console.log(error)
         );
     }
-
- 
-
     
-
-
 // --------------------------Example of Getting data from Firebase --------------------------
     /**
      * \warning DO NOT CALL THIS FUNCTION! 
@@ -266,7 +262,4 @@ export default class FirestoreHandle {
             // Warning: Don't return anything in "then()"!
         });
     }
-
-    
-
 }
