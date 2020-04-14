@@ -86,9 +86,9 @@ export default class Calendar extends React.Component {
 
     /** 
      * \brief modify this.props.taskData and mark a task (specified by taskId) as completed
-     * \detail
-     *      - TODO: in Google Calendar, set the task to be completed
-     * @param {*} task TODO: currently passing the entire task (which includes props, states, etc)
+     * \details 
+     *      Updates both Firebase and the user's Google Calendar
+     * @param {*} taskId a string that represent the taskId (each task has an unique taskId)
     */
     deleteCompletedTask(taskId) {
         this.state.firestoreHandle.setTaskCompleteInFirebase(this.props.userEmail, 
@@ -119,7 +119,6 @@ export default class Calendar extends React.Component {
      *      The parent (Calendar)'s deleteCompletedTask function gets passed down to
      *      the children (individual tasks)
      *      The children will call its this.props.completeTask function to delete itself
-     * @param {*} taskId a string that represent the taskId (each task has an unique task Id)
      */
     renderTask = async () => {
         let tempTaskArray = [];

@@ -2,6 +2,14 @@ export default class GoogleHandler{
 
     /**
      * \brief tells Google to mark a task in user's Google Tasks as completed
+     * \detail 
+     *      right now, can only mark tasks as complete
+     *      can easily be extended to be able to mark tasks as not complete
+     * @param {*} taskId a string that represent the taskId (each task has an unique taskId)
+     * @param {*} taskListId a string that represent the id of the task list (each task belongs to a task list)
+     *                       currently being passed in as undefined
+     *                       TODO: add support for multiple task lists
+     * @param {*} accessToken a string that tells the Google server that the app is authorized to access the user's information
      * 
      */
     completeGoogleTask = async(taskId, taskListId, accessToken) => {
@@ -29,11 +37,16 @@ export default class GoogleHandler{
     /**
      * \brief updates task data in user's Google Tasks
      * \detail
-     *      updates task's name (taskName) and due date (dueDate) in user's Google Tasks
-     *      taskName is a string, taskListId is a string, dueDate is a string, 
-     *      completion is a bool (true for completed)
-     *      taskId identifies the task
-     *      dueDate must be a Date() object
+     *      called from the EditTaskScreen
+     *      cannot be used to mark tasks as complete
+     * @param {*} taskId a string that represent the taskId (each task has an unique taskId)
+     * @param {*} taskListId a string that represent the id of the task list (each task belongs to a task list)
+     *                       currently being passed in as undefined
+     *                       TODO: add support for multiple task lists
+     * @param {*} taskName a string, the name of the task
+     * @param {*} dueDate  a Date object, the date that the task is due
+     * @param {*} accessToken a string that tells the Google server that the app is authorized to access the user's information
+     * 
      */
     updateGoogleTask = async (taskId, taskListId, taskName, dueDate, accessToken) => {
         // request the list of task lists
@@ -67,8 +80,9 @@ export default class GoogleHandler{
      * \brief creates a new task in user's Google Tasks
      * \detail
      *      called from the create task screen
-     *      creates a task with a custom task name and due date chosen by the user
-     *      dueDate should be a Date() object
+     * @param {*} taskName a string, the name of the task
+     * @param {*} dueDate  a Date object, the date that the task is due
+     * @param {*} accessToken a string that tells the Google server that the app is authorized to access the user's information
      */
     createGoogleTask = async(taskName, dueDate, accessToken) => {
         // request the list of task lists
