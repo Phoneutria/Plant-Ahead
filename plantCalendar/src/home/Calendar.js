@@ -5,6 +5,7 @@ import Task from '../home/Task';  // import task components
 import * as firebase from 'firebase';
 
 import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+import GoogleHandle from '../taskModal/GoogleHandler';
 
 /**
  * Calendar Class
@@ -15,6 +16,8 @@ export default class Calendar extends React.Component {
     state = {
         // a class to handle most of the firestore interfaces (eg. update data in firestore)
         firestoreHandle: new FirestoreHandle(),
+        // a class to update data in Google Tasks
+        googleHandle: new GoogleHandle(),
         taskArray: [],
         renderDone: false,
         delete: false,
@@ -90,6 +93,9 @@ export default class Calendar extends React.Component {
     deleteCompletedTask(taskId) {
         this.state.firestoreHandle.setTaskCompleteInFirebase(this.props.userEmail, 
             taskId, true);
+        
+        // TODO: taskListId is currently undefined. Update when adding support for multiple task lists
+        this.state.googleHandle.completeGoogleTask(taskId, undefined, this.props.accessToken);
         
         // re-render the tasks
         this.renderTask();

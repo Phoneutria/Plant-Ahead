@@ -106,7 +106,7 @@ export default class EditTaskModal extends React.Component {
             <Button
               title = "Save"
               onPress = {() => { this.state.googleHandle.updateGoogleTask(this.state.taskId, 
-                this.state.taskListId, this.state.name, this.state.dueDate, this.state.completed, this.state.accessToken)}}>
+                this.state.taskListId, this.state.name, this.state.dueDate, this.state.accessToken)}}>
             </Button>
           </View>  
 
