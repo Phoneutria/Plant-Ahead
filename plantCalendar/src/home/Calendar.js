@@ -46,7 +46,6 @@ export default class Calendar extends React.Component {
             headers: { Authorization: `Bearer ${this.props.accessToken}`},
         }).catch(error => console.log("error message: " + error));
         let tasksJson = await tasks.json();
-       
         
         return tasksJson;
     }

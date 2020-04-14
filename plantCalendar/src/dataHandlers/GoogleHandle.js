@@ -110,6 +110,8 @@ export default class GoogleHandle{
                 console.error('Error:', error)
         })
 
+        newTaskJson = await newTask.json();
+
         return newTaskJson.id;
     }
 }
