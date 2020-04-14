@@ -74,7 +74,7 @@ export default class HomeScreen extends React.Component {
                     // to interact with firestore
                     userEmail: this.props.route.params.userEmail
                 })}
-                title='Temperory going to garden'/>
+                title='Temporary going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
                 accessToken = {this.props.route.params.accessToken}

@@ -11,6 +11,7 @@ import CreateTaskScreen from './src/taskModal/CreateTaskScreen';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import ignoreWarnings from 'react-native-ignore-warnings';
 
 import firebaseConfig from './config';
 
@@ -20,6 +21,10 @@ import firebaseConfig from './config';
 
 const MainStack = createStackNavigator();
 const RootStack = createStackNavigator();
+
+// keeps warnings about long timers from showing up on Android
+// see https://github.com/facebook/react-native/issues/12981
+ignoreWarnings('Setting a timer');
 
 function MainStackApp() {
   return (
