@@ -39,7 +39,6 @@ export default class EditTaskModal extends React.Component {
       // when we change the date in the datetimepicker, we update the date 
       // with the selectedDate
       const onChangeDate = (selectedDate) => {
-        console.log(selectedDate);
         this.setState({dueDate: selectedDate,
                       dateIsVisible: false});
       };
@@ -106,7 +105,7 @@ export default class EditTaskModal extends React.Component {
             </Button>
             <Button
               title = "Save"
-              onPress = {() => {console.log("due date from edit screen"); console.log(this.state.dueDate); this.state.googleHandle.updateGoogleTask(this.state.taskId, 
+              onPress = {() => { this.state.googleHandle.updateGoogleTask(this.state.taskId, 
                 this.state.taskListId, this.state.name, this.state.dueDate, this.state.completed, this.state.accessToken)}}>
             </Button>
           </View>  
