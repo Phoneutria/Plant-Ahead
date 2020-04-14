@@ -20,36 +20,42 @@ import "./FirestoreSetup";
  *          import * as firebase from 'firebase';
  */
 export default class FirestoreHandle {
+
+    // --------------------------User Related Functions --------------------------
     /**
-     * \brief Update the firestore with data (specified by name, growthPoint parameters) for a given
-     *      user (specified by userEmail parameter)
+     * \brief Create the user (specified by userEmail parameter) in firestore with 
+     * data (specified by name, money parameters). Default creates a plant in for the user.
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
      * @param {*} name user's fullname, includes first name and last name
-     * @param {*} growthPoint TODO: integer? or float?
+     * @param {*} money integer that keeps tracks of how much money a user has
+     * @param {*} plantName name of the plant (default "plant 1")
+     * 
+     * This function is called by the createUserDataInFirestore function from the LoginScreen.js
      */
-    updateFirebaseUserData(userEmail, name, growthPoint) {
+    initFirebaseUserData(userEmail, name, money, plantName) {
         firebase.firestore().collection('users').doc(userEmail).set(
             {
                 name: name,
-                growthPoint: growthPoint,
+                money: money,
             },
             // merge: true will update the fields in the document of create it if it doesn't exist
             {merge: true}
         ).catch(
             error => console.log(error)
         );
+        // calls this function to initialize a plant for the new user with the default plantName
+        this.initFirebasePlantData(userEmail, plantName);
     }
 
-    // TODO: Test this function (I'm too dead to test at 3 am...)
     /**
-     * \brief update the user's growth point in firestore
+     * \brief update the user's money in firestore
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
-     * @param {*} growthPoint TODO: integer? or float?
+     * @param {*} money integer that keeps track of how money the user has
      */
-    updateUserGrowthPointFirebase(userEmail, growthPoint) {
+    updateUserMoneyFirebase(userEmail, money) {
         firebase.firestore().collection('users').doc(userEmail).set(
             {
-                growthPoint: growthPoint,
+                money: money,
             },
             // merge: true will update the fields in the document of create it if it doesn't exist
             {merge: true}
@@ -58,6 +64,7 @@ export default class FirestoreHandle {
         );
     }
 
+// --------------------------Task Related Functions --------------------------
     /**
      * \brief Initialize a given task data specified by its task id in firestore
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
@@ -74,7 +81,7 @@ export default class FirestoreHandle {
                 this.updateFirebaseTaskData(userEmail, taskId, taskName, 
                     'medium', 2, 0, false);
             }
-        })
+        });
     }
 
     /**
@@ -149,27 +156,82 @@ export default class FirestoreHandle {
         );
     }
 
-    // TODO: Test this function (I'm too dead to test at 3 am..)
+    /**
+     * A helper function that defined taskRef in firestore, called in all functions
+     * that are task related in FirestoreHandle.js
+     * @param {*} userEmail 
+     * @param {*} plantName 
+     */
+    taskRef(userEmail, taskId) {
+        const taskRef = firebase.firestore().collection('users').doc(userEmail).
+        collection('tasks').doc(taskId);
+        return taskRef;
+    }
+    
+// --------------------------Plant Related Functions --------------------------
+    /**
+     * A helper function that defined plantRef in firestore, called in all functions
+     * that are plant related in FirestoreHandle.js
+     * @param {*} userEmail 
+     * @param {*} plantName 
+     */
+    plantRef(userEmail, plantName) {
+        var plantRef;
+        plantRef = firebase.firestore().collection('users').doc(userEmail).collection('plants').doc(plantName);
+        return plantRef;
+    }
     /**
      * \brief create a plant and its data in firestore
      * \details
-     *      Let firestore automatically generate an id for the plant
-     * \warning
-     *      Cannot be used as an update function
-     *      There should be only one plant where "fullyGrown" is false in the "plants" collection
+     *      This function is first called in by the initFirebaseUserData
+     *      In this specific case, it will generate a collection called 'plants', and 
+     *      create one plant called 'plant 1' in the collection.
+     *      After that, every time this function is called again, a new plant will be
+     *      added to the same 'plants' collection.
+     *      It default initialzes the growth point to 0, stage to 0, and fullyGrown to false
      * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
      * @param {*} plantName plant's name
      */
-    createPlantDataInFirebase(userEmail, plantName) {
-        const plantsCollectionRef = firebase.firestore().collection('users').doc(userEmail).
-            collection('plants');
-        
-        plantsCollectionRef.set(
+    
+    initFirebasePlantData(userEmail, plantName) {
+        const plantRef = this.plantRef(userEmail, plantName)
+        plantRef.get().then(thisPlant => {
+            // only initialize the task data with default values if it doesn't exist
+            if (!thisPlant.exists) {
+                // this.updateFirebasePlantData(userEmail, plantName);
+                plantRef.set(
+                    {
+                        name: plantName,
+                        growthPoint: 0,
+                        stage: 0,
+                        fullyGrown: false,
+                    },
+                    // merge: true will update the fields in the document of create it if it doesn't exist
+                    {merge: true}
+                ).catch(
+                    error => console.log(error)
+                );
+                console.log("A plant is initialized")
+            }
+        });
+    }
+
+    /**
+     * \brief update the growthPoint for a plant specified by its name
+     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
+     * @param {*} plantName name of plant
+     * @param {*} growthPoint an integer that keeps track of the plant's progress
+     * @param {*} fullyGrown a boolean that indicates whether the plant is fully grown
+     * @param {*} stage an integer that indicates the new stage of a plant
+     * 
+     */
+    updatePlant(userEmail, plantName, growthPoint, fullyGrown, stage) {
+        plantRef = this.plantRef(userEmail, plantName);
+        plantRef.set(
             {
-                name: plantName,
-                plantPoint: 0,
-                stage: 0,
-                fullyGrown: false,
+                growthPoint: growthPoint,
+                fullyGrown: fullyGrown,
+                stage: stage,
             },
             // merge: true will update the fields in the document of create it if it doesn't exist
             {merge: true}
@@ -177,29 +239,8 @@ export default class FirestoreHandle {
             error => console.log(error)
         );
     }
-
-    // TODO: Test this function (I'm too dead to test at 3 am...)
-    /**
-     * \brief update the plantPoint for the user's plant specified by its id
-     * @param {*} userEmail gmail, used as unique id to identify user's data in firestore
-     * @param {*} plantId an unique id to identify the plant in firestore
-     * @param {*} plantPoint (TODO: int? or float?) updated new plantPoint to keep track of the plant's progress
-     */
-    updatePlantGrowthPoint(userEmail, plantId, plantPoint) {
-        const plantRef = firebase.firestore().collection('users').doc(userEmail).
-        collection('plants').doc(plantId);
     
-        plantsCollectionRef.set(
-            {
-                plantPoint: plantPoint,
-            },
-            // merge: true will update the fields in the document of create it if it doesn't exist
-            {merge: true}
-        ).catch(
-            error => console.log(error)
-    );
-    }
-
+// --------------------------Example of Getting data from Firebase --------------------------
     /**
      * \warning DO NOT CALL THIS FUNCTION! 
      * \brief an example of how to get data from firebase and use that data to do something
@@ -221,5 +262,4 @@ export default class FirestoreHandle {
             // Warning: Don't return anything in "then()"!
         });
     }
-
 }

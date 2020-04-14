@@ -26,7 +26,7 @@ export default class Calendar extends React.Component {
      * \warning 
      *      - REQUIRED: use this format (use await!) to call this function and get the data properly
      *           const taskJson = await this.getUserTasksJson();
-     *      - assume that the user only has one task list (and all the tasks are stored in that list
+     *      - assume that the user only has exactly one task list (and all the tasks are stored in that list
      */
     getUserTasksJson = async () => {
         // request the list of task lists
@@ -36,17 +36,15 @@ export default class Calendar extends React.Component {
         }).catch(error => console.log("error message: " + error));
         // have to parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
-
         // assume that all tasks from the user is stored in task list 1
         // directly set the task list id
         let taskListId = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[0].id + "/tasks";
-
         let tasks = await fetch(taskListId, {
             headers: { Authorization: `Bearer ${this.props.accessToken}`},
         }).catch(error => console.log("error message: " + error));
-        
         let tasksJson = await tasks.json();
-
+       
+        
         return tasksJson;
     }
 
@@ -58,7 +56,8 @@ export default class Calendar extends React.Component {
         // gets the json of all the task data from Google Task
         const taskJson = await this.getUserTasksJson();
         const taskArray = taskJson.items;
-
+        
+        
         for (let i = 0; i < taskArray.length; ++i){
             const task = taskArray[i];
 
