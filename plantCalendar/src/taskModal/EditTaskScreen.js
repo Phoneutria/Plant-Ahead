@@ -38,7 +38,8 @@ export default class EditTaskModal extends React.Component {
 
       // when we change the date in the datetimepicker, we update the date 
       // with the selectedDate
-      const onChangeDate = (event, selectedDate) => {
+      const onChangeDate = (selectedDate) => {
+        console.log(selectedDate);
         this.setState({dueDate: selectedDate,
                       dateIsVisible: false});
       };
