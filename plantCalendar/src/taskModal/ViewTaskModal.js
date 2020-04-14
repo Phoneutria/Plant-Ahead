@@ -2,7 +2,7 @@ import * as React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import { Icon }  from 'react-native-elements';
 
-import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 
 export default class ViewTaskModal extends React.Component {
     state = {

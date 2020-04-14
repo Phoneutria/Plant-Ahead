@@ -4,8 +4,8 @@ import Task from '../home/Task';  // import task components
 
 import * as firebase from 'firebase';
 
-import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
-import GoogleHandle from '../taskModal/GoogleHandler';
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
+import GoogleHandle from '../dataHandlers/GoogleHandle';
 
 /**
  * Calendar Class

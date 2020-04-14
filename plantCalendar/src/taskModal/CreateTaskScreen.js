@@ -3,8 +3,8 @@ import{ Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, 
     Alert, TextInput, TouchableHighlightBase} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
-import GoogleHandler from './GoogleHandler.js';
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
+import GoogleHandle from '../dataHandlers/GoogleHandle.js';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
@@ -16,7 +16,7 @@ export default class CreateTaskScreen extends React.Component {
     estTimeToComplete: 0,
     // a class to handle most of the firestore interfaces (eg. update time in firestore)
     firestoreHandle: new FirestoreHandle(),
-    googleHandle: new GoogleHandler(),
+    googleHandle: new GoogleHandle(),
 
     userEmail: this.props.route.params.userEmail,
 
@@ -150,7 +150,10 @@ export default class CreateTaskScreen extends React.Component {
             onPress = {() => this.props.navigation.goBack()}
             title = 'Cancel'/>
         <Button
-            onPress={()=> this.initiateTask()}
+            onPress={()=> {
+              this.initiateTask();
+              this.props.navigation.goBack()
+            }}
             title='Submit'/> 
             {/* this.formatOutput() */}
       </View>

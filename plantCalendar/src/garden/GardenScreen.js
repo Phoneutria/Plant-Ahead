@@ -5,7 +5,7 @@ import * as Progress from 'react-native-progress';
 import SpriteSheet from 'rn-sprite-sheet';
 
 import * as firebase from 'firebase';
-import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 
 export default class GardenScreen extends React.Component {
     constructor(props) {

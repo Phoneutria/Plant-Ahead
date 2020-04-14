@@ -4,7 +4,7 @@ import {Dropdown} from 'react-native-material-dropdown';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 
-import GoogleHandler from './GoogleHandler.js';
+import GoogleHandle from '../dataHandlers/GoogleHandle.js';
 
 export default class EditTaskModal extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ export default class EditTaskModal extends React.Component {
     this.taskRef = this.props.route.params.task;
 
     this.state = {
-      googleHandle: new GoogleHandler(),
+      googleHandle: new GoogleHandle(),
       name: this.taskRef.name,
       taskId: this.taskRef.id,
       dueDate: this.taskRef.dueDate,
@@ -105,8 +105,10 @@ export default class EditTaskModal extends React.Component {
             </Button>
             <Button
               title = "Save"
-              onPress = {() => { this.state.googleHandle.updateGoogleTask(this.state.taskId, 
-                this.state.taskListId, this.state.name, this.state.dueDate, this.state.accessToken)}}>
+              onPress = {() => { 
+                this.state.googleHandle.updateGoogleTask(this.state.taskId, this.state.taskListId,
+                                                         this.state.name, this.state.dueDate, this.state.accessToken);
+                this.props.navigation.goBack()}}>
             </Button>
           </View>  
 

@@ -5,9 +5,9 @@ import * as Google from 'expo-google-app-auth';
 
 import * as firebase from 'firebase';
 import 'firebase/firestore';
-import "../firebaseFirestore/FirestoreSetup";
+import "../dataHandlers/FirestoreSetup";
 
-import FirestoreHandle from '../firebaseFirestore/FirestoreHandle';
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 
 import {iosClientId} from '../../credentials/iosClientId';
 import {androidClientId} from '../../credentials/androidClientId';

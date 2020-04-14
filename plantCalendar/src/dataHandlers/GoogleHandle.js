@@ -1,4 +1,4 @@
-export default class GoogleHandler{
+export default class GoogleHandle{
 
     /**
      * \brief tells Google to mark a task in user's Google Tasks as completed
