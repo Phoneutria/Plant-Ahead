@@ -96,21 +96,22 @@ export default class GardenScreen extends React.Component {
 
     /**
      * \brief: updates plant info whenever user waters or fertilizes the plant
-     * @param {*} action an integer that indicates whether the user watered or fertilized the plant
-     * \details: This function is called whenever the water or fertilize button is pressed. It first gets the 
-     * current stats by calling the playPlant function. Then, it updates the stats depending on 
-     * the current stats, by calling the updatePlant in the FirestoreHandle class.
-     * threshold is an array that holds 3 integers to indicate how many growth points each stage needs
-     * to move to the next one.
+     * @param {*} cost an integer that indicates whether the user watered(1) or fertilized(2) the plant
+     * \details: This function is called whenever the water or fertilize button is pressed. 
+     * It calls the updateUserMoneyFirebase function to update money field in Firebase.
+     * Then, it updates the plant stats depending on by calling the updatePlant in 
+     * the FirestoreHandle class.
+     * threshold is an array that holds 3 integers to indicate 
      */
-    progressAdded(action) {
-        // growth point threshold for different stages
+    progressAdded(cost) {
+        // growth point threshold for different stages(how many growth points each stage needs to move 
+        // to the next one.)
         let threshold = [50, 70, 100]
         // local variables to handle updating growth point, and state
-        let newGP = this.state.growthPoint + action*10;
+        let newGP = this.state.growthPoint + cost*10;
 
         // update money in Firebase
-        this.state.firestoreHandle.updateUserMoneyFirebase(this.state.userEmail, this.state.money-action);
+        this.state.firestoreHandle.updateUserMoneyFirebase(this.state.userEmail, this.state.money-cost);
         
         // if after adding the points, growth point is less than threshold, it will update in Firebase
         // with the new growth point

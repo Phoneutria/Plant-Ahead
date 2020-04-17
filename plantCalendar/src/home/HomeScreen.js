@@ -22,6 +22,7 @@ export default class HomeScreen extends React.Component {
    componentWillMount() {
         const userRef = firebase.firestore().collection('users').doc(this.state.userEmail);
         // get information from firebase and return a promise
+        // gets the current amount of money that the user has from Firebase
         userRef.get().then(user => {
             this.setState({money: user.data().money});
         });
@@ -72,6 +73,7 @@ export default class HomeScreen extends React.Component {
                     // pass in the userEmail so Garden can have the necessary info
                     // to interact with firestore
                     userEmail: this.props.route.params.userEmail,
+                    // TODO: to be deleted later (For testing purposes)
                     money: this.state.money
                 })}
                 title='Temporary going to garden'/>
