@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Animated, Alert } from 'react-native';
 import { CheckBox } from 'react-native-elements';
 // allow react native to check the input props for Task Class
 import PropTypes from 'prop-types';
 // allow a child component (not a Screen) to use the "navigation"
 // in this case, allow a Task component to open the ViewTaskModal
 import { useNavigation } from '@react-navigation/native';
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 
 /**
  * Task Class
@@ -24,10 +25,12 @@ class Task extends React.Component {
         fadeValue: new Animated.Value(1),
         // for the checkbox
         checked: false,
-        // // for estimated time left
-        // timeSpent: 0,
+        // for estimated time left
+        timeSpent: this.props.timeSpent,
         timeLeft: this.props.estTimeToComplete-this.props.timeSpent,
+        firebaseHandle: new FirestoreHandle,
     };
+
 
     /**
      * \brief check the checkbox, animate fading out, and call parent (Calendar Class)'s 
@@ -35,6 +38,9 @@ class Task extends React.Component {
      */
     isCompleted() {
         this.setState({checked: !this.state.checked});  // check the checkbox
+        console.log(this.state.timeSpent);
+        this.state.firebaseHandle.updateUserMoneyFirebase(this.props.userEmail, this.props.timeSpent);
+        Alert.alert("You have gained" + this.props.timeSpent + "coins!");
         this.animateUnmount();
         // setTimeout allow the task to finish fading away, then
         // it calls the parent(Calendar Class)'s function to complete the task

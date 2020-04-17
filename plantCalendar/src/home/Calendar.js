@@ -79,7 +79,6 @@ export default class Calendar extends React.Component {
      */
     componentDidMount() {
         this.initAllTasksInFirebase();
-        
         this.renderTask();
     }
 
@@ -120,6 +119,7 @@ export default class Calendar extends React.Component {
      *      The children will call its this.props.completeTask function to delete itself
      */
     renderTask = async () => {
+        console.log("renderTask called")
         let tempTaskArray = [];
         
         // gets the json of all the task data from Google Task

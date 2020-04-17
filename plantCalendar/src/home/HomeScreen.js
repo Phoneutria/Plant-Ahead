@@ -4,6 +4,7 @@ import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
 import * as firebase from 'firebase';
+// import { calendar } from 'googleapis/build/src/apis/calendar';
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -16,8 +17,21 @@ export default class HomeScreen extends React.Component {
         this.state = {
             money: 0,
             userEmail: this.props.route.params.userEmail,
+            refresh: false,
         };
     };
+    
+    /*
+    * \breif: renders the calender
+    * \detail: this function first calls the renderTask function
+    * that is from its child class - Calender.js in order to dispaly the 
+    * new tasks. Then, it updates the state variable refresh so that the render
+    * function of HomeScreen can be called.
+    */
+    renderCalendar() {
+        this.calendar.renderTask();
+        this.setState({refresh: !this.state.refresh});
+    }
 
    componentWillMount() {
         const userRef = firebase.firestore().collection('users').doc(this.state.userEmail);
@@ -52,7 +66,10 @@ export default class HomeScreen extends React.Component {
                         // to interact with firestore
                         userEmail: this.props.route.params.userEmail,
                         // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
-                        accessToken: this.props.route.params.accessToken
+                        accessToken: this.props.route.params.accessToken,
+                        // pass in the renderCalendar function to Create Task so that
+                        // when we return to this page, the new task is rendered
+                        renderCalendar: this.renderCalendar.bind(this),
                     })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
@@ -79,6 +96,7 @@ export default class HomeScreen extends React.Component {
                 title='Temporary going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
+                ref = {calendar => {this.calendar = calendar}} 
                 accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
             ></Calendar>

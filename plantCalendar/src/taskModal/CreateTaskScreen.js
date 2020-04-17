@@ -17,7 +17,6 @@ export default class CreateTaskScreen extends React.Component {
     // a class to handle most of the firestore interfaces (eg. update time in firestore)
     firestoreHandle: new FirestoreHandle(),
     googleHandle: new GoogleHandle(),
-
     userEmail: this.props.route.params.userEmail,
 
     //boolean to handle the datetimepicker
@@ -28,25 +27,20 @@ export default class CreateTaskScreen extends React.Component {
   // TODO: instead of this function, it would be a function that
   // create new task and returns back to the home page
   // Temporary function to check if text input and date picker worked
-  formatOutput() {
+  async backTo() {
     let temp = String(this.state.dueDate).split(' ');
     temp = " is due on " + temp[1]+ "-" + temp[2]+ "-" + temp[3];
     let output = String(this.state.name) + temp + " with " + this.state.priority + 
     " priority. You have " + String(this.state.estTimeToComplete) + " hours left!";
-
-    // TODO: Once you have the create new Task function ready, uncomment the code bellow
-    //   then set googlTaskId to task id returned by Goolge Task Create function
-
-    // let googleTaskId = "TODO: actualGoolgeTaskId"
+    Alert.alert(output);
     
-    // // create the task in firestore
-    // this.state.firestoreHandle.updateFirebaseTaskData(this.props.route.params.userEmail,
-    //   googleTaskId, this.state.name, this.state.priority, 
-    //   parseFloat(this.state.estTimeToComplete), 0, false);
-    
+    // initate the task in both firebase and gogole
+    await this.initiateTask();
+    // call the renderCalendar function in HomeScreen to display the new task
+    this.props.route.params.renderCalendar();
+    // Go back to the HomeScreen
     this.props.navigation.goBack();
 
-    Alert.alert(output);
 
     /**
      * Suggestion:
@@ -64,9 +58,6 @@ export default class CreateTaskScreen extends React.Component {
      *      In my case, I was able to do it because ViewTaskModal is called by a Task, and the
      *      Calendar is like a box containing Tasks). Therefore, it's easier to pass timeSpentHandler()
      *      from Calendar to Task then from Task to ViewTaskModal
-     * 
-     *      P.S: I'm sorry about the long paragraphs. I'm trying to leave as much information behind as
-     *      possible really late a night lmao
      */
   }
 
@@ -76,7 +67,8 @@ export default class CreateTaskScreen extends React.Component {
 
   async initiateTask() {
     // create task in google Task
-    taskId = await this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, this.props.route.params.accessToken);
+    taskId = await this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, 
+      this.props.route.params.accessToken);
     console.log(taskId);
     
     // initialize task in Firebase
@@ -85,8 +77,8 @@ export default class CreateTaskScreen extends React.Component {
     // update new task with user-entered data
     // the time spent on the task is zero by default
     // the task is not completed, by default
-    this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, this.state.priority,
-                                                      this.state.estTimeToComplete, 0, false)
+    this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, 
+      this.state.priority, this.state.estTimeToComplete, 0, false)
   }
 
   render() {
@@ -151,11 +143,9 @@ export default class CreateTaskScreen extends React.Component {
             title = 'Cancel'/>
         <Button
             onPress={()=> {
-              this.initiateTask();
-              this.props.navigation.goBack()
+              this.backTo()
             }}
             title='Submit'/> 
-            {/* this.formatOutput() */}
       </View>
     </View>
   );
