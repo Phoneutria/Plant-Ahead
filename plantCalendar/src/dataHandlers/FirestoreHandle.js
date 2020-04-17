@@ -96,8 +96,7 @@ export default class FirestoreHandle {
      * @param {*} completed boolean, whether this task has been completed
      */
     updateFirebaseTaskData(userEmail, taskId, taskName, priority, estTimeToComplete, timeSpent, completed) {
-        const taskRef = firebase.firestore().collection('users').doc(userEmail).
-            collection('tasks').doc(taskId);
+        const taskRef = this.taskRef(userEmail, taskId);
         
         taskRef.set(
             {
@@ -120,9 +119,7 @@ export default class FirestoreHandle {
      * @param {*} timeSpent double, how long the user has spent on this task
      */
     updateTimeSpentInFirebase(userEmail, taskId, timeSpent) {
-        const taskRef = firebase.firestore().collection('users').doc(userEmail).
-        collection('tasks').doc(taskId);
-
+        const taskRef = this.taskRef(userEmail, taskId);
         taskRef.set(
             {
                 timeSpent: timeSpent,
@@ -142,9 +139,7 @@ export default class FirestoreHandle {
      * @param {*} completed boolean, whether this task has been completed
      */
     setTaskCompleteInFirebase(userEmail, taskId, completed) {
-        const taskRef = firebase.firestore().collection('users').doc(userEmail).
-            collection('tasks').doc(taskId);
-        
+        const taskRef = this.taskRef(userEmail, taskId);
         taskRef.set(
             {
                 completed: completed,
