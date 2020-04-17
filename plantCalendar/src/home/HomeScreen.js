@@ -3,6 +3,7 @@ import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-nat
 import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
+import * as firebase from 'firebase';
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -13,19 +14,18 @@ export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            growthPoints: 0,
+            money: 0,
+            userEmail: this.props.route.params.userEmail,
         };
     };
 
-    // handle the button when progress is added
-    progressAdded() {
-        if(this.state.growthPoints < 1){
-            this.setState({ growthPoints: this.state.growthPoints+0.2 });
-            Alert.alert("adding points!");
-        } else {
-            Alert.alert("Your tree is done growing!");
-        }
-    }
+   componentWillMount() {
+        const userRef = firebase.firestore().collection('users').doc(this.state.userEmail);
+        // get information from firebase and return a promise
+        userRef.get().then(user => {
+            this.setState({money: user.data().money});
+        });
+   }
 
     render() {
         // options for drop-down box
@@ -36,6 +36,7 @@ export default class HomeScreen extends React.Component {
         
         return (
             <View style={{ flex: 10}}>
+                <Text>You have ${this.state.money}</Text>
             <Dropdown
                 label='Sort'
                 data={data}
@@ -64,15 +65,14 @@ export default class HomeScreen extends React.Component {
                 />
 
             {/* // Button to add more progree to the progress bar */}
-            <Button
-                onPress={this.progressAdded.bind(this)}
-                title='Temporary to show progress bar'/>  
+           
             <Button
                 onPress={()=> this.props.navigation.navigate('Garden',
                 {
                     // pass in the userEmail so Garden can have the necessary info
                     // to interact with firestore
-                    userEmail: this.props.route.params.userEmail
+                    userEmail: this.props.route.params.userEmail,
+                    money: this.state.money
                 })}
                 title='Temporary going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
