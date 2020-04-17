@@ -16,16 +16,14 @@ export default class GardenScreen extends React.Component {
             growthPoint: -1,
             stage: -1,
             userEmail: this.props.route.params.userEmail,
+            money: this.props.route.params.money,
         };
         this.plantRef = null;
     };
 
     /**
-     * \brief: animate the plant based on its stage stored in firebase (no parameters necessary)
-     * \detail: This function calls the getStage() method from the FirestoreHandle class, by passing
-     * the class the userEmail and the name of the plant. Then the method returns the stage
-     * of the current plant, and passed this as an argument to call playStage() 
-     * function
+     * \brief: get the name of the current plant(the one that is not fully grown) from Firebase
+     * \detail: This function is called in the playPant and progressAdded function
      */
     async getPlantName() {
         // Warning: assume that there is only one plant that we are currently growing
@@ -45,7 +43,7 @@ export default class GardenScreen extends React.Component {
      * \brief: get and update the stage and growth point of a plant
      * @param {*} plantName name of the plant
      */
-    getPlantInfo(plantName) {
+    async getPlantInfo(plantName) {
         const plantRef = firebase.firestore().collection('users').doc(this.state.userEmail).
         collection('plants').doc(plantName);
         // get information from firebase and return a promise
@@ -69,6 +67,8 @@ export default class GardenScreen extends React.Component {
         await this.getPlantName();
         // update stage and growth point state variables
         await this.getPlantInfo(this.state.plantName);
+        // updates money state variable
+        await this.getUserMoney();
         // type determines the stage of the plant in the animation
         var type = ""
         if (this.state.stage == 0) {
@@ -96,38 +96,40 @@ export default class GardenScreen extends React.Component {
 
     /**
      * \brief: updates plant info whenever user waters or fertilizes the plant
-     * @param {*} action an integer that indicates whether the user watered or fertilized the plant
-     * \details: This function is called whenever the water or fertilize button is pressed. It first gets the 
-     * current stats by calling the playPlant function. Then, it updates the stats depending on 
-     * the current stats, by calling the updatePlant in the FirestoreHandle class.
-     * threshold is an array that holds 3 integers to indicate how many growth points each stage needs
-     * to move to the next one.
+     * @param {*} cost an integer that indicates whether the user watered(1) or fertilized(2) the plant
+     * \details: This function is called whenever the water or fertilize button is pressed. 
+     * It calls the updateUserMoneyFirebase function to update money field in Firebase.
+     * Then, it updates the plant stats depending on by calling the updatePlant in 
+     * the FirestoreHandle class.
+     * threshold is an array that holds 3 integers to indicate 
      */
-    progressAdded(action) {
-        // updates the state variables to current stats
-        this.playPlant();
-        // growth point threshold for different stages
+    progressAdded(cost) {
+        // growth point threshold for different stages(how many growth points each stage needs to move 
+        // to the next one.)
         let threshold = [50, 70, 100]
-        // If growth point is less than the threshold during that stage, 10 growth points will be added
-        if(this.state.growthPoint < threshold[this.state.stage]){
+        // local variables to handle updating growth point, and state
+        let newGP = this.state.growthPoint + cost*10;
+
+        // update money in Firebase
+        this.state.firestoreHandle.updateUserMoneyFirebase(this.state.userEmail, this.state.money-cost);
+        
+        // if after adding the points, growth point is less than threshold, it will update in Firebase
+        // with the new growth point
+        if(newGP < threshold[this.state.stage]){
             this.state.firestoreHandle.updatePlant(this.state.userEmail, this.state.plantName, 
-                this.state.growthPoint+10, false, this.state.stage);
-            if (action == 0) {
-                Alert.alert("You just watered your plants! 10 points added.");
-            } else {
-                Alert.alert("You just fertilized your plants! 10 points added.");
-            }
+                newGP, false, this.state.stage);
         } else {
             // If plant is in stage 0 or 1 and growth point achieves threshold, plant moves to next stage
+            // and the plant starts with the old growth point subtract by the threshold
             if (this.state.stage < 2) {
                 this.state.firestoreHandle.updatePlant(this.state.userEmail, this.state.plantName, 
-                    0, false, this.state.stage+1);
-                Alert.alert("Congratulations! Your plant can move to the next stage. Press play to see.");
+                    newGP-threshold[this.state.stage], false, this.state.stage+1);
+                Alert.alert("Congratulations! Your plant can move to the next stage.");
             } 
             //  If plant is in stage 2 and growth point achieves threshold, new plant is created in database
             else {
                 this.state.firestoreHandle.updatePlant(this.state.userEmail, this.state.plantName, 
-                    this.state.growthPoint+10, true, this.state.stage+1);
+                    threshold[oldStage], true, this.state.stage+1);
                 // TODO: instead of giving a default name, there will be a pop-up that prompts
                 // users to enter a new name for the plant
                 this.state.firestoreHandle.initFirebasePlantData(userEmail, "plant 2") 
@@ -138,12 +140,29 @@ export default class GardenScreen extends React.Component {
         this.playPlant();
     }
 
+    /**
+     * \breif: This method updates the state variable money with the field in Firebase
+     */
+    async getUserMoney() {
+        const userRef = firebase.firestore().collection('users').doc(this.state.userEmail);
+        // get information from firebase
+        return userRef.get().then(user => {
+            this.setState({money: user.data().money});
+        });
+    }
+
+    /**
+     * \breif: Automatically called whenever the page is opened. Updates all state variables.
+     */
+    componentWillMount (){
+        this.playPlant();
+    }
+
     render () {
         return (
         <View>
             <View style={styles.container}>
-                {/* Testing how to import and use a sprite sheet */}
-                
+            <Text>You currently have ${this.state.money}</Text>
                 <SpriteSheet
                     ref={ref => (this.plant = ref)} // declare the reference to this sprite as a data member of Garden Class
                     source={require('./plants/sunflower.png')}
@@ -163,11 +182,27 @@ export default class GardenScreen extends React.Component {
                     title="play"
                     onPress={() => this.playPlant()}/>
                 <Button
-                    title="Water"
-                    onPress={() => this.progressAdded(0)}/>
+                    title="Water (Cost 1 coin)"
+                    onPress={() => {
+                        if (this.state.money >= 1) {
+                            Alert.alert("You just watered your plants! 10 points added.");
+                            this.progressAdded(1);
+                        } else {
+                            Alert.alert("Oops! You don't have enough money right now.\
+                            Try again after more tasks are completed");
+                        }}
+                    }/>
                 <Button
-                    title="Fertilize"
-                    onPress={() => this.progressAdded(1)}/>
+                    title="Fertilize (Cost 2 coins)"
+                    onPress={() => {
+                        if (this.state.money >= 2) {
+                            Alert.alert("You just fertilized your plants! 20 points added.");
+                            this.progressAdded(2);
+                        } else {
+                            Alert.alert("Oops! You don't have enough money right now.\
+                            Try again after more tasks are completed");
+                        }}
+                    }/>
                 <Text
                     style={{fontSize:20, color:'#0E88E5', marginBottom: 20}}>
                     You currently have  [   

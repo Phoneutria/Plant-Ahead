@@ -3,6 +3,8 @@ import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-nat
 import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
+import * as firebase from 'firebase';
+// import { calendar } from 'googleapis/build/src/apis/calendar';
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -13,19 +15,32 @@ export default class HomeScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            growthPoints: 0,
+            money: 0,
+            userEmail: this.props.route.params.userEmail,
+            refresh: false,
         };
     };
-
-    // handle the button when progress is added
-    progressAdded() {
-        if(this.state.growthPoints < 1){
-            this.setState({ growthPoints: this.state.growthPoints+0.2 });
-            Alert.alert("adding points!");
-        } else {
-            Alert.alert("Your tree is done growing!");
-        }
+    
+    /*
+    * \breif: renders the calender
+    * \detail: this function first calls the renderTask function
+    * that is from its child class - Calender.js in order to dispaly the 
+    * new tasks. Then, it updates the state variable refresh so that the render
+    * function of HomeScreen can be called.
+    */
+    renderCalendar() {
+        this.calendar.renderTask();
+        this.setState({refresh: !this.state.refresh});
     }
+
+   componentWillMount() {
+        const userRef = firebase.firestore().collection('users').doc(this.state.userEmail);
+        // get information from firebase and return a promise
+        // gets the current amount of money that the user has from Firebase
+        userRef.get().then(user => {
+            this.setState({money: user.data().money});
+        });
+   }
 
     render() {
         // options for drop-down box
@@ -36,6 +51,7 @@ export default class HomeScreen extends React.Component {
         
         return (
             <View style={{ flex: 10}}>
+                <Text>You have ${this.state.money}</Text>
             <Dropdown
                 label='Sort'
                 data={data}
@@ -50,7 +66,10 @@ export default class HomeScreen extends React.Component {
                         // to interact with firestore
                         userEmail: this.props.route.params.userEmail,
                         // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
-                        accessToken: this.props.route.params.accessToken
+                        accessToken: this.props.route.params.accessToken,
+                        // pass in the renderCalendar function to Create Task so that
+                        // when we return to this page, the new task is rendered
+                        renderCalendar: this.renderCalendar.bind(this),
                     })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
@@ -64,19 +83,20 @@ export default class HomeScreen extends React.Component {
                 />
 
             {/* // Button to add more progree to the progress bar */}
-            <Button
-                onPress={this.progressAdded.bind(this)}
-                title='Temporary to show progress bar'/>  
+           
             <Button
                 onPress={()=> this.props.navigation.navigate('Garden',
                 {
                     // pass in the userEmail so Garden can have the necessary info
                     // to interact with firestore
-                    userEmail: this.props.route.params.userEmail
+                    userEmail: this.props.route.params.userEmail,
+                    // TODO: to be deleted later (For testing purposes)
+                    money: this.state.money
                 })}
                 title='Temporary going to garden'/>
             {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
+                ref = {calendar => {this.calendar = calendar}} 
                 accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
             ></Calendar>
