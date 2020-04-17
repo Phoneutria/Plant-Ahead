@@ -24,9 +24,14 @@ export default class CreateTaskScreen extends React.Component {
   }
 
 
-  // TODO: instead of this function, it would be a function that
-  // create new task and returns back to the home page
-  // Temporary function to check if text input and date picker worked
+  /*
+  * \breif: alerts the user of their input, then returns to HomeScreen
+  * \detail: This function first constructs an alert to tell user of the new
+  * task they created. Then, it initiates the task by calling initateTask()
+  * Then, it calls the renderCalendar function passed in as props from the 
+  * HomeScreen so that the new task will be displayed. Finally, it 
+  * navigates back to HomeScreen
+  */
   async backTo() {
     let temp = String(this.state.dueDate).split(' ');
     temp = " is due on " + temp[1]+ "-" + temp[2]+ "-" + temp[3];
@@ -40,31 +45,11 @@ export default class CreateTaskScreen extends React.Component {
     this.props.route.params.renderCalendar();
     // Go back to the HomeScreen
     this.props.navigation.goBack();
-
-
-    /**
-     * Suggestion:
-     *    If when we go back to the home screen, the tasks do not render
-     *    and you can't see the new Task Created...
-     *      You need to figure out how to call the Calendar's renderTask() function.
-     *  
-     *      One way that I was able to do it for the ViewTaskModal was using navigate()
-     *      function to pass in parameters (for example, how I pass in userEmail)
-     *      You might want to look at ViewTaskModal and see how I pass in the function
-     *      timeSpentHandler()
-     * 
-     *      However, this might be more complicated because I don't know how you can access 
-     *      Calendar's function from the HomeScreen (which is like a box containing Calendar)
-     *      In my case, I was able to do it because ViewTaskModal is called by a Task, and the
-     *      Calendar is like a box containing Tasks). Therefore, it's easier to pass timeSpentHandler()
-     *      from Calendar to Task then from Task to ViewTaskModal
-     */
   }
 
   /** \brief takes the user's input and creates a corresponding task in google calendar and firebase
    * 
    */
-
   async initiateTask() {
     // create task in google Task
     taskId = await this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, 
