@@ -19,6 +19,7 @@ export default class HomeScreen extends React.Component {
             userEmail: this.props.route.params.userEmail,
             refresh: false,
         };
+        this.updateMoneyDisplay = this.updateMoneyDisplay.bind(this);
     };
     
     /*
@@ -30,13 +31,24 @@ export default class HomeScreen extends React.Component {
     */
     renderCalendar() {
         this.calendar.renderTask();
+        // the refresh state varaible is made just so everytime renderCalendar
+        // is called, the HomeScreen is rendered
         this.setState({refresh: !this.state.refresh});
     }
 
+    /*
+    * \breif: This function is automatically called the first time it gets to HomeScreen
+    */
    componentWillMount() {
-        const userRef = firebase.firestore().collection('users').doc(this.state.userEmail);
-        // get information from firebase and return a promise
-        // gets the current amount of money that the user has from Firebase
+        this.updateMoneyDisplay();
+   }
+
+   /**
+    * \breif: This function updates the dispaly of money in the HomeScreen by getting
+    * it from Firebase
+    */
+   updateMoneyDisplay() {
+        const userRef = firebase.firestore().collection('users').doc(this.props.route.params.userEmail);
         userRef.get().then(user => {
             this.setState({money: user.data().money});
         });
@@ -90,15 +102,18 @@ export default class HomeScreen extends React.Component {
                     // pass in the userEmail so Garden can have the necessary info
                     // to interact with firestore
                     userEmail: this.props.route.params.userEmail,
-                    // TODO: to be deleted later (For testing purposes)
                     money: this.state.money
                 })}
                 title='Temporary going to garden'/>
-            {/* Tempory Dummy Calendar to display tasks*/}
             <Calendar
+                // ref is required so that the renderTask function from the Calendar
+                // class can be called by the renderCalendar in this class
                 ref = {calendar => {this.calendar = calendar}} 
+                // variables and functions that are passed to the calendar class
                 accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
+                updateMoneyDisplay = {this.updateMoneyDisplay}
+                currentMoney = {this.state.money}
             ></Calendar>
         </View>
         );

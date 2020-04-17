@@ -119,7 +119,6 @@ export default class Calendar extends React.Component {
      *      The children will call its this.props.completeTask function to delete itself
      */
     renderTask = async () => {
-        console.log("renderTask called")
         let tempTaskArray = [];
         
         // gets the json of all the task data from Google Task
@@ -149,6 +148,7 @@ export default class Calendar extends React.Component {
                     // create an arrays of Task React Components
                     tempTaskArray[i]=
                             <Task
+                                // --------------------------------variables-----------------------------
                                 userEmail = {this.props.userEmail}
                                 // compiler wants a "key" prop when the components are 
                                 // rendered in an array
@@ -163,13 +163,19 @@ export default class Calendar extends React.Component {
                                 estTimeToComplete={taskFbData.estTimeToComplete}
                                 timeSpent = {taskFbData.timeSpent}
                                 accessToken = {this.props.accessToken}
+                                currentMoney = {this.props.currentMoney}
+
+                                // --------------------------------functions-----------------------------
                                 // pass in Calendar's deleteCompletedTask function
                                 // so that when a task is completed, the task can call Calendar's function
                                 completeTask={(taskId) => this.deleteCompletedTask(taskId)}
                                 // pass in the Calendar's renderTask function
                                 // so that when a task and possibly the ViewTaskModal needs to re-render
-                                //      all the task, they can call this function
+                                //  all the task, they can call this function
                                 updatedTaskHandler={() => this.updatedTaskHandler()}
+                                // the updateMoneyDisplay function from the HomeScreen is passed to Task
+                                updateMoneyDisplay={() => this.props.updateMoneyDisplay()}
+
                             ></Task>
                     ;             
 

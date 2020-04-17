@@ -26,21 +26,29 @@ class Task extends React.Component {
         // for the checkbox
         checked: false,
         // for estimated time left
-        timeSpent: this.props.timeSpent,
         timeLeft: this.props.estTimeToComplete-this.props.timeSpent,
         firebaseHandle: new FirestoreHandle,
     };
 
 
     /**
-     * \brief check the checkbox, animate fading out, and call parent (Calendar Class)'s 
-     *      function to complete this task
+     * \brief check the checkbox, update money, animate fading out, 
+     *  and call parent (Calendar Class)'s function to complete this task
      */
     isCompleted() {
         this.setState({checked: !this.state.checked});  // check the checkbox
-        console.log(this.state.timeSpent);
-        this.state.firebaseHandle.updateUserMoneyFirebase(this.props.userEmail, this.props.timeSpent);
-        Alert.alert("You have gained" + this.props.timeSpent + "coins!");
+        // update the field money in Firebase, with money = (current money + 
+        // the estimation of how long the task would take)
+        this.state.firebaseHandle.updateUserMoneyFirebase(this.props.userEmail, 
+            this.props.currentMoney + parseInt(this.props.estTimeToComplete));
+        
+        // calls this function in the HomeScreen to update the display
+        this.props.updateMoneyDisplay();
+
+        // alert the user how much they gained
+        Alert.alert("You have gained " + this.props.estTimeToComplete + " coins!");
+        
+        // animation 
         this.animateUnmount();
         // setTimeout allow the task to finish fading away, then
         // it calls the parent(Calendar Class)'s function to complete the task
@@ -102,6 +110,7 @@ class Task extends React.Component {
                                     //     the "submit" button to update time spent on the class
                                     // this allows us the re-render the tasks
                                     timeSpentHandler: this.props.updatedTaskHandler,
+                                    updateMoneyDisplay: this.props.updateMoneyDisplay,
                                 },
                                 // pass in the user email so View Task Modal has the necessary information
                                 //      to call the firestore handler functions
