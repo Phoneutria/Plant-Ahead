@@ -17,7 +17,15 @@ import firebaseConfig from './config';
 
 // import * as firebase from 'firebase';
 // firebase.initializeApp(firebaseConfig);
+import { decode, encode } from 'base-64';
 
+if (!global.btoa) {
+    global.btoa = encode;
+}
+
+if (!global.atob) {
+    global.atob = decode;
+}
 
 const MainStack = createStackNavigator();
 const RootStack = createStackNavigator();
