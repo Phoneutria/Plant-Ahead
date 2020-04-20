@@ -25,19 +25,12 @@ export default class CreateTaskScreen extends React.Component {
 
 
   /*
-  * \breif: alerts the user of their input, then returns to HomeScreen
-  * \detail: This function first constructs an alert to tell user of the new
-  * task they created. Then, it initiates the task by calling initateTask()
+  * \breif: This function initiates the task by calling initateTask()
   * Then, it calls the renderCalendar function passed in as props from the 
   * HomeScreen so that the new task will be displayed. Finally, it 
   * navigates back to HomeScreen
   */
   async backTo() {
-    let temp = String(this.state.dueDate).split(' ');
-    temp = " is due on " + temp[1]+ "-" + temp[2]+ "-" + temp[3];
-    let output = String(this.state.name) + temp + " with " + this.state.priority + 
-    " priority. You have " + String(this.state.estTimeToComplete) + " hours left!";
-    Alert.alert(output);
     
     // initate the task in both firebase and gogole
     await this.initiateTask();
@@ -54,7 +47,6 @@ export default class CreateTaskScreen extends React.Component {
     // create task in google Task
     taskId = await this.state.googleHandle.createGoogleTask(this.state.name, this.state.dueDate, 
       this.props.route.params.accessToken);
-    console.log(taskId);
     
     // initialize task in Firebase
     this.state.firestoreHandle.initFirebaseTaskData(this.state.userEmail, taskId, this.state.name);
@@ -63,7 +55,7 @@ export default class CreateTaskScreen extends React.Component {
     // the time spent on the task is zero by default
     // the task is not completed, by default
     this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, 
-      this.state.priority, this.state.estTimeToComplete, 0, false)
+      this.state.priority, this.state.estTimeToComplete, 0, false, this.state.dueDate);
   }
 
   render() {
@@ -106,7 +98,7 @@ export default class CreateTaskScreen extends React.Component {
       <Button title="Select Date" onPress={() => this.setState({dateIsVisible: true})} />
       <DateTimePickerModal
         isVisible={this.state.dateIsVisible}
-        mode="date"
+        mode="datetime"
         onConfirm={(selectedDate) => onChangeDate(selectedDate)}
         onCancel={() => this.setState({dateIsVisible:false})}
       />

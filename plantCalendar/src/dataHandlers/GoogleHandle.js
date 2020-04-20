@@ -74,6 +74,9 @@ export default class GoogleHandle{
         }).catch((error) => {
             console.error('Error:', error)
         })
+
+        let editedTaskJson = await editedTask.json();
+        return editedTaskJson.id;
     }
 
     /**
@@ -96,8 +99,6 @@ export default class GoogleHandle{
         
         // we assume that all tasks from the user is stored in task list 1
         // TODO: add support for multiple task lists
-
-        console.log(dueDate.toISOString());
 
         let newTask = await fetch('https://www.googleapis.com/tasks/v1/lists/' + taskListJson.items[0].id + '/tasks', {
             headers: { Authorization: `Bearer ${accessToken}`, 'Content-type': 'application/json', "Accept": 'application/json'},

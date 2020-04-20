@@ -50,10 +50,8 @@ class Task extends React.Component {
         
         // animation 
         this.animateUnmount();
-        // setTimeout allow the task to finish fading away, then
-        // it calls the parent(Calendar Class)'s function to complete the task
-        setTimeout(()=>this.props.completeTask(this.props.id),
-                     this.state.fadeAnimationTime);
+
+        this.props.completeTask(this.props.id);
     };
 
     /**

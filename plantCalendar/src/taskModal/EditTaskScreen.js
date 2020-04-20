@@ -3,7 +3,7 @@ import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
-
+import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 import GoogleHandle from '../dataHandlers/GoogleHandle.js';
 
 export default class EditTaskModal extends React.Component {
@@ -13,6 +13,7 @@ export default class EditTaskModal extends React.Component {
 
     this.state = {
       googleHandle: new GoogleHandle(),
+      firestoreHandle: new FirestoreHandle(),
       name: this.taskRef.name,
       taskId: this.taskRef.id,
       dueDate: this.taskRef.dueDate,
@@ -20,6 +21,7 @@ export default class EditTaskModal extends React.Component {
       priority: this.taskRef.priority, 
       esttimeToComplete: this.taskRef.estTimeToComplete,
       completed: this.taskRef.completed,  // undefined until we implement support for completing tasks
+      timeSpent: this.taskRef.timeSpent,
 
       dateIsVisible: false,  // determines whether the datetimepicker modal is visible
 
@@ -27,6 +29,25 @@ export default class EditTaskModal extends React.Component {
       accessToken: this.taskRef.accessToken
     }
   }
+
+  /*
+  * \brief: This function calls functions to update the task based on the user's data, then 
+  * navigates back to the home screen
+  */
+ async backTo() {
+
+  // update the task in Google
+  taskId = await this.state.googleHandle.updateGoogleTask(this.state.taskId, this.state.taskListId,
+    this.state.name, this.state.dueDate, this.state.accessToken)
+
+  // update the task in Firebase
+  this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, 
+    this.state.priority, this.state.estTimeToComplete, this.state.timeSpent, this.state.completed, this.state.dueDate);
+  // call the renderCalendar function in HomeScreen to display the edited task
+  this.props.route.params.renderCalendar();
+  // Go back to the HomeScreen
+  this.props.navigation.goBack();
+}
 
   render() {
       // options for priority
@@ -67,7 +88,7 @@ export default class EditTaskModal extends React.Component {
             <Button title="Select Date" onPress={() => this.setState({dateIsVisible: true})} />
             <DateTimePickerModal
               isVisible={this.state.dateIsVisible}
-              mode="date"
+              mode="datetime"
               onConfirm={(selectedDate) => onChangeDate(selectedDate)}
               onCancel={() => this.setState({dateIsVisible:false})}
             />
@@ -105,10 +126,7 @@ export default class EditTaskModal extends React.Component {
             </Button>
             <Button
               title = "Save"
-              onPress = {() => { 
-                this.state.googleHandle.updateGoogleTask(this.state.taskId, this.state.taskListId,
-                                                         this.state.name, this.state.dueDate, this.state.accessToken);
-                this.props.navigation.goBack()}}>
+              onPress = {() => this.backTo()}>
             </Button>
           </View>  
 

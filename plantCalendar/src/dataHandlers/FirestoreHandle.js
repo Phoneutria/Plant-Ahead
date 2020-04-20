@@ -78,8 +78,9 @@ export default class FirestoreHandle {
         taskRef.get().then(thisTask => {
             // only initialize the task data with default values if it doesn't exist
             if (!thisTask.exists) {
+                let dueDate = new Date();
                 this.updateFirebaseTaskData(userEmail, taskId, taskName, 
-                    'medium', 2, 0, false);
+                    'medium', 2, 0, false, dueDate);
             }
         });
     }
@@ -94,9 +95,15 @@ export default class FirestoreHandle {
      * @param {*} estTimeToComplete double, how long the user estimates to complete this task
      * @param {*} timeSpent double, how long the user has spent on this task
      * @param {*} completed boolean, whether this task has been completed
+     * @param {*} dueDate Date object, the date (and time) the task is due
      */
-    updateFirebaseTaskData(userEmail, taskId, taskName, priority, estTimeToComplete, timeSpent, completed) {
+    updateFirebaseTaskData(userEmail, taskId, taskName, priority, estTimeToComplete, timeSpent, completed, dueDate) {
         const taskRef = this.taskRef(userEmail, taskId);
+        
+        // get just the due time information from the date
+        // format is HH:MM:SS.FFFZ, where FF is the fractional seconds
+        // Z indicates that it's in UTC time
+        let dueTime = dueDate.toISOString().substring(11);
         
         taskRef.set(
             {
@@ -105,6 +112,7 @@ export default class FirestoreHandle {
                 estTimeToComplete: estTimeToComplete,
                 timeSpent: timeSpent,
                 completed: completed,
+                dueTime: dueTime
             },
             // merge: true will update the fields in the document of create it if it doesn't exist
             {merge: true}
