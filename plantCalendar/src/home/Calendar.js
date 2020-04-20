@@ -150,11 +150,7 @@ export default class Calendar extends React.Component {
                     // if due time entry doesn't exist in Firebase, skip this step
                     if (taskFbData.dueTime) {
                         let dueDate = taskGoogleData.due.substring(0, 10);
-                        console.log("dueDate");
-                        console.log(dueDate);
-                        console.log("dueTime");
-                        console.log(taskFbData.dueTime);
-                        dueDateAndTime = dueDate + "T" +taskFbData.dueTime;
+                        dueDateAndTime = dueDate + taskFbData.dueTime;
                     } 
                    
                     // create an arrays of Task React Components

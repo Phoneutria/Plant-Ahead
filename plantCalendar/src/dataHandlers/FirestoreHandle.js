@@ -101,9 +101,9 @@ export default class FirestoreHandle {
         const taskRef = this.taskRef(userEmail, taskId);
         
         // get just the due time information from the date
-        // format is HH:MM:SS.FFFZ, where FF is the fractional seconds
+        // format is THH:MM:SS.FFFZ, where T is an actual T, HH is the hours, MM is the minutes, SS is the seconds, FFF is the fractional seconds, 
         // Z indicates that it's in UTC time
-        let dueTime = dueDate.toISOString().substring(11);
+        let dueTime = dueDate.toISOString().substring(10);
         
         taskRef.set(
             {
