@@ -135,7 +135,7 @@ export default class Calendar extends React.Component {
             // iterate throught the data from google Task and 
             // render each task
             for (let i = 0; i < googleTaskDataArray.length; ++i){
-                const taskGoogleData = googleTaskDataArray[i];
+                const taskGoogleData = googleTaskDataArray[i]; 
 
                 // reference to the task document in firestore
                 const taskRef = firebase.firestore().collection('users').doc(this.props.userEmail).
@@ -144,6 +144,18 @@ export default class Calendar extends React.Component {
                 // get the data from firestore, then create the tasks
                 taskRef.get().then(thisTask => {      
                     let taskFbData = thisTask.data();
+
+                    let dueDateAndTime = taskGoogleData.due;
+                    // build the correct due date and time by combining Google and Firebase data
+                    // if due time entry doesn't exist in Firebase, skip this step
+                    if (taskFbData.dueTime) {
+                        let dueDate = taskGoogleData.due.substring(0, 10);
+                        console.log("dueDate");
+                        console.log(dueDate);
+                        console.log("dueTime");
+                        console.log(taskFbData.dueTime);
+                        dueDateAndTime = dueDate + "T" +taskFbData.dueTime;
+                    } 
                    
                     // create an arrays of Task React Components
                     tempTaskArray[i]=
@@ -157,7 +169,7 @@ export default class Calendar extends React.Component {
                                 // data for the task
                                 id = {taskGoogleData.id}
                                 name={taskGoogleData.title}
-                                dueDate={new Date(taskGoogleData.due)}
+                                dueDate={new Date(dueDateAndTime)}
                                 priority={taskFbData.priority}
                                 completed={taskFbData.completed}
                                 estTimeToComplete={taskFbData.estTimeToComplete}
