@@ -7,6 +7,12 @@ import * as firebase from 'firebase';
 import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 import GoogleHandle from '../dataHandlers/GoogleHandle';
 
+
+// TODO: efficiency thoughts
+// after loading taskArray, we should not be getting the data from the servers again
+// we should not be loading complete tasks from Firebase. it is less intensive to ask google if they're done 
+// than it is to grab them from firebase
+
 /**
  * Calendar Class
  *  \brief render each individual task
@@ -112,6 +118,58 @@ export default class Calendar extends React.Component {
     }
 
     /**
+     * \brief Sorts tasks by date, with the tasks that are due first at the top
+     */
+    sortByDate() {
+        let sortedTaskArray = this.state.taskArray;
+        sortedTaskArray.sort( (a, b) => {
+            return a.props.dueDate - b.props.dueDate;
+        })
+
+        // updates state variable and triggers Calendar to call render() method
+        this.setState({taskArray: sortedTaskArray});
+        console.log(this.state.taskArray);
+    }
+
+    /**
+     * \brief Sorts tasks by priority, with the highest priority tasks at the top
+     */
+    // TODO: store priority as a number?
+    sortByPriority() {
+        let sortedTaskArray=this.state.taskArray;
+        sortedTaskArray.sort ( (a, b) => {
+            let aPriority = a.props.priority;
+            let bPriority = b.props.priotiy;
+            if (aPriority != bPriority ) {
+                if (aPriority == "high") {
+                    if (bBriority == "low") {
+                        return 2;  // a is high, b is low
+                    } else {
+                        return 1;  // a is high, b is medium
+                    }
+                } else if (aPriority == medium) {
+                    if (bPriority == "high") {
+                        return -1;  // a is medium, b is high
+                    } else if (bPriority == "low") {
+                        return 1;  // a is medium, b is low
+                    }
+                } else if (aPriority == "low") {
+                    if (bPriority == "high") {
+                        return -2;  // a is low, b is high
+                    } else if (bPriority == "medium") {
+                        return -1  // a is low, b is medium
+                    }
+                }
+            } else {
+                return 0;  // same priority level
+            }
+        })
+
+        // updates state variable and triggers Calendar to call render() method
+        this.setState({taskArray: sortedTaskArray});
+    }
+
+    /**
      * \brief render each task based on its information
      * \detail
      *      The parent (Calendar)'s deleteCompletedTask function gets passed down to
@@ -200,6 +258,7 @@ export default class Calendar extends React.Component {
     };
 
     render() {
+        console.log("calendar's render called");
         return (
             <View style={styles.container}>
                 <ScrollView showsVerticalScrollIndicator={false}>

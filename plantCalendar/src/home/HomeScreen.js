@@ -31,8 +31,7 @@ export default class HomeScreen extends React.Component {
     */
     renderCalendar() {
         this.calendar.renderTask();
-        // the refresh state varaible is made just so everytime renderCalendar
-        // is called, the HomeScreen is rendered
+
         this.setState({refresh: !this.state.refresh});
     }
 
@@ -54,7 +53,21 @@ export default class HomeScreen extends React.Component {
         });
    }
 
+   sortTasks(value) {
+        if (value == "By Due Date") {
+            console.log("sorting by due date...");
+            this.calendar.sortByDate();
+        } if (value == "By Priority") {
+            console.log("sorting by priority...");
+            this.calendar.sortByPriority();
+        } 
+
+        // rerender the screen
+        // this.setState({refresh: !this.state.refresh});
+   }
+
     render() {
+        console.log("homeScreen's render called");
         // options for drop-down box
         let data = [{
             value: 'By Due Date'},{
@@ -67,12 +80,13 @@ export default class HomeScreen extends React.Component {
             <Dropdown
                 label='Sort'
                 data={data}
+                onChangeText = {value => {console.log(value); this.sortTasks(value)}}
             />
             {/* This is the button for adding adding tasks
             TODO: center the + sign*/ }
             <TouchableOpacity 
                 style={styles.button}
-                onPress={()=> this.props.navigation.navigate('CreateTask', 
+                onPress={()=> {this.calendar.sortByPriority(); this.props.navigation.navigate('CreateTask', 
                     {
                         // pass in the userEmail so CreateTaskScreen can have the necessary info
                         // to interact with firestore
@@ -82,7 +96,7 @@ export default class HomeScreen extends React.Component {
                         // pass in the renderCalendar function to Create Task so that
                         // when we return to this page, the new task is rendered
                         renderCalendar: this.renderCalendar.bind(this),
-                    })}>
+                    })}}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
 
