@@ -15,11 +15,12 @@ export default class EditTaskModal extends React.Component {
       googleHandle: new GoogleHandle(),
       firestoreHandle: new FirestoreHandle(),
       name: this.taskRef.name,
+      userEmail: this.taskRef.userEmail,
       taskId: this.taskRef.id,
       dueDate: this.taskRef.dueDate,
       taskListId: this.taskRef.taskListId,  // undefined until we implement support for multiple task lists
       priority: this.taskRef.priority, 
-      esttimeToComplete: this.taskRef.estTimeToComplete,
+      estTimeToComplete: this.taskRef.estTimeToComplete,
       completed: this.taskRef.completed,  // undefined until we implement support for completing tasks
       timeSpent: this.taskRef.timeSpent,
 
@@ -42,9 +43,9 @@ export default class EditTaskModal extends React.Component {
 
   // update the task in Firebase
   this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, 
-    this.state.priority, this.state.estTimeToComplete, this.state.timeSpent, this.state.completed, this.state.dueDate);
-  // call the renderCalendar function in HomeScreen to display the edited task
-  this.props.route.params.renderCalendar();
+    this.state.priority, this.state.estTimeToComplete, this.state.timeSpent, false, this.state.dueDate);
+  // TODO: call the renderCalendar function in HomeScreen to display the edited task
+  // this.props.route.params.renderCalendar();
   // Go back to the HomeScreen
   this.props.navigation.goBack();
 }
