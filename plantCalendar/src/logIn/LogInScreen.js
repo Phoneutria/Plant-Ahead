@@ -1,6 +1,6 @@
 import * as React from 'react';
 // TODO: remove Alert when we don't need it anymore
-import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import * as Google from 'expo-google-app-auth';
 
 import * as firebase from 'firebase';
@@ -11,6 +11,7 @@ import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 
 import {iosClientId} from '../../credentials/iosClientId';
 import {androidClientId} from '../../credentials/androidClientId';
+import { LinearGradient } from 'expo-linear-gradient';
 
 /**
  * LogInScreen Class
@@ -107,12 +108,31 @@ export default class LogInScreen extends React.Component {
     render () {  
         return (
             <View style={styles.container}>
+                 <LinearGradient
+                // white '#ffffff'
+                // light green '#b0e099'
+                // green '#8ccd82'
+                // brown '#c06318'
+                // redish pink '#e37957'
+                // brain pink  '#dc9b9b'
+                // yellow #fff8d4'
+                    colors={['#ffffff','#72a669']}
+                    style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        height: 900,
+                    }}
+                    />
                 <Image
                     style={styles.logo}
-                    source={require('../../assets/plantAheadLogo.png')}/>
-                <Button
-                    title="Continue With Google"
-                    onPress={() => this.signInWithGoogleAsync()}/>
+                    source={require('../../assets/Picture1.png')}/>
+                <TouchableOpacity
+                style={styles.button}
+                onPress={() => this.signInWithGoogleAsync()}>
+                    <Text style={styles.text}> Login With Google</Text>
+                </TouchableOpacity>
             </View>
         );
     };
@@ -121,10 +141,34 @@ export default class LogInScreen extends React.Component {
 const styles = StyleSheet.create({
     container:{
         // control how the children align horizontally
+        flex: 1,
         alignItems: 'center',
+        flexDirection:'column',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor: '#72a669'//'#fdd8c0'
     },
     logo: {
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 200,
+        marginLeft:30,
     },
+    button: {
+        marginTop:30,
+        marginBottom:100,
+        paddingTop:15,
+        paddingBottom:15,
+        marginLeft:40,
+        marginRight:30,
+        borderRadius:10,
+        padding: 20,
+        backgroundColor: '#8ccd82'
+    },
+    text: {
+        color: '#ffffff',
+        fontFamily: "Cochin",
+        fontSize: 25,
+        fontWeight: "bold"
+    }
 });
+

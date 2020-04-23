@@ -62,8 +62,8 @@ export default class HomeScreen extends React.Component {
         }];
         
         return (
-            <View style={{ flex: 10}}>
-                <Text>You have ${this.state.money}</Text>
+            <View style={styles.container}>
+                <Text style={styles.text}>You currently have <Text style={{fontWeight:"bold"}}>{this.state.money}</Text> coins</Text>
             <Dropdown
                 label='Sort'
                 data={data}
@@ -123,6 +123,14 @@ export default class HomeScreen extends React.Component {
 
 
 const styles = StyleSheet.create({
+    container: {
+        // control how the children align horizontally
+        flex: 1,
+        backgroundColor: '#ffffff',
+        flexDirection:'column',
+
+       
+    },
     button: {
         position: 'absolute',
         padding: 20,
@@ -144,5 +152,11 @@ const styles = StyleSheet.create({
     },
     progressBar:{
         left: 40,
+    },
+    text:{
+        alignSelf: 'center',
+        color: '#9D5F38',
+        fontSize: 25,
+        fontFamily: "Cochin",
     }
 });
