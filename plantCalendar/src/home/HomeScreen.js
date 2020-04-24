@@ -1,7 +1,6 @@
 import  React, { Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
 import * as firebase from 'firebase';
 // import { calendar } from 'googleapis/build/src/apis/calendar';
@@ -67,6 +66,7 @@ export default class HomeScreen extends React.Component {
             <Dropdown
                 label='Sort'
                 data={data}
+                style={styles.dropDown}
             />
             {/* This is the button for adding adding tasks
             TODO: center the + sign*/ }
@@ -85,18 +85,8 @@ export default class HomeScreen extends React.Component {
                     })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
-
-            {/* // Self defined object progress bar */}
-            <Progress.Bar 
-                progress={this.state.growthPoints} 
-                width={300} 
-                height={20}
-                style={styles.progressBar}
-                />
-
-            {/* // Button to add more progree to the progress bar */}
            
-            <Button
+            {/* <Button
                 onPress={()=> this.props.navigation.navigate('Garden',
                 {
                     // pass in the userEmail so Garden can have the necessary info
@@ -104,7 +94,7 @@ export default class HomeScreen extends React.Component {
                     userEmail: this.props.route.params.userEmail,
                     money: this.state.money
                 })}
-                title='Temporary going to garden'/>
+                title='Temporary going to garden'/> */}
             <Calendar
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
@@ -128,15 +118,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#ffffff',
         flexDirection:'column',
+        paddingLeft:10,
 
-       
     },
     button: {
         position: 'absolute',
         padding: 20,
         marginRight: 15,
         marginLeft: 15,
-        backgroundColor: '#0E88E5',
+        backgroundColor: '#8ccd82',
         bottom:20,
         right:10,
         height: 70,
@@ -146,17 +136,19 @@ const styles = StyleSheet.create({
     },
     textButton: {
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
         color:'#FFFFFF'
     },
-    progressBar:{
-        left: 40,
-    },
     text:{
+        marginTop: 15,
         alignSelf: 'center',
-        color: '#9D5F38',
         fontSize: 25,
-        fontFamily: "Cochin",
+        color: '#8ccd82',   
+    },
+    dropDown:{
+        fontSize:15,
+        // fontColor:'#8ccd82',   
+        paddingLeft:10,
     }
 });
