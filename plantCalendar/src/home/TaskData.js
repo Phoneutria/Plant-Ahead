@@ -13,16 +13,19 @@ import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 import GoogleHandle from '../dataHandlers/GoogleHandle';
 
  export default class TaskData {
-     state = {
-         taskJson = []  // array of JSON objects, each one corresponding to a task
-     }
-
+    TaskData(accessToken, userEmail) {
+        this.accessToken = accessToken,
+        this.userEmail = userEmail,
+        this.taskArray = []  // array of JSON objects, each of which represents a task
+        this.firestoreHandle = new FirestoreHandle();  // class for manipulating Firebase
+        this.googleHandle - new GoogleHandle();  // class for manipulating Google Tasks
+    }
 
      /**
-      * \brief gets user's Task information from Google Tasks and adds it to taskJson
+      * \brief gets user's Task information from Google Tasks and adds it to taskArray
       * 
       * \details does not get completed tasks from Google Tasks 
-      *         after calling this function, taskJson should be a collection of the following objects: 
+      *         after calling this function, taskArray should be a collection of the following objects: 
       *     { 
       *         name
       *         id
@@ -36,16 +39,54 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
       *
       */
 
-      getGoogleTasks = async(accessToken) => {
-          return 0;
+      getGoogleData = async() => {
+        let tempTaskArray = [];
+        let k = 0;  // counter to tell us where to put the task in tempTaskArray
+
+        // get task list data from server
+        // each task list contains a bunch of tasks
+        let taskLists = await fetch('https://www.googleapis.com/tasks/v1/users/@me/lists', {
+            headers: { Authorization: `Bearer ${this.accessToken}`},
+        }).catch(error => console.log("error message: " + error));
+
+        // parse what we receive from the server into a json
+        let taskListJson = await taskLists.json();
+
+        for (let i = 0; i < taskListJson.items.length; ++i) {
+            // get task information from Google for each task list
+            let taskUrl = "https://www.googleapis.com/tasks/v1/lists/" + taskListJson.items[i].id + "/tasks";
+            
+            let rawTasks = await fetch (taskUrl, {
+                headers: { Authorization: `Bearer ${this.accessToken}`},
+            }).catch(error => console.log("error message: " + error));
+            
+            let taskJson = await rawTasks.json();
+
+            for (j = 0; j < taskJson.items.length; ++j) {
+                let task = taskJson.items[i];
+
+                // only save uncompleted tasks
+                if (task.status != "completed") {
+                    let newTask = {
+                        name: task.title,
+                        id: task.id, 
+                        taskListId: taskListJson.items[i],
+                        dueDay: task.due
+                    }
+                    tempTaskArray[k] = newTask;
+                    ++k;
+                }
+            }
+        }
+        this.taskArray = tempTaskArray;
       }
 
       /**
-       * \brief gets user's task data from Firebase and adds it to taskJson
+       * \brief gets user's task data from Firebase and adds it to taskArray
        * 
-       * \details this function MUST be called after getGoogleTasks; it uses the existing information in the taskJson to 
+       * \details this function MUST be called after getGoogleData(); it uses the existing information in the taskArray to 
        *            get data from Firebase
-       *          after calling this function, taskJson should be a collection of the following objects:
+       *          after calling this function, taskArray should be a collection of the following JSON objects:
        *          { 
       *             name
       *             id
@@ -65,39 +106,75 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
       * 
       *     if it can't find the data in Firebase, it adds a new entry to Firebase with the updated data
        */
-      getFirebaseTasks = async(userEmail) => {
-          return 0;
-      }
+      getFirebaseData = async(userEmail) => {
+        for (let i = 0; i < this.taskArray.length; ++i){
+            const task = this.taskArray[i];
+
+            // call the firestore handler function to initialize the data in firestore if it hasn't
+            // been created. 
+            this.state.firestoreHandle.initFirebaseTaskData(this.userEmail, task.id, task.name);
+        }
+
+        const tasksCollectionRef = firebase.firestore().collection('users').
+            doc(this.userEmail).collection('tasks');
+
+        // onSnapshot() allows us to listen for changes in the firebase
+        // if any tasks get updated, the function inside onSnapshot() will run
+        //     so we can re-render the tasks    
+        tasksCollectionRef.onSnapshot(() => {
+            // iterate through the data from taskArray and add firebase data to it
+            for (let i = 0; i < this.taskArray.length; ++i) {
+                const taskRef = firebase.firestore().collection('users').doc(this.userEmail).
+                    collection('tasks').doc(this.taskArray[i].id);
+                
+                // get the data from firestore, then edit the tasks
+                taskRef.get().then(thisTask => {      
+                    let taskFbData = thisTask.data();
+
+                    let dueDateAndTime = this.taskArray[i].dueDay;
+                    // build the correct due date and time by combining Google and Firebase data
+                    // if due time entry doesn't exist in Firebase, skip this step
+                    if (taskFbData.dueTime) {
+                        let dueDate = this.taskArray[i].dueDay.dueDay.substring(0, 10);
+                        dueDateAndTime = dueDate + taskFbData.dueTime;
+                    }
+                    this.taskArray[i].priority = taskFbData.priority;
+                    this.taskArray[i].estTimeToComplete = taskFbData.estTimeToComplete;
+                    this.taskArray[i].timeSpent = taskFbData.timeSpent;
+                });    
+            }});
+        }
 
      /**
-      * \brief Gets task data from Google and Firebase and stores it in taskJson
+      * \brief Gets task data from Google and Firebase and stores it in taskArray
       * 
       * \details Only stores uncompleted tasks
       */
 
       initiate = async () => {
+        this.getGoogleData();
+        this.getFirebaseData();
+      }
+
+      /**
+       * \brief Creates a task in Google Tasks, taskArray, and Firebase
+       */
+      createTask = async() => {
         return 0;
       }
 
       /**
-       * \brief Creates a task in Google Tasks, taskJson, and Firebase
+       * \brief Updates taskArray, Firebase, and Google Tasks depending on the user's input
        */
-      createTask = async() => {
-
+      updateTask = async() => {
+        return 0;
       }
 
       /**
-       * \brief Updates taskJson, Firebase, and Google Tasks depending on the user's input
+       * \brief Completes in the externally stored task data and deletes it from taskArray
        */
-      updateTask = async () => {
-
-      }
-
-      /**
-       * \brief Completes in the externally stored task data and deletes it from taskJson
-       */
-      completeTask = async () = {
-
+      completeTask = async() => {
+        return 0;
       }
 
       /**
