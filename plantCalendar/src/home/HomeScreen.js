@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         backgroundColor:'#8ccd82',
         padding:10,
-        borderRadius:10,
+        borderRadius:5,
     },
     bottomContainer:{
         // control how the children align horizontally
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
     text:{
         marginTop: 15,
         alignSelf: 'center',
-        fontSize: 25,
+        fontSize: 20,
         color: '#8ccd82',   
     },
     dropDown:{

@@ -65,19 +65,16 @@ export default class CreateTaskScreen extends React.Component {
     // with the selectedDate
     const onChangeDate = (selectedDate) => {
       this.setState({dueDate: selectedDate, 
-                    dateDisplay: "Due on " + (selectedDate.getMonth()+1).toString() + " - " +
-                    +selectedDate.getDate().toString() + " at " +
-                    selectedDate.getHours().toString() + ":" +
-                    selectedDate.getMinutes().toString(),
+                    dateDisplay: this.state.dueDate.toLocaleString(),
                     dateIsVisible: false},
                    );
     };
 
     // options for priority
     let data = [
-      {value: 'High ***'},
-      {value: 'Medium **'},
-      {value: 'Low *'}
+      {value: 'high'},
+      {value: 'medium'},
+      {value: 'low'}
     ];
 
   return (
