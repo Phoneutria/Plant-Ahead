@@ -3,7 +3,8 @@ import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-nat
 import {Dropdown} from 'react-native-material-dropdown';
 import Calendar from './Calendar';  // import task components
 import * as firebase from 'firebase';
-// import { calendar } from 'googleapis/build/src/apis/calendar';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -52,16 +53,41 @@ export default class HomeScreen extends React.Component {
             this.setState({money: user.data().money});
         });
    }
-
+ 
     render() {
         // options for drop-down box
         let data = [{
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        
+
+        // configuration for swiping the screen
+        const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+          };
+
         return (
+            // If the user swipe to the left, the screen will navigate to Garden
+            <GestureRecognizer
+            onSwipe={(direction, state) => {
+                const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+                if (direction == SWIPE_LEFT) {
+                    this.props.navigation.navigate('Garden', {
+                    // pass in the userEmail so Garden can have the necessary info
+                    // to interact with firestore
+                    userEmail: this.props.route.params.userEmail,
+                    money: this.state.money
+                    })
+                } 
+            }}
+            config={config}
+            style={{
+              flex: 1,
+            }}
+            >
             <View style={styles.container}>
+            
                 <Text style={styles.text}>You currently have <Text style={{fontWeight:"bold"}}>{this.state.money}</Text> coins</Text>
             <Dropdown
                 label='Sort'
@@ -86,15 +112,6 @@ export default class HomeScreen extends React.Component {
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
            
-            {/* <Button
-                onPress={()=> this.props.navigation.navigate('Garden',
-                {
-                    // pass in the userEmail so Garden can have the necessary info
-                    // to interact with firestore
-                    userEmail: this.props.route.params.userEmail,
-                    money: this.state.money
-                })}
-                title='Temporary going to garden'/> */}
             <Calendar
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
@@ -106,6 +123,7 @@ export default class HomeScreen extends React.Component {
                 currentMoney = {this.state.money}
             ></Calendar>
         </View>
+        </GestureRecognizer>
         );
         
     }
