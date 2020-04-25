@@ -6,6 +6,7 @@ import SpriteSheet from 'rn-sprite-sheet';
 
 import * as firebase from 'firebase';
 import FirestoreHandle from '../dataHandlers/FirestoreHandle';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 export default class GardenScreen extends React.Component {
     constructor(props) {
@@ -159,7 +160,25 @@ export default class GardenScreen extends React.Component {
     }
 
     render () {
+         // configuration for swiping the screen
+         const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+          };
         return (
+        // If the user swipe to the right, the screen will navigate to Home
+        <GestureRecognizer
+            onSwipe={(direction, state) => {
+                const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+                if (direction == SWIPE_RIGHT) {
+                    this.props.navigation.navigate('Home');
+                } 
+            }}
+            config={config}
+            style={{
+                flex: 1,
+            }}
+        >
         <View>
             <View style={styles.container}>
             <Text>You currently have ${this.state.money}</Text>
@@ -217,6 +236,7 @@ export default class GardenScreen extends React.Component {
                 style={styles.progressBar}
                 />
          </View>
+         </GestureRecognizer>
         )
     }
 };
