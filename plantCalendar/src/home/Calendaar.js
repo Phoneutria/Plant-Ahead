@@ -18,7 +18,7 @@ export default class Calendaar extends React.Component {
     constructor(props) {
         super(props)
         state = {
-            taskArray: []
+            taskArray: []  // array for holding Task components
         }
     }
 
@@ -33,7 +33,39 @@ export default class Calendaar extends React.Component {
      * \brief Translates TaskData into an array of Tasks
      */
     renderTask() {
-        return 0;
+        let taskJson = this.props.taskData.getData();  // array of objects with task data
+        for (let i = 0; i < taskJson.length; ++i) {
+            taskArray[i] =  
+                <Task 
+                    // --------------------------------variables-----------------------------
+                    // compiler wants a "key" prop when the components are 
+                    // rendered in an array
+                    // this prop is there to just make the compiler happy
+                    key = {taskJson.taskListId + taskJson.id}
+                    // data for the task
+                    id = {taskJson.id}
+                    name={taskJson.title}
+                    dueDate={new Date(taskJson.dueDateAndTime)}
+                    priority={taskJson.priority}
+                    completed={taskJson.completed}
+                    estTimeToComplete={taskJson.estTimeToComplete}
+                    timeSpent = {taskJson.timeSpent}
+                    
+                    //currentMoney = {this.props.currentMoney}
+
+                    // --------------------------------functions-----------------------------
+                    // TODO: pass in the right functions from the HomeScreen
+                    // pass in Calendar's deleteCompletedTask function
+                    // so that when a task is completed, the task can call Calendar's function
+                    // completeTask={(taskId) => this.deleteCompletedTask(taskId)}
+                    // pass in the Calendar's renderTask function
+                    // so that when a task and possibly the ViewTaskModal needs to re-render
+                    //  all the task, they can call this function
+                    // updatedTaskHandler={() => this.updatedTaskHandler()}
+                    // the updateMoneyDisplay function from the HomeScreen is passed to Task
+                    // updateMoneyDisplay={() => this.props.updateMoneyDisplay()}
+                ></Task>
+        }
     }
 
     render() {
