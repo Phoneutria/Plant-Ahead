@@ -45,7 +45,7 @@ function MainStackApp() {
           options={{headerLeft:null}}/>
         <MainStack.Screen name="Garden" component={GardenScreen} 
           options={{headerLeft:null}}/>
-        <MainStack.Screen name="Friends" component={FriendsScreen} />
+       
         <MainStack.Screen name="CreateTask" component={CreateTaskScreen} />
       </MainStack.Navigator>
   );
