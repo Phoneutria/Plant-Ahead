@@ -115,7 +115,7 @@ export default class LogInScreen extends React.Component {
         const images = [require('../../assets/Picture1.png')];
     
         const cacheImages = images.map(image => {
-          return Asset.fromModule(image).downloadAsync();
+          return Assets.fromModule(image).downloadAsync();
         }); 
         return Promise.all(cacheImages);
     }

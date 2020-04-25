@@ -94,25 +94,7 @@ export default class HomeScreen extends React.Component {
                 data={data}
                 style={styles.dropDown}
             />
-            {/* This is the button for adding adding tasks
-            TODO: center the + sign*/ }
-            <TouchableOpacity 
-                style={styles.button}
-                onPress={()=> this.props.navigation.navigate('CreateTask', 
-                    {
-                        // pass in the userEmail so CreateTaskScreen can have the necessary info
-                        // to interact with firestore
-                        userEmail: this.props.route.params.userEmail,
-                        // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
-                        accessToken: this.props.route.params.accessToken,
-                        // pass in the renderCalendar function to Create Task so that
-                        // when we return to this page, the new task is rendered
-                        renderCalendar: this.renderCalendar.bind(this),
-                    })}>
-                    <Text style={styles.textButton}>+</Text>
-            </TouchableOpacity>
-           
-            <Calendar
+             <Calendar
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
                 ref = {calendar => {this.calendar = calendar}} 
@@ -122,6 +104,33 @@ export default class HomeScreen extends React.Component {
                 updateMoneyDisplay = {this.updateMoneyDisplay}
                 currentMoney = {this.state.money}
             ></Calendar>
+
+            <View style={styles.bottomContainer}>
+                {/* For user to create task */}
+                <TouchableOpacity 
+                    style={styles.createButton}
+                    onPress={()=> this.props.navigation.navigate('CreateTask', 
+                        {
+                            // pass in the userEmail so CreateTaskScreen can have the necessary info
+                            // to interact with firestore
+                            userEmail: this.props.route.params.userEmail,
+                            // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
+                            accessToken: this.props.route.params.accessToken,
+                            // pass in the renderCalendar function to Create Task so that
+                            // when we return to this page, the new task is rendered
+                            renderCalendar: this.renderCalendar.bind(this),
+                        })}>
+                        <Text style={styles.textButton}>+</Text>
+                </TouchableOpacity>
+
+                {/* For user to Sign out */}
+                <TouchableOpacity 
+                    style={styles.logoutButton}
+                    onPress={()=> this.props.navigation.navigate('Login')}>
+                    <Text style={styles.textButton}>Sign out</Text>
+                </TouchableOpacity>
+            </View>
+           
         </View>
         </GestureRecognizer>
         );
@@ -137,15 +146,13 @@ const styles = StyleSheet.create({
         backgroundColor: '#ffffff',
         flexDirection:'column',
         paddingLeft:10,
-
     },
-    button: {
+    createButton: {
         position: 'absolute',
         padding: 20,
         marginRight: 15,
         marginLeft: 15,
         backgroundColor: '#8ccd82',
-        bottom:20,
         right:10,
         height: 70,
         width: 70,  //The Width must be the same as the height
@@ -157,6 +164,22 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontWeight: 'bold',
         color:'#FFFFFF'
+    },
+    logoutButton: {
+        textAlign: 'center',
+        fontSize: 20,
+        backgroundColor:'#8ccd82',
+        padding:10,
+        borderRadius:10,
+    },
+    bottomContainer:{
+        // control how the children align horizontally
+        // flex: 2,
+        flexDirection:'row',
+        marginBottom: 50,
+        alignItems: "center",
+        justifyContent: 'space-between',
+        padding:10,
     },
     text:{
         marginTop: 15,
