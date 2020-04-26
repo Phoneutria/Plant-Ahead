@@ -3,7 +3,6 @@ import {View, Text, Button, TouchableOpacity,
         StyleSheet, Alert, Image} from 'react-native';
 import * as Progress from 'react-native-progress';
 import SpriteSheet from 'rn-sprite-sheet';
-
 import * as firebase from 'firebase';
 import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
@@ -198,6 +197,7 @@ export default class GardenScreen extends React.Component {
                     stage2: [6, 7, 8, 7],
                 }}
             />
+           
             <TouchableOpacity
                 style={styles.button}
                 onPress={() => {
@@ -212,6 +212,9 @@ export default class GardenScreen extends React.Component {
                 <Text style={styles.buttonText}>Water {"\n"}
                     <Text style={styles.text}> 1 coin </Text>
                 </Text>
+                <Image
+                    source={require('./water.png')}
+                    style={styles.imageWater}></Image>
             </TouchableOpacity>
                 
             <TouchableOpacity
@@ -228,6 +231,9 @@ export default class GardenScreen extends React.Component {
                 <Text style={styles.buttonText}>Fertilize {"\n"}
                     <Text style={styles.text}> 2 coins </Text>
                 </Text>
+                <Image
+                    source={require('./fertilizer.png')}
+                    style={styles.imageFertilizer}></Image>
             </TouchableOpacity>
 
         <Text
@@ -241,8 +247,7 @@ export default class GardenScreen extends React.Component {
             progress={this.state.growthPoint/100.0} 
             width={300} 
             height={20}
-            style={styles.progressBar}
-            // color={rgba(140, 205, 130, 1)}
+            color={'#8ccd82'}
             />
          </View>
          </GestureRecognizer>
@@ -257,10 +262,6 @@ styles = StyleSheet.create({
         alignSelf: 'center',
         fontSize: 20,
         color: '#8ccd82',   
-    },
-    progressBar:{
-        left: 40,
-        
     },
     logo: {
         marginTop: 70,
@@ -282,11 +283,24 @@ styles = StyleSheet.create({
         borderRadius:10,
         margin:10,
         alignItems:'center',
-        width:200
+        width:200,
+        height:70,
+        flexDirection:'row',
+        justifyContent: 'center'
     },
     buttonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color:'#FFFFFF'
+        fontSize: 18,
+        fontWeight: 'bold',
+        color:'#FFFFFF'
     },
+    imageWater: {
+        width: 30,
+        height:30,
+        marginLeft: 10
+    },
+    imageFertilizer: {
+        width: 40,
+        height:50,
+        marginLeft: 10
+    }
 });
