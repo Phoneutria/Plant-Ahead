@@ -264,7 +264,6 @@ styles = StyleSheet.create({
         color: '#8ccd82',   
     },
     logo: {
-        marginTop: 70,
         width: 150,
         height: 150,
     },
@@ -274,14 +273,14 @@ styles = StyleSheet.create({
         backgroundColor: 'white'
     },
     text:{
-        fontSize: 14,
+        fontSize: 15,
         color: '#fff', 
     },
     button: {
         backgroundColor:'#8ccd82',
         padding:10,
         borderRadius:10,
-        margin:10,
+        marginBottom:20,
         alignItems:'center',
         width:200,
         height:70,

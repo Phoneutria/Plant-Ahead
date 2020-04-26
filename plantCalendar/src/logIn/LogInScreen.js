@@ -12,6 +12,7 @@ import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 import {iosClientId} from '../../credentials/iosClientId';
 import {androidClientId} from '../../credentials/androidClientId';
 import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
 
 /**
  * LogInScreen Class
@@ -115,7 +116,7 @@ export default class LogInScreen extends React.Component {
         const images = [require('../../assets/Picture1.png')];
     
         const cacheImages = images.map(image => {
-          return Assets.fromModule(image).downloadAsync();
+          return Asset.fromModule(image).downloadAsync();
         }); 
         return Promise.all(cacheImages);
     }
@@ -149,7 +150,6 @@ export default class LogInScreen extends React.Component {
     }  
 }
 
-
 const styles = StyleSheet.create({
     container:{
         // control how the children align horizontally
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
         flexDirection:'column',
         alignItems:'center',
         justifyContent:'center',
-        backgroundColor: '#ffffff'//'#fdd8c0'
+        backgroundColor: '#ffffff'
     },
     logo: {
         width: 200,
@@ -188,12 +188,3 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     }
 });
-
-// TODO: these are the colors that might be used, delete later
-// white '#ffffff'
-// light green '#b0e099'
-// green '#8ccd82'
-// brown '#c06318'
-// redish pink '#e37957'
-// brain pink  '#dc9b9b'
-// yellow #fff8d4'
