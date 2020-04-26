@@ -130,12 +130,13 @@ export default class ViewTaskModal extends React.Component {
                     }}
                     value = {this.state.inputTimeSpent}
                     keyboardType = {'numeric'} 
+                    placeholder='Enter total hours spent'
                 />
                 <TouchableOpacity
                   style = {styles.submitButton}
                   onPress = {() => this.addTimeSpent()}
                 >
-                  <Text>SUBMIT</Text>
+                  <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
               </View> 
             : null}
@@ -143,7 +144,7 @@ export default class ViewTaskModal extends React.Component {
             <TouchableOpacity 
               style = {styles.completeButton}
               onPress = {() => this.closeAndCompleteTask()}>
-              <Text>COMPLETE</Text>
+              <Text style={styles.buttonText}>Task Completed</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -162,6 +163,7 @@ const styles = StyleSheet.create({
       height: '50%', 
       width: '80%', 
       backgroundColor: "#F2F2F2",
+      justifyContent: 'space-evenly',
   },
   taskTextBlock: {
     marginLeft: 25,
@@ -171,15 +173,14 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   completeButton: {
-    position: 'absolute', 
-    backgroundColor: '#65CCB8',
-    width: '90%',
-    height: '10%',
-    marginLeft: 15,
-    marginRight: 15,
-    bottom: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
+    textAlign: 'center',
+    backgroundColor: '#8ccd82',
+    position:'absolute',
+    bottom:20,
+    alignSelf: 'center',
+    padding:10,
+    borderRadius:5,
   },
   closeButton: {
     position: 'absolute', 
@@ -192,12 +193,12 @@ const styles = StyleSheet.create({
     right: 5,
   },
   inputContainer: {
-    position: 'absolute', 
+    flex:1,
     flexDirection: 'row',
     alignItems: 'center', 
     marginLeft: 10,
     marginRight: 10,
-    bottom: 75,
+    bottom: 70,
   },
   input: {
     width: '70%',
@@ -205,16 +206,20 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     margin: 5,
     height: 50,
-    borderColor: '#0E88E5',
-    borderWidth: 4
+    borderColor: '#8ccd82',
+    borderBottomWidth: 2
   },
   submitButton: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#0E88E5',
-    height: 50, 
-    paddingHorizontal: 10,
-    margin: 5,
+    textAlign: 'center',
+    backgroundColor:'#8ccd82',
+    marginLeft:10,
+    borderRadius:5,
+    padding:10,
+  },
+  buttonText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color:'#FFFFFF'
   },
 });
    

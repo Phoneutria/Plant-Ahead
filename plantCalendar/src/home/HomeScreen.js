@@ -1,10 +1,10 @@
 import  React, { Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
 import * as firebase from 'firebase';
-// import { calendar } from 'googleapis/build/src/apis/calendar';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
+
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -53,59 +53,48 @@ export default class HomeScreen extends React.Component {
             this.setState({money: user.data().money});
         });
    }
-
+ 
     render() {
         // options for drop-down box
         let data = [{
             value: 'By Due Date'},{
             value: 'By Priority'
         }];
-        
+
+        // configuration for swiping the screen
+        const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+          };
+
         return (
-            <View style={{ flex: 10}}>
-                <Text>You have ${this.state.money}</Text>
-            <Dropdown
-                label='Sort'
-                data={data}
-            />
-            {/* This is the button for adding adding tasks
-            TODO: center the + sign*/ }
-            <TouchableOpacity 
-                style={styles.button}
-                onPress={()=> this.props.navigation.navigate('CreateTask', 
-                    {
-                        // pass in the userEmail so CreateTaskScreen can have the necessary info
-                        // to interact with firestore
-                        userEmail: this.props.route.params.userEmail,
-                        // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
-                        accessToken: this.props.route.params.accessToken,
-                        // pass in the renderCalendar function to Create Task so that
-                        // when we return to this page, the new task is rendered
-                        renderCalendar: this.renderCalendar.bind(this),
-                    })}>
-                    <Text style={styles.textButton}>+</Text>
-            </TouchableOpacity>
-
-            {/* // Self defined object progress bar */}
-            <Progress.Bar 
-                progress={this.state.growthPoints} 
-                width={300} 
-                height={20}
-                style={styles.progressBar}
-                />
-
-            {/* // Button to add more progree to the progress bar */}
-           
-            <Button
-                onPress={()=> this.props.navigation.navigate('Garden',
-                {
+            // If the user swipe to the left, the screen will navigate to Garden
+            <GestureRecognizer
+            onSwipe={(direction, state) => {
+                const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+                if (direction == SWIPE_LEFT) {
+                    this.props.navigation.navigate('Garden', {
                     // pass in the userEmail so Garden can have the necessary info
                     // to interact with firestore
                     userEmail: this.props.route.params.userEmail,
                     money: this.state.money
-                })}
-                title='Temporary going to garden'/>
-            <Calendar
+                    })
+                } 
+            }}
+            config={config}
+            style={{
+              flex: 1,
+            }}
+            >
+            <View style={styles.container}>
+            
+                <Text style={styles.text}>You currently have <Text style={{fontWeight:"bold"}}>{this.state.money}</Text> coins</Text>
+            <Dropdown
+                label='Sort'
+                data={data}
+                style={styles.dropDown}
+            />
+             <Calendar
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
                 ref = {calendar => {this.calendar = calendar}} 
@@ -115,7 +104,35 @@ export default class HomeScreen extends React.Component {
                 updateMoneyDisplay = {this.updateMoneyDisplay}
                 currentMoney = {this.state.money}
             ></Calendar>
+
+            <View style={styles.bottomContainer}>
+                {/* For user to create task */}
+                <TouchableOpacity 
+                    style={styles.createButton}
+                    onPress={()=> this.props.navigation.navigate('CreateTask', 
+                        {
+                            // pass in the userEmail so CreateTaskScreen can have the necessary info
+                            // to interact with firestore
+                            userEmail: this.props.route.params.userEmail,
+                            // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
+                            accessToken: this.props.route.params.accessToken,
+                            // pass in the renderCalendar function to Create Task so that
+                            // when we return to this page, the new task is rendered
+                            renderCalendar: this.renderCalendar.bind(this),
+                        })}>
+                        <Text style={styles.textButton}>+</Text>
+                </TouchableOpacity>
+
+                {/* For user to Sign out */}
+                <TouchableOpacity 
+                    style={styles.logoutButton}
+                    onPress={()=> this.props.navigation.navigate('Login')}>
+                    <Text style={styles.textButton}>Sign out</Text>
+                </TouchableOpacity>
+            </View>
+           
         </View>
+        </GestureRecognizer>
         );
         
     }
@@ -123,13 +140,19 @@ export default class HomeScreen extends React.Component {
 
 
 const styles = StyleSheet.create({
-    button: {
+    container: {
+        // control how the children align horizontally
+        flex: 1,
+        backgroundColor: '#ffffff',
+        flexDirection:'column',
+        paddingLeft:10,
+    },
+    createButton: {
         position: 'absolute',
         padding: 20,
         marginRight: 15,
         marginLeft: 15,
-        backgroundColor: '#0E88E5',
-        bottom:20,
+        backgroundColor: '#8ccd82',
         right:10,
         height: 70,
         width: 70,  //The Width must be the same as the height
@@ -138,11 +161,35 @@ const styles = StyleSheet.create({
     },
     textButton: {
         textAlign: 'center',
-        fontSize: 30,
+        fontSize: 25,
         fontWeight: 'bold',
         color:'#FFFFFF'
     },
-    progressBar:{
-        left: 40,
+    logoutButton: {
+        textAlign: 'center',
+        fontSize: 20,
+        backgroundColor:'#8ccd82',
+        padding:10,
+        borderRadius:5,
+    },
+    bottomContainer:{
+        // control how the children align horizontally
+        // flex: 2,
+        flexDirection:'row',
+        marginBottom: 50,
+        alignItems: "center",
+        justifyContent: 'space-between',
+        padding:10,
+    },
+    text:{
+        marginTop: 15,
+        alignSelf: 'center',
+        fontSize: 20,
+        color: '#8ccd82',   
+    },
+    dropDown:{
+        fontSize:15,
+        // fontColor:'#8ccd82',   
+        paddingLeft:10,
     }
 });

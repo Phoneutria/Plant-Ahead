@@ -3,9 +3,9 @@ import {View, Text, Button, TouchableOpacity,
         StyleSheet, Alert, Image} from 'react-native';
 import * as Progress from 'react-native-progress';
 import SpriteSheet from 'rn-sprite-sheet';
-
 import * as firebase from 'firebase';
 import FirestoreHandle from '../dataHandlers/FirestoreHandle';
+import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
 
 export default class GardenScreen extends React.Component {
     constructor(props) {
@@ -159,86 +159,147 @@ export default class GardenScreen extends React.Component {
     }
 
     render () {
+         // configuration for swiping the screen
+         const config = {
+            velocityThreshold: 0.3,
+            directionalOffsetThreshold: 80
+          };
         return (
-        <View>
-            <View style={styles.container}>
-            <Text>You currently have ${this.state.money}</Text>
-                <SpriteSheet
-                    ref={ref => (this.plant = ref)} // declare the reference to this sprite as a data member of Garden Class
-                    source={require('./plants/sunflower.png')}
-                    columns={3}
-                    rows={3}
-                    height={300} // set either, none, but not both
-                    // width={200}
-                    imageStyle={{ marginTop: -1 }}
-                    // refer to the sprite sheet for sunflower
-                    animations={{
-                        stage0: [0, 1, 2, 1],
-                        stage1: [3, 4, 5, 4],
-                        stage2: [6, 7, 8, 7],
+        // If the user swipe to the right, the screen will navigate to Home
+        <GestureRecognizer
+            onSwipe={(direction, state) => {
+                const {SWIPE_UP, SWIPE_DOWN, SWIPE_LEFT, SWIPE_RIGHT} = swipeDirections;
+                if (direction == SWIPE_RIGHT) {
+                    this.props.navigation.navigate('Home');
+                } 
+            }}
+            config={config}
+            style={{
+                flex: 1,
+            }}
+        >
+        <View style={styles.container}>
+            <Text style={styles.headerText}>You currently have  
+                <Text style={{fontWeight:'bold'}}> {this.state.money} </Text> coins
+            </Text>
+            <SpriteSheet
+                ref={ref => (this.plant = ref)} // declare the reference to this sprite as a data member of Garden Class
+                source={require('./plants/sunflower.png')}
+                columns={3}
+                rows={3}
+                height={300} // set either, none, but not both
+                // width={200}
+                imageStyle={{ marginTop: -1 }}
+                // refer to the sprite sheet for sunflower
+                animations={{
+                    stage0: [0, 1, 2, 1],
+                    stage1: [3, 4, 5, 4],
+                    stage2: [6, 7, 8, 7],
+                }}
+            />
+           
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                    if (this.state.money >= 1) {
+                        Alert.alert("You just watered your plants! 10 points added.");
+                        this.progressAdded(1);
+                    } else {
+                        Alert.alert("Oops! You don't have enough money right now.\
+                        Try again after more tasks are completed");
                     }}
-                />
-                <Button
-                    title="play"
-                    onPress={() => this.playPlant()}/>
-                <Button
-                    title="Water (Cost 1 coin)"
-                    onPress={() => {
-                        if (this.state.money >= 1) {
-                            Alert.alert("You just watered your plants! 10 points added.");
-                            this.progressAdded(1);
-                        } else {
-                            Alert.alert("Oops! You don't have enough money right now.\
-                            Try again after more tasks are completed");
-                        }}
-                    }/>
-                <Button
-                    title="Fertilize (Cost 2 coins)"
-                    onPress={() => {
-                        if (this.state.money >= 2) {
-                            Alert.alert("You just fertilized your plants! 20 points added.");
-                            this.progressAdded(2);
-                        } else {
-                            Alert.alert("Oops! You don't have enough money right now.\
-                            Try again after more tasks are completed");
-                        }}
-                    }/>
-                <Text
-                    style={{fontSize:20, color:'#0E88E5', marginBottom: 20}}>
-                    You currently have  [   
-                    <Text>{this.state.growthPoint}</Text>
-                    ] growthPoints!
+                }>
+                <Text style={styles.buttonText}>Water {"\n"}
+                    <Text style={styles.text}> 1 coin </Text>
                 </Text>
-            </View>
-            <Progress.Bar 
-                progress={this.state.growthPoint/100.0} 
-                width={300} 
-                height={20}
-                style={styles.progressBar}
-                />
+                <Image
+                    source={require('./water.png')}
+                    style={styles.imageWater}></Image>
+            </TouchableOpacity>
+                
+            <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                    if (this.state.money >= 2) {
+                        Alert.alert("You just fertilized your plants! 20 points added.");
+                        this.progressAdded(2);
+                    } else {
+                        Alert.alert("Oops! You don't have enough money right now.\
+                        Try again after more tasks are completed");
+                    }}
+                }>
+                <Text style={styles.buttonText}>Fertilize {"\n"}
+                    <Text style={styles.text}> 2 coins </Text>
+                </Text>
+                <Image
+                    source={require('./fertilizer.png')}
+                    style={styles.imageFertilizer}></Image>
+            </TouchableOpacity>
+
+        <Text
+            style={styles.headerText}>
+            You currently have
+            <Text style={{fontWeight:'bold'}}> {this.state.growthPoint} </Text> 
+             growthPoints!
+        </Text>
+
+        <Progress.Bar 
+            progress={this.state.growthPoint/100.0} 
+            width={300} 
+            height={20}
+            color={'#8ccd82'}
+            />
          </View>
+         </GestureRecognizer>
         )
     }
 };
 
 styles = StyleSheet.create({
-    textStyle: {
-        textAlign: 'center',
-        fontSize: 50,
-        fontWeight: 'bold',
-        color:'#0E88E5',
-        marginBottom: 10
-    },
-    progressBar:{
-        left: 40,
+    headerText:{
+        marginTop: 15,
+        marginBottom:20,
+        alignSelf: 'center',
+        fontSize: 20,
+        color: '#8ccd82',   
     },
     logo: {
-        marginTop: 50,
         width: 150,
         height: 150,
     },
     container:{
         alignItems: 'center',
-        justifyContent: 'flex-start',
+        flex: 1,
+        backgroundColor: 'white'
+    },
+    text:{
+        fontSize: 15,
+        color: '#fff', 
+    },
+    button: {
+        backgroundColor:'#8ccd82',
+        padding:10,
+        borderRadius:10,
+        marginBottom:20,
+        alignItems:'center',
+        width:200,
+        height:70,
+        flexDirection:'row',
+        justifyContent: 'center'
+    },
+    buttonText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color:'#FFFFFF'
+    },
+    imageWater: {
+        width: 30,
+        height:30,
+        marginLeft: 10
+    },
+    imageFertilizer: {
+        width: 40,
+        height:50,
+        marginLeft: 10
     }
 });

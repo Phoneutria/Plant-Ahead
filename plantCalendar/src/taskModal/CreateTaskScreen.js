@@ -12,6 +12,7 @@ export default class CreateTaskScreen extends React.Component {
   state = {
     name: "Empty",
     dueDate: new Date(1598051730000),
+    dateDisplay: "Click here to select date and time",
     priority: "medium",
     estTimeToComplete: 0,
     // a class to handle most of the firestore interfaces (eg. update time in firestore)
@@ -64,7 +65,9 @@ export default class CreateTaskScreen extends React.Component {
     // with the selectedDate
     const onChangeDate = (selectedDate) => {
       this.setState({dueDate: selectedDate, 
-                    dateIsVisible: false});
+                    dateDisplay: this.state.dueDate.toLocaleString(),
+                    dateIsVisible: false},
+                   );
     };
 
     // options for priority
@@ -75,27 +78,30 @@ export default class CreateTaskScreen extends React.Component {
     ];
 
   return (
-    <View>
+    <View style={styles.container}>
       {/* Entering name of the task */}
       <TextInput
-              style={styles.input}
-              onChangeText={(text)=>{
-                this.setState({name:text});
-              }}
-              placeholder="name"
-          />
+            style={styles.input}
+            onChangeText={(text)=>{
+              this.setState({name:text});
+            }}
+            placeholder="Name of new task"
+        />
       {/* Entering number of hours needed for the task */}
       <TextInput
+          keyboardType='numeric'
           style={styles.input}
           onChangeText={(text)=>{
             this.setState({estTimeToComplete:text});
           }}
-          // TODO: make sure the input is a number
           placeholder="Estimate hours needed"
       />
       {/* For selecting the due date */}
      <View>
-      <Button title="Select Date" onPress={() => this.setState({dateIsVisible: true})} />
+      <TouchableOpacity 
+      onPress={() => this.setState({dateIsVisible: true})}>
+      <Text style={styles.text}>{this.state.dateDisplay}</Text>
+     </TouchableOpacity>
       <DateTimePickerModal
         isVisible={this.state.dateIsVisible}
         mode="datetime"
@@ -106,7 +112,8 @@ export default class CreateTaskScreen extends React.Component {
 
       {/* For selecting the priority */}
       <Dropdown
-          label='Priority'
+          label='Select priority here'
+          
           data={data}
           onChangeText={(value)=>{
             this.setState({priority:value});
@@ -114,15 +121,19 @@ export default class CreateTaskScreen extends React.Component {
       />
 
       {/* Navigation buttons */}
-      <View>
-        <Button
+      <View style={styles.bottom}>
+        <TouchableOpacity
             onPress = {() => this.props.navigation.goBack()}
-            title = 'Cancel'/>
-        <Button
+            style={styles.button}>
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
+        <TouchableOpacity
             onPress={()=> {
               this.backTo()
             }}
-            title='Submit'/> 
+            style={styles.button}>
+            <Text style={styles.buttonText}>Create</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -130,11 +141,40 @@ export default class CreateTaskScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    input: {
-        paddingLeft: 10,
-        margin: 10,
-        height: 50,
-        borderColor: '#0E88E5',
-        borderWidth: 4
-    },
+  input: {
+      paddingLeft: 10,
+      margin: 5,
+      height: 50,
+      borderColor: '#8ccd82',
+      borderBottomWidth: 2,
+      fontSize: 15,
+  },
+  text:{
+    marginTop: 15,
+    fontSize: 20,
+    color: '#8ccd82',  
+    alignSelf: 'center'
+  },
+  container:{
+    marginTop: 15,
+    padding:10,
+    flex:1,
+  },
+  button: {
+    textAlign: 'center',
+    backgroundColor:'#8ccd82',
+    padding:10,
+    borderRadius:10,
+    marginHorizontal:50
+  },
+  buttonText: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color:'#FFFFFF'
+  },
+  bottom: {
+    flexDirection:'row',
+    marginTop:20,
+    justifyContent: 'center',
+  },
 });

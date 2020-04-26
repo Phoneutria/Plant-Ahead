@@ -40,9 +40,12 @@ function MainStackApp() {
     // When calling .navigate, use "name" to navigate to the corresponding screen
       <MainStack.Navigator initialRouteName="Login">
         <MainStack.Screen name="Login" component={LogInScreen} />
-        <MainStack.Screen name="Home" component={HomeScreen} />
-        <MainStack.Screen name="Garden" component={GardenScreen} />
-        <MainStack.Screen name="Friends" component={FriendsScreen} />
+        {/* cannot press "back" to logout */}
+        <MainStack.Screen name="Home" component={HomeScreen} 
+          options={{headerLeft:null}}/>
+        <MainStack.Screen name="Garden" component={GardenScreen} 
+          options={{headerLeft:null}}/>
+       
         <MainStack.Screen name="CreateTask" component={CreateTaskScreen} />
       </MainStack.Navigator>
   );

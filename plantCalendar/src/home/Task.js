@@ -71,7 +71,11 @@ class Task extends React.Component {
                 <Animated.View style={{
                     marginBottom: 5,
                     flexDirection: 'row',
-                    opacity: this.state.fadeValue,  // allow animation to change opacity and animate fading away
+                    opacity: this.state.fadeValue, // allow animation to change opacity and animate fading away
+                    borderBottomWidth:2,
+                    borderColor: '#8ccd82',
+                    
+                    
                 }}>
                     {/** 
                      * Create a clickable rectangle that displays info about a task 
@@ -116,8 +120,8 @@ class Task extends React.Component {
                                 userEmail: this.props.userEmail,
                             });}}
                     >
-                        <Text>{this.props.name}</Text>
-                        <Text>{this.props.dueDate.toLocaleString()}</Text>
+                        <Text style={styles.nameText}>{this.props.name}</Text>
+                        <Text style={styles.dateText}>{this.props.dueDate.toLocaleString()}</Text>
                     </TouchableOpacity>
                     <CheckBox 
                         checked = {this.state.checked}
@@ -166,7 +170,21 @@ Task.defaultProps = {
 
 const styles = StyleSheet.create({
     task:{
-        backgroundColor: '#97CAEF',
-        width:'70%',  // make all the boxes for Task have the same width
+        // backgroundColor: '#ffffff',
+        width:'75%',  // make all the boxes for Task have the same width
+        padding: 5,
+        // backgroundColor:'#8ccd82',
+       
     },
+    nameText:{
+        color: '#000000', 
+        fontSize: 20,
+    },
+    dateText:{
+        color: '#464e51', 
+        fontSize: 15,
+    },
+    animatedView:{
+        
+    }
 });

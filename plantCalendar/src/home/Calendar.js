@@ -216,5 +216,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         // make Flat List scrollable
         flex: 1,
+        paddingTop:20,
     },
 });

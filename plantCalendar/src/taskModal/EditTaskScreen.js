@@ -1,5 +1,5 @@
 import  React, { Component } from 'react';
-import {View, Text, TextInput, StyleSheet, Button} from 'react-native';
+import {View, Text, TextInput, StyleSheet, Button, TouchableOpacity} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 
@@ -38,7 +38,7 @@ export default class EditTaskModal extends React.Component {
  async backTo() {
 
   // update the task in Google
-  taskId = await this.state.googleHandle.updateGoogleTask(this.state.taskId, this.state.taskListId,
+  let taskId = await this.state.googleHandle.updateGoogleTask(this.state.taskId, this.state.taskListId,
     this.state.name, this.state.dueDate, this.state.accessToken)
 
   // update the task in Firebase
@@ -47,7 +47,7 @@ export default class EditTaskModal extends React.Component {
   // TODO: call the renderCalendar function in HomeScreen to display the edited task
   // this.props.route.params.renderCalendar();
   // Go back to the HomeScreen
-  this.props.navigation.goBack();
+  this.props.navigation.navigate("Home");
 }
 
   render() {
@@ -66,27 +66,48 @@ export default class EditTaskModal extends React.Component {
       };
 
       return (
-        <View style = {styles.editScreen}> 
-          <View style = {styles.header}>
-            <View style = {styles.header}></View>
-            <Text style = {styles.headerText}> Edit Task </Text>
-          </View>  
-          
+        <View style = {styles.container}> 
+
+          <Text style = {styles.headerText}> Edit Task </Text>
+          <View style = {styles.inputView}>
           {/* Editing name of the task */}
-          <View style = {styles.editView}>
-            <Text style = {styles.editText}> Name:  </Text>
-            <TextInput style = {styles.textBox}
-              defaultValue = {this.state.name}
+          <Text style={styles.text}>Task Name:</Text>
+          <TextInput
+            style={styles.input}
+            defaultValue = {this.state.name}
               onChangeText={(text)=>{
                 this.setState({name:text});
-              }}>
-            </TextInput>
-          </View>
+            }}
+            placeholder='/'
+          />
+        </View>
 
-          {/* Editing due date of the task
-              TODO: find a better picker library and implement */}
-          <View style = {styles.editView}>
-            <Button title="Select Date" onPress={() => this.setState({dateIsVisible: true})} />
+        <View style = {styles.inputView}>
+          {/* Entering number of hours needed for the task */}
+          <Text style={styles.text}>
+            Est. Time Needed (Hours): 
+          </Text>
+        <TextInput
+            keyboardType='numeric'
+            style={styles.input}
+            defaultValue = {this.state.estTimeToComplete}
+            onChangeText={(text)=>{
+              this.setState({estTimeToComplete:text});
+            }}
+            placeholder='0'
+        />
+        </View>
+          
+          
+          {/* Editing due date of the task */}
+          <View style = {styles.inputView}>
+            <Text style={styles.text}>Due date and time: </Text>
+            <TouchableOpacity 
+              onPress={() => this.setState({dateIsVisible: true})}>
+              <Text style={{borderBottomWidth:2,borderBottomColor: '#8ccd82'}}>
+                {this.state.dueDate.toLocaleString()}
+              </Text>
+            </TouchableOpacity>
             <DateTimePickerModal
               isVisible={this.state.dateIsVisible}
               mode="datetime"
@@ -95,41 +116,35 @@ export default class EditTaskModal extends React.Component {
             />
           </View> 
 
-          {/* Editing time to complete of the task */}
-          <View style = {styles.editView}>
-            <Text style = {styles.editText}> Est. Time to Complete: </Text>
-            <TextInput style = {styles.textBox} 
-              defaultValue = {this.state.estTimeToComplete}
-              onChangeText={(text)=>{
-                this.setState({estTimeToComplete: text});
-              }}> 
-            </TextInput>
-          </View>
           
-          {/* Editing priority of the task 
-              TODO: style*/}
-          <View style = {styles.editView}>
-            <Text style = {styles.editText}> Priority: </Text>
+          {/* Editing priority of the task */}
+          <View style = {styles.inputView}>
+            <Text style = {styles.text}> Edit task Priority: </Text>
             <Dropdown
               label= {this.state.priority}
               data={data}
               onChangeText={(text)=>{
                 this.setState({priority:text});
               }}
+              containerStyle={{ width: 100}}
             />
           </View>
           
           {/* Navigation buttons */}
-          <View style = {styles.botButtons}>
-            <Button
-              title = "Cancel"
-              onPress = {() => this.props.navigation.goBack()}>
-            </Button>
-            <Button
-              title = "Save"
-              onPress = {() => this.backTo()}>
-            </Button>
-          </View>  
+          <View style={styles.bottom}>
+          <TouchableOpacity
+                onPress = {() => this.props.navigation.goBack()}
+                style={styles.button}>
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+            <TouchableOpacity
+                onPress={()=> {
+                  this.backTo()
+                }}
+                style={styles.button}>
+                <Text style={styles.buttonText}>Save Changes</Text>
+            </TouchableOpacity>
+          </View>
 
         </View>
       );
@@ -137,50 +152,60 @@ export default class EditTaskModal extends React.Component {
 }
   
 const styles = StyleSheet.create({
-  header: {
-    flex: 2,
-    backgroundColor: 'green',
-    alignItems: 'center'
-  },
-
   headerText: {
     flex: 1,
     fontWeight: 'bold',
-    backgroundColor: 'green',
-    alignItems: 'stretch'
+    alignSelf: 'center',
+    color: 'black',
+    fontSize:20,
+    marginTop:50
   },
-  
-  editScreen: {
-    flex: 1,
+  container:{
+    padding:10,
+    flex:1,
     backgroundColor: 'white',
-    alignItems: 'stretch'
   },
-
-  editView: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center'
+  input: {
+    marginLeft:10,
+    
+    borderColor: '#8ccd82',
+    borderBottomWidth: 2,
+    fontSize: 15,
   },
-
-  botButtons: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-around'
+  inputView: {
+    flex:1, 
+    flexDirection:'row', 
+    alignItems: 'flex-start',
+    marginTop:10
   },
-
-  editText: {
+  text:{
+    fontSize: 18,
+    color: '#8ccd82',  
+    // fontWeight:'bold'
+  },
+  button: {
+    backgroundColor:'#8ccd82',
+    padding:10,
+    borderRadius:10,
+    marginHorizontal:30,
+    alignItems:'center',
+    width:150
+  },
+  buttonText: {
+    fontSize: 18,
     fontWeight: 'bold',
-    alignItems: 'center'
+    color:'#FFFFFF'
   },
-
-  textBox: {
-    borderColor: 'green',
-    borderWidth: 1
-
+  bottom: {
+    flexDirection:'row',
+    marginTop:70,
+    marginBottom:400,
+    justifyContent: 'center',
   },
+    
 
-  footer: {
-    flex: 2,
-    flexDirection: 'row'
-  }
+
+
+
+
 })

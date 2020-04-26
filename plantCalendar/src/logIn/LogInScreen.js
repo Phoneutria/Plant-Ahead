@@ -1,6 +1,6 @@
 import * as React from 'react';
 // TODO: remove Alert when we don't need it anymore
-import { StyleSheet, View, Text, Button, Image, Alert} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image, Alert} from 'react-native';
 import * as Google from 'expo-google-app-auth';
 
 import * as firebase from 'firebase';
@@ -11,6 +11,8 @@ import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 
 import {iosClientId} from '../../credentials/iosClientId';
 import {androidClientId} from '../../credentials/androidClientId';
+import { AppLoading } from 'expo';
+import { Asset } from 'expo-asset';
 
 /**
  * LogInScreen Class
@@ -24,6 +26,7 @@ export default class LogInScreen extends React.Component {
         userEmail: "",
         userName: "",
         firestoreHandle: new FirestoreHandle(),
+        fontsLoaded: false,
     }
     
     /**
@@ -43,8 +46,9 @@ export default class LogInScreen extends React.Component {
                 'https://www.googleapis.com/auth/calendar.events',
                 'https://www.googleapis.com/auth/tasks',
                 ],
+                //for loading screen purposes, reference _cacheResourcesAsync() desicription below
+                isReady: false,
             });
-
             if (result.type === 'success') {
                 this.setState({userEmail: result.user.email, userName: result.user.name});
                 this.firebaseSignUpSignIn(result.accessToken);
@@ -104,27 +108,83 @@ export default class LogInScreen extends React.Component {
         }).catch(error => console.log(error));
     }
 
+    /**
+     * \brief: returns a promise after the image is loaded so that the Login screen can replace
+     * the loading screen
+     */
+    async _cacheResourcesAsync() {
+        const images = [require('../../assets/Picture1.png')];
+    
+        const cacheImages = images.map(image => {
+          return Asset.fromModule(image).downloadAsync();
+        }); 
+        return Promise.all(cacheImages);
+    }
+
     render () {  
+        // Tells the loading screen to appear until _cacheResourcesAsync returns a promise
+        // updates the state variable isReady to true
+        if (!this.state.isReady) {
+            return (
+              <AppLoading
+                startAsync={this._cacheResourcesAsync}
+                onFinish={() => this.setState({ isReady: true })}
+                onError={console.warn}
+              />
+            );
+        }
+            
         return (
             <View style={styles.container}>
+                <Text style={styles.headingText}>Welcome To Plant Ahead!</Text>
                 <Image
                     style={styles.logo}
-                    source={require('../../assets/plantAheadLogo.png')}/>
-                <Button
-                    title="Continue With Google"
-                    onPress={() => this.signInWithGoogleAsync()}/>
+                    source={require('../../assets/Picture1.png')}/>
+                <TouchableOpacity
+                style={styles.button}
+                onPress={() => this.signInWithGoogleAsync()}>
+                    <Text style={styles.buttonText}> Login With Google</Text>
+                </TouchableOpacity>
             </View>
         );
-    };
+    }  
 }
 
 const styles = StyleSheet.create({
     container:{
         // control how the children align horizontally
+        flex: 1,
         alignItems: 'center',
+        flexDirection:'column',
+        alignItems:'center',
+        justifyContent:'center',
+        backgroundColor: '#ffffff'
     },
     logo: {
-        width: 150,
-        height: 150,
+        width: 200,
+        height: 200,
+        marginLeft:20,
+        marginTop:20,
     },
+    button: {
+        marginTop:30,
+        marginBottom:100,
+        paddingTop:15,
+        paddingBottom:15,
+        marginLeft:30,
+        marginRight:30,
+        borderRadius:10,
+        padding: 20,
+        backgroundColor: '#eebaba'
+    },
+    buttonText: {
+        color: '#ffffff',
+        fontSize: 20,
+        fontWeight: "bold"
+    },
+    headingText:{
+        color: '#8ccd82',
+        fontSize: 30,
+        fontWeight: "bold",
+    }
 });
