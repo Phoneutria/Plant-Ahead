@@ -4,6 +4,8 @@ import {Dropdown} from 'react-native-material-dropdown';
 import * as Progress from 'react-native-progress';
 import Calendar from './Calendar';  // import task components
 import * as firebase from 'firebase';
+import TaskData from './TaskData';
+import Calendaar from './Calendaar';
 // import { calendar } from 'googleapis/build/src/apis/calendar';
 
 export default class HomeScreen extends React.Component {
@@ -18,8 +20,11 @@ export default class HomeScreen extends React.Component {
             money: 0,
             userEmail: this.props.route.params.userEmail,
             refresh: false,
+            taskData: new TaskData(this.props.route.params.accessToken, this.props.route.params.userEmail)
         };
         this.updateMoneyDisplay = this.updateMoneyDisplay.bind(this);
+
+        this.state.taskData.initiate();
     };
     
     /*
@@ -105,16 +110,17 @@ export default class HomeScreen extends React.Component {
                     money: this.state.money
                 })}
                 title='Temporary going to garden'/>
-            <Calendar
+            <Calendaar
+                taskData = {this.state.taskData}
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
-                ref = {calendar => {this.calendar = calendar}} 
+                // ref = {calendar => {this.calendar = calendar}} 
                 // variables and functions that are passed to the calendar class
-                accessToken = {this.props.route.params.accessToken}
-                userEmail = {this.props.route.params.userEmail}
-                updateMoneyDisplay = {this.updateMoneyDisplay}
+                // accessToken = {this.props.route.params.accessToken}
+                // userEmail = {this.props.route.params.userEmail}
+                // updateMoneyDisplay = {this.updateMoneyDisplay}
                 currentMoney = {this.state.money}
-            ></Calendar>
+            ></Calendaar>
         </View>
         );
         

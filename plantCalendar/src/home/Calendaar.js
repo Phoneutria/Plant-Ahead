@@ -2,11 +2,6 @@ import * as React from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
 import Task from '../home/Task';  // import task components
 
-import * as firebase from 'firebase';
-
-import FirestoreHandle from '../dataHandlers/FirestoreHandle';
-import GoogleHandle from '../dataHandlers/GoogleHandle';
-
 /**
  * Calendar Class
  *  \brief render each individual task
@@ -33,9 +28,10 @@ export default class Calendaar extends React.Component {
      * \brief Translates TaskData into an array of Tasks
      */
     renderTask() {
+        let tempTaskArray = [];
         let taskJson = this.props.taskData.getData();  // array of objects with task data
         for (let i = 0; i < taskJson.length; ++i) {
-            taskArray[i] =  
+            tempTaskArray[i] =  
                 <Task 
                     // --------------------------------variables-----------------------------
                     // compiler wants a "key" prop when the components are 
@@ -51,7 +47,7 @@ export default class Calendaar extends React.Component {
                     estTimeToComplete={taskJson.estTimeToComplete}
                     timeSpent = {taskJson.timeSpent}
                     
-                    //currentMoney = {this.props.currentMoney}
+                    currentMoney = {this.props.currentMoney}
 
                     // --------------------------------functions-----------------------------
                     // TODO: pass in the right functions from the HomeScreen
@@ -66,6 +62,11 @@ export default class Calendaar extends React.Component {
                     // updateMoneyDisplay={() => this.props.updateMoneyDisplay()}
                 ></Task>
         }
+        console.log("taskJsonData");
+        console.log(taskJson);
+        console.log("Calendar tempTaskArray");
+        console.log(tempTaskArray);
+        this.setState({taskArray: tempTaskArray});
     }
 
     render() {

@@ -13,7 +13,7 @@ import FirestoreHandle from '../dataHandlers/FirestoreHandle';
 import GoogleHandle from '../dataHandlers/GoogleHandle';
 
  export default class TaskData {
-    TaskData(accessToken, userEmail) {
+    constructor(accessToken, userEmail) {
         this.accessToken = accessToken,
         this.userEmail = userEmail,
         this.taskArray = []  // array of JSON objects, each of which represents a task
@@ -51,6 +51,8 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
 
         // parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
+        console.log("taskListJson");
+        console.log(taskListJson);
 
         for (let i = 0; i < taskListJson.items.length; ++i) {
             // get task information from Google for each task list
@@ -62,6 +64,9 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
             
             let taskJson = await rawTasks.json();
 
+            console.log("taskJson");
+            console.log(taskJson);
+
             for (j = 0; j < taskJson.items.length; ++j) {
                 let task = taskJson.items[i];
 
@@ -70,7 +75,7 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
                     let newTask = {
                         name: task.title,
                         id: task.id, 
-                        taskListId: taskListJson.items[i],
+                        taskListId: taskListJson.items[i].id,
                         dueDay: task.due
                     }
                     tempTaskArray[k] = newTask;
@@ -79,6 +84,8 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
             }
         }
         this.taskArray = tempTaskArray;
+        console.log("TaskData: this.taskArray");
+        console.log(this.taskArray);
       }
 
       /**
@@ -152,7 +159,9 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
       */
 
       initiate = async () => {
+        console.log("Calling getGoogleData()");
         this.getGoogleData();
+        console.log("Calling getFirebaseData()");
         this.getFirebaseData();
       }
 
@@ -181,7 +190,9 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
        * \brief Returns the locally stored task data, taskJson
        */
       getData() {
-          return this.state.taskJson;
+          console.log("getData called");
+          console.log(this.taskArray);
+          return this.taskArray;
       }
 
 
