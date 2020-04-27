@@ -23,8 +23,6 @@ export default class HomeScreen extends React.Component {
             taskData: new TaskData(this.props.route.params.accessToken, this.props.route.params.userEmail)
         };
         this.updateMoneyDisplay = this.updateMoneyDisplay.bind(this);
-
-        this.state.taskData.initiate();
     };
     
     /*
@@ -34,17 +32,17 @@ export default class HomeScreen extends React.Component {
     * new tasks. Then, it updates the state variable refresh so that the render
     * function of HomeScreen can be called.
     */
-    renderCalendar() {
-        this.calendar.renderTask();
-        // the refresh state varaible is made just so everytime renderCalendar
-        // is called, the HomeScreen is rendered
-        this.setState({refresh: !this.state.refresh});
-    }
+    // renderCalendar() {
+    //     this.calendar.renderTask();
+    //     // the refresh state varaible is made just so everytime renderCalendar
+    //     // is called, the HomeScreen is rendered
+    //     this.setState({refresh: !this.state.refresh});
+    // }
 
     /*
     * \breif: This function is automatically called the first time it gets to HomeScreen
     */
-   componentWillMount() {
+   componentMount() {
         this.updateMoneyDisplay();
    }
 
@@ -86,7 +84,7 @@ export default class HomeScreen extends React.Component {
                         accessToken: this.props.route.params.accessToken,
                         // pass in the renderCalendar function to Create Task so that
                         // when we return to this page, the new task is rendered
-                        renderCalendar: this.renderCalendar.bind(this),
+                        // renderCalendar: this.renderCalendar.bind(this),
                     })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>

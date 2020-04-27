@@ -19,6 +19,7 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
         this.taskArray = []  // array of JSON objects, each of which represents a task
         this.firestoreHandle = new FirestoreHandle();  // class for manipulating Firebase
         this.googleHandle - new GoogleHandle();  // class for manipulating Google Tasks
+        this.initiated = false;
     }
 
      /**
@@ -51,8 +52,6 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
 
         // parse what we receive from the server into a json
         let taskListJson = await taskLists.json();
-        console.log("taskListJson");
-        console.log(taskListJson);
 
         for (let i = 0; i < taskListJson.items.length; ++i) {
             // get task information from Google for each task list
@@ -63,9 +62,6 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
             }).catch(error => console.log("error message: " + error));
             
             let taskJson = await rawTasks.json();
-
-            console.log("taskJson");
-            console.log(taskJson);
 
             for (j = 0; j < taskJson.items.length; ++j) {
                 let task = taskJson.items[i];
@@ -84,7 +80,7 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
             }
         }
         this.taskArray = tempTaskArray;
-        console.log("TaskData: this.taskArray");
+        console.log("taskArray at the end of google");
         console.log(this.taskArray);
       }
 
@@ -114,6 +110,8 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
       *     if it can't find the data in Firebase, it adds a new entry to Firebase with the updated data
        */
       getFirebaseData = async(userEmail) => {
+        console.log("is task Array what it should be?");
+        console.log(this.taskArray);
         for (let i = 0; i < this.taskArray.length; ++i){
             const task = this.taskArray[i];
 
@@ -142,7 +140,7 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
                     // build the correct due date and time by combining Google and Firebase data
                     // if due time entry doesn't exist in Firebase, skip this step
                     if (taskFbData.dueTime) {
-                        let dueDate = this.taskArray[i].dueDay.dueDay.substring(0, 10);
+                        let dueDate = this.taskArray[i].dueDay.substring(0, 10);
                         dueDateAndTime = dueDate + taskFbData.dueTime;
                     }
                     this.taskArray[i].priority = taskFbData.priority;
@@ -150,19 +148,41 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
                     this.taskArray[i].timeSpent = taskFbData.timeSpent;
                 });    
             }});
+            console.log("Got stuff from Firebase:");
+            console.log(this.taskArray);
+            this.initiated = true;
         }
 
      /**
       * \brief Gets task data from Google and Firebase and stores it in taskArray
       * 
       * \details Only stores uncompleted tasks
+      *          Returns a Promise that resolves to taskArray when finished
       */
 
-      initiate = async () => {
-        console.log("Calling getGoogleData()");
-        this.getGoogleData();
-        console.log("Calling getFirebaseData()");
-        this.getFirebaseData();
+      initiate = async() => {
+        // console.log("Calling getGoogleData()");
+        //     await this.getGoogleData();
+        //     console.log("Calling getFirebaseData()");
+        //     await this.getFirebaseData();
+        // return this.state.taskArray;
+
+        return new Promise((resolve, reject) => {
+            this.getGoogleData()
+            .then(this.getFirebaseData)
+            .then(resolve(this.state.taskArray))
+            .catch(reject("Could not load data"));
+            // console.log("Calling getGoogleData()");
+            // await this.getGoogleData();
+            // console.log("Calling getFirebaseData()");
+            // await this.getFirebaseData();
+
+            // if (this.initiated == true) {
+            //     resolve(this.state.taskArray);
+            // } else {
+            //     reject("Could not load data");
+            // }
+        })
       }
 
       /**
@@ -188,6 +208,8 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
 
       /**
        * \brief Returns the locally stored task data, taskJson
+       * 
+       * \details Should not be called to get the data for the first time
        */
       getData() {
           console.log("getData called");

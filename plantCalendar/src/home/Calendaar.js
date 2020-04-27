@@ -10,26 +10,37 @@ import Task from '../home/Task';  // import task components
  * 
  */
 export default class Calendaar extends React.Component {
-    constructor(props) {
-        super(props)
-        state = {
-            taskArray: []  // array for holding Task components
-        }
+    state = {
+        taskArray: [],  // array for holding Task components
+        dataInitiated: false  // turns true if TaskData prop has loaded data
     }
 
     /**
      * \brief After component has mounted, render tasks
      */
     componentDidMount() {
+        console.log("Calendaar did mount");
         this.renderTask();
+    }
+
+    /**
+     * \brief Initiates TaskData
+     */
+    initiateTasks = async() => {
+        console.log("initiateTasks called");
+        let taskJson = await this.props.taskData.initiate();
+        console.log("initiateTasks taskJson");
+        console.log(taskJson);
+        this.renderTask(taskJson);
     }
 
     /**
      * \brief Translates TaskData into an array of Tasks
      */
-    renderTask() {
+    renderTask(taskJson) {
+        console.log("Calendaar taskJson");
+        console.log(taskJson);
         let tempTaskArray = [];
-        let taskJson = this.props.taskData.getData();  // array of objects with task data
         for (let i = 0; i < taskJson.length; ++i) {
             tempTaskArray[i] =  
                 <Task 
@@ -61,23 +72,51 @@ export default class Calendaar extends React.Component {
                     // the updateMoneyDisplay function from the HomeScreen is passed to Task
                     // updateMoneyDisplay={() => this.props.updateMoneyDisplay()}
                 ></Task>
+                ;
+        // A sneaky way to make the rendering task work
+            // this ensures that all the tasks will be added to the array
+            //      before Calendar calls its render() function
+            if (i == googleTaskDataArray.length-1){
+                // setState will trigger Calender to call its render() function
+                this.setState({taskArray: tempTaskArray});
+            }
         }
         console.log("taskJsonData");
         console.log(taskJson);
         console.log("Calendar tempTaskArray");
         console.log(tempTaskArray);
         this.setState({taskArray: tempTaskArray});
+
+        console.log("Calendaar taskArray");
+        console.log(this.state.taskArray);
     }
 
     render() {
-        return (
-            <View style={styles.container}>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    {this.state.taskArray}
-                </ScrollView>
-            </View>
-        );
-    };
+        if (this.state.dataInitiated == false) {
+            this.initiateTasks().then(result => {
+                this.setState({dataInitiated: true});
+                return (
+                    <View style={styles.container}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                            {this.state.taskArray}
+                        </ScrollView>
+                    </View>
+                );
+            }).catch = (error) => {
+                console.log(error);
+            }
+        } else {
+            let taskJson = this.props.taskData.getData();  // array of objects with task data
+            this.renderTask(taskJson);
+            return (
+                <View style={styles.container}>
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        {this.state.taskArray}
+                    </ScrollView>
+                </View>
+            );
+        }
+    }
 }
 
 const styles = StyleSheet.create({
