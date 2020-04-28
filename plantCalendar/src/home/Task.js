@@ -51,7 +51,8 @@ class Task extends React.Component {
         // animation 
         this.animateUnmount();
 
-        this.props.completeTask(this.props.id);
+        this.props.taskData.completeTask(this.props.id);
+        this.props.renderCalendar();
     };
 
     /**
@@ -106,12 +107,12 @@ class Task extends React.Component {
                                     userEmail: this.props.userEmail,
                                     // function that ViewTaskModal can call if the user clicks
                                     //     the "complete" button on the modal
+                                    taskData: this.props.taskData,
+                                    renderCalendar: this.props.renderCalendar,
+                                    
+                                    // passed in so ViewTaskModal can complete tasks
                                     completedHandler: this.isCompleted,
-                                    // this.props.updatedTaskHandler is a function belonging to the Calendar class
-                                    // Calendar passes this function in as a prop of Task
-                                    // Then, the ViewTaskModal can call this function if the user clicks
-                                    //     the "submit" button to update time spent on the class
-                                    // this allows us the re-render the tasks
+
                                     timeSpentHandler: this.props.updatedTaskHandler,
                                     updateMoneyDisplay: this.props.updateMoneyDisplay,
                                 },

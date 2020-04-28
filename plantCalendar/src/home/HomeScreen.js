@@ -1,10 +1,11 @@
 import  React, { Component } from 'react';
 import {View, Text, Button, TouchableOpacity, StyleSheet, Alert} from 'react-native';
 import {Dropdown} from 'react-native-material-dropdown';
-import Calendar from './Calendar';  // import task components
+import * as Progress from 'react-native-progress';
 import * as firebase from 'firebase';
+import TaskData from './TaskData';
+import Calendar from './Calendar';
 import GestureRecognizer, {swipeDirections} from 'react-native-swipe-gestures';
-
 
 export default class HomeScreen extends React.Component {
     /* TODO: currently the growthpoints is a state variable
@@ -18,12 +19,13 @@ export default class HomeScreen extends React.Component {
             money: 0,
             userEmail: this.props.route.params.userEmail,
             refresh: false,
+            taskData: new TaskData(this.props.route.params.accessToken, this.props.route.params.userEmail)
         };
         this.updateMoneyDisplay = this.updateMoneyDisplay.bind(this);
     };
     
     /*
-    * \breif: renders the calender
+    * \brief: renders the calender
     * \detail: this function first calls the renderTask function
     * that is from its child class - Calender.js in order to dispaly the 
     * new tasks. Then, it updates the state variable refresh so that the render
@@ -37,14 +39,14 @@ export default class HomeScreen extends React.Component {
     }
 
     /*
-    * \breif: This function is automatically called the first time it gets to HomeScreen
+    * \brief: This function is automatically called the first time it gets to HomeScreen
     */
-   componentWillMount() {
+   componentMount() {
         this.updateMoneyDisplay();
    }
 
    /**
-    * \breif: This function updates the dispaly of money in the HomeScreen by getting
+    * \brief: This function updates the dispaly of money in the HomeScreen by getting
     * it from Firebase
     */
    updateMoneyDisplay() {
@@ -95,11 +97,14 @@ export default class HomeScreen extends React.Component {
                 style={styles.dropDown}
             />
              <Calendar
+                taskData = {this.state.taskData}
+                userEmail = {this.props.route.params.userEmail}
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
                 ref = {calendar => {this.calendar = calendar}} 
+                renderCalendar = {this.renderCalendar.bind(this)}
                 // variables and functions that are passed to the calendar class
-                accessToken = {this.props.route.params.accessToken}
+                // accessToken = {this.props.route.params.accessToken}
                 userEmail = {this.props.route.params.userEmail}
                 updateMoneyDisplay = {this.updateMoneyDisplay}
                 currentMoney = {this.state.money}
@@ -113,11 +118,10 @@ export default class HomeScreen extends React.Component {
                         {
                             // pass in the userEmail so CreateTaskScreen can have the necessary info
                             // to interact with firestore
-                            userEmail: this.props.route.params.userEmail,
-                            // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
-                            accessToken: this.props.route.params.accessToken,
-                            // pass in the renderCalendar function to Create Task so that
-                            // when we return to this page, the new task is rendered
+                            // pass in taskData so the create task screen can
+                            // modify the local data
+                            taskData:this.state.taskData,
+
                             renderCalendar: this.renderCalendar.bind(this),
                         })}>
                         <Text style={styles.textButton}>+</Text>

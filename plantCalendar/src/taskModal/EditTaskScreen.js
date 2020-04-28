@@ -37,15 +37,10 @@ export default class EditTaskModal extends React.Component {
   */
  async backTo() {
 
-  // update the task in Google
-  let taskId = await this.state.googleHandle.updateGoogleTask(this.state.taskId, this.state.taskListId,
-    this.state.name, this.state.dueDate, this.state.accessToken)
-
-  // update the task in Firebase
-  this.state.firestoreHandle.updateFirebaseTaskData(this.state.userEmail, taskId, this.state.name, 
-    this.state.priority, this.state.estTimeToComplete, this.state.timeSpent, false, this.state.dueDate);
+  await this.props.route.params.task.taskData.updateTask(this.state.taskId, this.state.taskListId, this.state.name,
+    this.state.dueDate, this.state.priority, this.state.estTimeToComplete, this.state.timeSpent);
   // TODO: call the renderCalendar function in HomeScreen to display the edited task
-  // this.props.route.params.renderCalendar();
+  this.props.route.params.task.renderCalendar();
   // Go back to the HomeScreen
   this.props.navigation.navigate("Home");
 }

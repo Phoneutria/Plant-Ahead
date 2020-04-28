@@ -34,7 +34,8 @@ export default class CreateTaskScreen extends React.Component {
   async backTo() {
     
     // initate the task in both firebase and gogole
-    await this.initiateTask();
+    await this.props.route.params.taskData.createTask(this.state.name, this.state.dueDate,
+      this.state.priority, this.state.estTimeToComplete);
     // call the renderCalendar function in HomeScreen to display the new task
     this.props.route.params.renderCalendar();
     // Go back to the HomeScreen
