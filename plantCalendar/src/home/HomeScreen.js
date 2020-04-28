@@ -32,12 +32,12 @@ export default class HomeScreen extends React.Component {
     * new tasks. Then, it updates the state variable refresh so that the render
     * function of HomeScreen can be called.
     */
-    // renderCalendar() {
-    //     this.calendar.renderTask();
-    //     // the refresh state varaible is made just so everytime renderCalendar
-    //     // is called, the HomeScreen is rendered
-    //     this.setState({refresh: !this.state.refresh});
-    // }
+    renderCalendar() {
+        this.calendaar.renderTask();
+        // the refresh state varaible is made just so everytime renderCalendar
+        // is called, the HomeScreen is rendered
+        this.setState({refresh: !this.state.refresh});
+    }
 
     /*
     * \breif: This function is automatically called the first time it gets to HomeScreen
@@ -77,14 +77,17 @@ export default class HomeScreen extends React.Component {
                 style={styles.button}
                 onPress={()=> this.props.navigation.navigate('CreateTask', 
                     {
-                        // pass in the userEmail so CreateTaskScreen can have the necessary info
-                        // to interact with firestore
-                        userEmail: this.props.route.params.userEmail,
-                        // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
-                        accessToken: this.props.route.params.accessToken,
+                        // pass in createTask function
+                        taskData:this.state.taskData,
+                        createTask: this.state.taskData.createTask,
+                        // // pass in the userEmail so CreateTaskScreen can have the necessary info
+                        // // to interact with firestore
+                        // userEmail: this.props.route.params.userEmail,
+                        // // pass in accessToken so CreateTaskScreen is authorized to edit the user's google Tasks
+                        // accessToken: this.props.route.params.accessToken,
                         // pass in the renderCalendar function to Create Task so that
                         // when we return to this page, the new task is rendered
-                        // renderCalendar: this.renderCalendar.bind(this),
+                        renderCalendar: this.renderCalendar.bind(this),
                     })}>
                     <Text style={styles.textButton}>+</Text>
             </TouchableOpacity>
@@ -112,7 +115,7 @@ export default class HomeScreen extends React.Component {
                 taskData = {this.state.taskData}
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
-                // ref = {calendar => {this.calendar = calendar}} 
+                ref = {calendaar => {this.calendaar = calendaar}} 
                 // variables and functions that are passed to the calendar class
                 // accessToken = {this.props.route.params.accessToken}
                 // userEmail = {this.props.route.params.userEmail}
