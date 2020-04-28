@@ -248,18 +248,62 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
       }
 
       /**
-       * \brief Updates taskArray, Firebase, and Google Tasks depending on the user's input
+       * \brief Searches taskArray for the object with the given taskId and taskListId
+       *        Returns the index of that object
+       * 
+       * TODO: Using just taskId may cause problems in the future
        */
-      updateTask = async() => {
-        return 0;
+      findTask(taskId) {
+          for (i = 0; i < this.taskArray.length; ++i) {
+              if (this.taskArray[i].id == taskId) {
+                  return i;
+              }
+          }
+          console.log("Error: Did not find task");
       }
 
       /**
-       * \brief Completes in the externally stored task data and deletes it from taskArray
+       * \brief Updates taskArray, Firebase, and Google Tasks depending on the user's input
        */
-      completeTask = async() => {
-        return 0;
+      updateTask = async(taskId, taskListId, name, dueDate, priority, estTimeToComplete, timeSpent) => {
+        
+        // update google data
+        taskId = await this.googleHandle.updateGoogleTask(taskId, taskListId,
+            name, dueDate, this.accessToken)
+        
+        // update the task in Firebase
+        this.firestoreHandle.updateFirebaseTaskData(this.userEmail, taskId, name, 
+            priority, estTimeToComplete, timeSpent, false, dueDate);
+        
+        // update local data
+        i = this.findTask(taskId);
+        console.log(i);
+        console.log(this.taskArray);
+        this.taskArray[i].name = name;
+        this.taskArray[i].dueDateAndTime = dueDate.toISOString();
+        this.taskArray[i].priority = priority;
+        this.taskArray[i].estTimeToComplete = estTimeToComplete;
+        this.taskArray[i].timeSpent = timeSpent;
       }
+
+      /**
+       *  \brief modify this.props.taskData and mark a task (specified by taskId) as completed
+       * \details 
+       *      Updates both Firebase and the user's Google Calendar
+       * @param {*} taskId a string that represent the taskId (each task has an unique taskId)
+      */
+      completeTask = async(taskId) => {
+        // update Firebase
+        this.firestoreHandle.setTaskCompleteInFirebase(this.userEmail, 
+            taskId, true);
+        
+        // TODO: taskListId is passed in as undefined. Update when adding support for multiple task lists
+        this.googleHandle.completeGoogleTask(taskId, undefined, this.accessToken);
+        
+        // Delete task from local data
+        i = this.findTask(taskId);
+        this.taskArray.splice(i,1);
+        }
 
       /**
        * \brief Returns the locally stored task data, taskJson

@@ -52,6 +52,7 @@ export default class Calendaar extends React.Component {
             tempTaskArray[i] =  
                 <Task 
                     // --------------------------------variables-----------------------------
+                    userEmail = {this.props.userEmail}
                     // compiler wants a "key" prop when the components are 
                     // rendered in an array
                     // this prop is there to just make the compiler happy
@@ -67,16 +68,18 @@ export default class Calendaar extends React.Component {
                     currentMoney = {this.props.currentMoney}
 
                     // --------------------------------functions-----------------------------
-                    // TODO: pass in the right functions from the HomeScreen
+                    taskData = {this.props.taskData}
+                    renderCalendar = {this.props.renderCalendar}
+                    
                     // pass in Calendar's deleteCompletedTask function
                     // so that when a task is completed, the task can call Calendar's function
                     // completeTask={(taskId) => this.deleteCompletedTask(taskId)}
                     // pass in the Calendar's renderTask function
                     // so that when a task and possibly the ViewTaskModal needs to re-render
                     //  all the task, they can call this function
-                    // updatedTaskHandler={() => this.updatedTaskHandler()}
+                    updatedTaskHandler={() => this.updatedTaskHandler()}
                     // the updateMoneyDisplay function from the HomeScreen is passed to Task
-                    // updateMoneyDisplay={() => this.props.updateMoneyDisplay()}
+                    updateMoneyDisplay={() => this.props.updateMoneyDisplay()}
                 ></Task>
                 ;
         // A sneaky way to make the rendering task work

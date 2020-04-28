@@ -28,7 +28,8 @@ export default class ViewTaskModal extends React.Component {
       // wait for a bit so the user can clear see 2 steps:
       //   1) close the modal
       //   2) delete the task
-      setTimeout(()=>this.props.route.params.task.completedHandler(),
+      let taskRef = this.props.route.params.task;
+      setTimeout(()=>taskRef.completedHandler(),
                      this.state.completeTaskAnimationTime);
     }
 

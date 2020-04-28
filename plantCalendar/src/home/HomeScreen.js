@@ -113,13 +113,15 @@ export default class HomeScreen extends React.Component {
                 title='Temporary going to garden'/>
             <Calendaar
                 taskData = {this.state.taskData}
+                userEmail = {this.props.route.params.userEmail}
                 // ref is required so that the renderTask function from the Calendar
                 // class can be called by the renderCalendar in this class
                 ref = {calendaar => {this.calendaar = calendaar}} 
+                renderCalendar = {this.renderCalendar.bind(this)}
                 // variables and functions that are passed to the calendar class
                 // accessToken = {this.props.route.params.accessToken}
-                // userEmail = {this.props.route.params.userEmail}
-                // updateMoneyDisplay = {this.updateMoneyDisplay}
+                userEmail = {this.props.route.params.userEmail}
+                updateMoneyDisplay = {this.updateMoneyDisplay}
                 currentMoney = {this.state.money}
             ></Calendaar>
         </View>
