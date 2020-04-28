@@ -37,7 +37,14 @@ export default class Calendaar extends React.Component {
     /**
      * \brief Translates TaskData into an array of Tasks
      */
-    renderTask(taskJson) {
+    renderTask = async() => {
+        let taskJson;
+        if (this.state.dataInitiated == false) {
+            taskJson = await this.props.taskData.initiate();
+            this.setState({dataInitiated:true});
+        } else {
+            taskJson = this.props.taskData.getData();
+        }
         console.log("Calendaar taskJson");
         console.log(taskJson);
         let tempTaskArray = [];
@@ -48,15 +55,14 @@ export default class Calendaar extends React.Component {
                     // compiler wants a "key" prop when the components are 
                     // rendered in an array
                     // this prop is there to just make the compiler happy
-                    key = {taskJson.taskListId + taskJson.id}
+                    key = {taskJson[i].taskListId.concat(taskJson[i].id)}
                     // data for the task
-                    id = {taskJson.id}
-                    name={taskJson.title}
-                    dueDate={new Date(taskJson.dueDateAndTime)}
-                    priority={taskJson.priority}
-                    completed={taskJson.completed}
-                    estTimeToComplete={taskJson.estTimeToComplete}
-                    timeSpent = {taskJson.timeSpent}
+                    id = {taskJson[i].id}
+                    name={taskJson[i].name}
+                    dueDate={new Date(taskJson[i].dueDateAndTime)}
+                    priority={taskJson[i].priority}
+                    estTimeToComplete={taskJson[i].estTimeToComplete}
+                    timeSpent = {taskJson[i].timeSpent}
                     
                     currentMoney = {this.props.currentMoney}
 
@@ -76,7 +82,8 @@ export default class Calendaar extends React.Component {
         // A sneaky way to make the rendering task work
             // this ensures that all the tasks will be added to the array
             //      before Calendar calls its render() function
-            if (i == googleTaskDataArray.length-1){
+            if (i == taskJson.length-1){
+                // if (this.state.dataInitiated == false) 
                 // setState will trigger Calender to call its render() function
                 this.setState({taskArray: tempTaskArray});
             }
@@ -92,30 +99,17 @@ export default class Calendaar extends React.Component {
     }
 
     render() {
-        if (this.state.dataInitiated == false) {
-            this.initiateTasks().then(result => {
-                this.setState({dataInitiated: true});
-                return (
-                    <View style={styles.container}>
-                        <ScrollView showsVerticalScrollIndicator={false}>
-                            {this.state.taskArray}
-                        </ScrollView>
-                    </View>
-                );
-            }).catch = (error) => {
-                console.log(error);
+        let returnObject = null;
+        if (this.state.dataInitiated == true) {
+            returnObject = this.state.taskArray;
             }
-        } else {
-            let taskJson = this.props.taskData.getData();  // array of objects with task data
-            this.renderTask(taskJson);
-            return (
-                <View style={styles.container}>
-                    <ScrollView showsVerticalScrollIndicator={false}>
-                        {this.state.taskArray}
-                    </ScrollView>
-                </View>
+        return (
+            <View style={styles.container}>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    {returnObject}
+                </ScrollView>
+            </View>
             );
-        }
     }
 }
 
