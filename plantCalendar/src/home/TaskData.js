@@ -141,44 +141,6 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
             delete this.taskArray[i].dueDay;
             }    
     }    
-        // let k = 0;
-        // onSnapshot() allows us to listen for changes in the firebase
-        // if any tasks get updated, the function inside onSnapshot() will run
-        //     so we can re-render the tasks    
-        // tasksCollectionRef.onSnapshot(() => {
-            // iterate through the data from taskArray and add firebase data to it
-        //     for (let i = 0; i < this.taskArray.length; ++i) {
-        //         const taskRef = firebase.firestore().collection('users').doc(this.userEmail).
-        //             collection('tasks').doc(this.taskArray[i].id);
-                
-        //         // get the data from firestore, then edit the tasks
-        //         taskRef.get().then(thisTask => {      
-        //             let taskFbData = thisTask.data();
-        //             console.log("taskFbData");
-        //             console.log(taskFbData);
-
-        //             let dueDateAndTime = this.taskArray[i].dueDay;
-        //             // build the correct due date and time by combining Google and Firebase data
-        //             // if due time entry doesn't exist in Firebase, skip this step
-        //             if (taskFbData.dueTime) {
-        //                 let dueDate = this.taskArray[i].dueDay.substring(0, 10);
-        //                 dueDateAndTime = dueDate + taskFbData.dueTime;
-        //             }
-        //             this.taskArray[i].priority = taskFbData.priority;
-        //             this.taskArray[i].estTimeToComplete = taskFbData.estTimeToComplete;
-        //             this.taskArray[i].timeSpent = taskFbData.timeSpent;
-        //             ++k;
-        //         });    
-        //     }});
-        //     console.log("Got stuff from Firebase:");
-        //     console.log(this.taskArray);
-        //     return new Promise((resolve, reject) => {
-        //         if (k==this.taskArray.length) {
-        //             console.log(this.taskArray);
-        //             resolve(this.taskArray);
-        //         }
-        //     })
-        // }
 
      /**
       * \brief Gets task data from Google and Firebase and stores it in taskArray
@@ -188,32 +150,10 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
       */
 
       initiate = async() => {
-        // console.log("Calling getGoogleData()");
-        //     await this.getGoogleData();
-        //     console.log("Calling getFirebaseData()");
-        //     await this.getFirebaseData();
-        // return this.state.taskArray;
 
         await this.getGoogleData();
         await this.getFirebaseData();
         return this.taskArray;
-
-        // return new Promise((resolve, reject) => {
-        //     this.getGoogleData()
-        //     .then(this.getFirebaseData())
-        //     .then(resolve(this.taskArray))
-        //     .catch(reject("Could not load data"));
-            // console.log("Calling getGoogleData()");
-            // await this.getGoogleData();
-            // console.log("Calling getFirebaseData()");
-            // await this.getFirebaseData();
-
-            // if (this.initiated == true) {
-            //     resolve(this.state.taskArray);
-            // } else {
-            //     reject("Could not load data");
-            // }
-        //})
       }
 
       /**
@@ -222,9 +162,7 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
 
     async createTask(name, dueDate, priority, estTimeToComplete) {
         // create task in google Task
-        console.log(this.googleHandle);
         let taskId = await this.googleHandle.createGoogleTask(name, dueDate, this.accessToken);
-        console.log(taskId);
         
         // initialize task in Firebase
         this.firestoreHandle.initFirebaseTaskData(this.userEmail, taskId, name);
@@ -237,7 +175,7 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
         
         let newTask = {
             name: name,
-            id: id,
+            id: taskId,
             taskListId: "@default",
             priority: priority,
             estTimeToComplete: estTimeToComplete,
@@ -277,8 +215,6 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
         
         // update local data
         i = this.findTask(taskId);
-        console.log(i);
-        console.log(this.taskArray);
         this.taskArray[i].name = name;
         this.taskArray[i].dueDateAndTime = dueDate.toISOString();
         this.taskArray[i].priority = priority;
@@ -311,8 +247,6 @@ import GoogleHandle from '../dataHandlers/GoogleHandle';
        * \details Should not be called to get the data for the first time
        */
       getData() {
-          console.log("getData called");
-          console.log(this.taskArray);
           return this.taskArray;
       }
 

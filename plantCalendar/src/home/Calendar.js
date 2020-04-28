@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { StyleSheet, View, ScrollView } from 'react-native';
-import Task from '../home/Task';  // import task components
+import Task from './Task';  // import task components
 
 /**
  * Calendar Class
@@ -9,7 +9,7 @@ import Task from '../home/Task';  // import task components
  *  TODO: rename to Calendar after finished moving functions around
  * 
  */
-export default class Calendaar extends React.Component {
+export default class Calendar extends React.Component {
     state = {
         taskArray: [],  // array for holding Task components
         dataInitiated: false  // turns true if TaskData prop has loaded data
@@ -19,7 +19,6 @@ export default class Calendaar extends React.Component {
      * \brief After component has mounted, render tasks
      */
     componentDidMount() {
-        console.log("Calendaar did mount");
         this.renderTask();
     }
 
@@ -27,10 +26,7 @@ export default class Calendaar extends React.Component {
      * \brief Initiates TaskData
      */
     initiateTasks = async() => {
-        console.log("initiateTasks called");
         let taskJson = await this.props.taskData.initiate();
-        console.log("initiateTasks taskJson");
-        console.log(taskJson);
         this.renderTask(taskJson);
     }
 
@@ -45,8 +41,6 @@ export default class Calendaar extends React.Component {
         } else {
             taskJson = this.props.taskData.getData();
         }
-        console.log("Calendaar taskJson");
-        console.log(taskJson);
         let tempTaskArray = [];
         for (let i = 0; i < taskJson.length; ++i) {
             tempTaskArray[i] =  
@@ -91,14 +85,7 @@ export default class Calendaar extends React.Component {
                 this.setState({taskArray: tempTaskArray});
             }
         }
-        console.log("taskJsonData");
-        console.log(taskJson);
-        console.log("Calendar tempTaskArray");
-        console.log(tempTaskArray);
         this.setState({taskArray: tempTaskArray});
-
-        console.log("Calendaar taskArray");
-        console.log(this.state.taskArray);
     }
 
     render() {
