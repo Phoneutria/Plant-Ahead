@@ -12,7 +12,7 @@ In order to start working with our files, first clone the repo. Then create a ne
 
 Put your Firebase API key in a new file called firebaseApiKey.js in this folder. The file should read 
 
-'export const firebaseApiKey = <your API key here>;'
+`export const firebaseApiKey = <your API key here>;`
   
 Then, create two new files in the same directory called androidClientId.js and iosClientId.js. In each file, put 
 
